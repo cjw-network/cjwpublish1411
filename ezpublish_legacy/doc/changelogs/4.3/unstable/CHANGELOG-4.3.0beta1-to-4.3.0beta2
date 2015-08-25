@@ -1,0 +1,48 @@
+Changes from 4.3.0beta1 to 4.3.0beta2
+
+*Kernel:
+- Implemented enhancement #16226: Translation of custom admin menu items - improved
+- Implemented enhancement #16351: Add date picker on ezdate and ezdatetime in admin2 (same as in webin)
+- Implemented enhancement #16352: Don't enforce convention on classes users are allowed to create, let policies define that instead
+
+*Design:
+
+*eZTemplate:
+
+*eZLocale:
+
+*Package system:
+
+*Scripts:
+- Fixed bug #15522: Upgrade script for node assignments which are left behind
+
+*Translations:
+
+*Bugfixes:
+- Fixed bug #15157: admin history page, 'object information' tab, show wrong data
+- Fixed bug #16244: Dashboard templates only available in admin2
+- Fixed bug #16267: IIS setup process
+- Fixed bug #16114: Check that eZCache items that are clustered are defined as such
+- Fixed bug #16078: Discarding translated draft removes original image
+- Fixed bug #16290: eZDFSFileHandlerTest incorrectly restore settings which causes other tests to fail
+- Fixed bug #15891: ezjscore - file names are cutted
+- Fixed bug #16289: Preview tab disabled by default
+- Fixed bug #16285: Parent setUp() function should be called after testing whether a test should be skipped
+- Fixed bug #16313: CachedViewPreferences[] contains preferences that are not used in viewcached pages decreasing cache efficiency in backend
+- Fixed bug #16248: wrong use of array_intersect() in ezsubtreenotificationrule.php
+- Fixed bug #16048: eZTextFileUser login fail on mysql master/slave
+- Fixed bug #16288: New mail transport classes can not be placed inside extension
+- Fixed bug #16272: Formatting of SQL queries causes warnings in Postgresql
+- Fixed bug #16327: Normalise the error handling across mysql, mysqli and postgresql
+- Fixed bug #16334: Database connection shouldn't be closed twice with MySQL/MySQLi backends
+- Fixed bug #16332: In-memory cache for eZContentClass when clearing class identifier cache
+- Fixed bug #16322: eZTextFileUser makes user names with newline (with patch)
+- Fixed bug #16357: Javascript in error in admin2 if LoadFromCDN is disabled
+- Fixed bug #16358: Missing comment indicator at menu.ini file
+- Fixed bug #16355: TC-102 - Adding a "Section" returns a Fatal Error
+- Fixed bug #16156: Modification of attribute category leads to database transaction error (ezscheduled_script table missing?)
+- Fixed bug #16319: deprecate cronjob ldapusermanage.php
+- Fixed bug #16340: DB Deadlocks on ezcontentobject_tree when updating subnode (needs SQL IN() statement)
+- Fixed bug #16140: Wrong permissions in var inside tarball
+- Fixed bug #16291: Media library without access to create folders
+- Fixed bug #8994: Database consistency check suggest to drop extension tables

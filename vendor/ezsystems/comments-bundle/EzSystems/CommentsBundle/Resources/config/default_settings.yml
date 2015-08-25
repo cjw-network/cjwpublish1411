@@ -1,0 +1,13 @@
+parameters:
+    ez_comments.default.default_provider: no_comments
+    ez_comments.default.content_comments: []
+
+    # Disqus
+    ez_comments.default.disqus.default_template: "EzSystemsCommentsBundle::disqus.html.twig"
+
+    # Facebook
+    ez_comments.default.facebook.default_template: "EzSystemsCommentsBundle::facebook.html.twig"
+    ez_comments.default.facebook.width: 470
+    ez_comments.default.facebook.num_posts: 10
+    ez_comments.default.facebook.color_scheme: light
+    ez_comments.default.facebook.include_sdk: true

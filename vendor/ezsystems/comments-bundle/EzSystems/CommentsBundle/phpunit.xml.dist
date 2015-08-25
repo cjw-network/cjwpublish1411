@@ -1,0 +1,23 @@
+<phpunit
+    backupGlobals="false"
+    backupStaticAttributes="false"
+    bootstrap="Tests/bootstrap.php"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    colors="false">
+    <testsuites>
+        <testsuite name="CommentsBundle test suite">
+            <directory>./Tests</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">.</directory>
+            <exclude>
+                <directory>vendor/</directory>
+                <directory>Tests/</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>

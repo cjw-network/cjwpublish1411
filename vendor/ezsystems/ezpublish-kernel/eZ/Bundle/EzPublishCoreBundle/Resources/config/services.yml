@@ -1,0 +1,119 @@
+parameters:
+    ezpublish.siteaccess.class: eZ\Publish\Core\MVC\Symfony\SiteAccess
+    ezpublish.siteaccess.default.name: default
+    ezpublish.config.resolver.dynamic.class: eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\ConfigResolver
+    ezpublish.config.resolver.chain.class: eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\ChainConfigResolver
+    ezpublish.config.default_scope: ezsettings
+    ezpublish.config.dynamic_setting.parser.class: eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAware\DynamicSettingParser
+    ezpublish.controller.base.class: eZ\Publish\Core\MVC\Symfony\Controller\Controller
+    ezpublish.controller.content.view.class: eZ\Publish\Core\MVC\Symfony\Controller\Content\ViewController
+    ezpublish.controller.content.preview.class: eZ\Publish\Core\MVC\Symfony\Controller\Content\PreviewController
+    ezpublish.controller.page.view.class: eZ\Bundle\EzPublishCoreBundle\Controller\PageController
+
+    # FragmentRenderer overrides
+    ezpublish.decorated_fragment_renderer.inline.class: eZ\Bundle\EzPublishCoreBundle\Fragment\InlineFragmentRenderer
+    ezpublish.decorated_fragment_renderer.class: eZ\Bundle\EzPublishCoreBundle\Fragment\DecoratedFragmentRenderer
+    ezpublish.fragment_listener.factory.class: eZ\Bundle\EzPublishCoreBundle\Fragment\FragmentListenerFactory
+
+    ezpublish.controller_manager.class: eZ\Publish\Core\MVC\Symfony\Controller\Manager
+    ezpublish.controller_listener.class: eZ\Bundle\EzPublishCoreBundle\EventListener\ViewControllerListener
+    ezpublish.page_controller_listener.class: eZ\Bundle\EzPublishCoreBundle\EventListener\PageControllerListener
+
+services:
+    # Siteaccess is injected in the container at runtime
+    ezpublish.siteaccess:
+        class: %ezpublish.siteaccess.class%
+        arguments: [%ezpublish.siteaccess.default.name%]
+        synchronized: true
+
+    ezpublish.config.resolver.core:
+        class: %ezpublish.config.resolver.dynamic.class%
+        arguments: [%ezpublish.siteaccess.groups_by_siteaccess%, %ezpublish.config.default_scope%]
+        calls:
+            - [setSiteAccess, [@ezpublish.siteaccess]]
+            - [setContainer, [@service_container]]
+        lazy: true
+        tags:
+            - { name: ezpublish.config.resolver, priority: 200 }
+
+    ezpublish.config.resolver.chain:
+        class: %ezpublish.config.resolver.chain.class%
+
+    ezpublish.config.resolver:
+        alias: ezpublish.config.resolver.chain
+
+    ezpublish.config.dynamic_setting.parser:
+        class: %ezpublish.config.dynamic_setting.parser.class%
+
+    ezpublish.controller.base:
+        class: %ezpublish.controller.base.class%
+        abstract: true
+        calls:
+            - [ setContainer, [@service_container] ]
+
+    ezpublish.controller.content.view:
+        class: %ezpublish.controller.content.view.class%
+        arguments:
+            - @ezpublish.view_manager
+            - @security.context
+        parent: ezpublish.controller.base
+
+    ezpublish.controller.content.preview.core:
+        class: %ezpublish.controller.content.preview.class%
+        arguments:
+            - @ezpublish.api.service.content
+            - @http_kernel
+            - @ezpublish.content_preview_helper
+            - @security.context
+        calls:
+            - [setRequest, [@?request=]]
+
+    ezpublish.controller.content.preview:
+        alias: ezpublish.controller.content.preview.core
+
+    ezpublish.controller.page.view:
+        class: %ezpublish.controller.page.view.class%
+        arguments: [@ezpublish.view_manager, @ezpublish.fieldType.ezpage.pageService]
+        parent: ezpublish.controller.base
+        scope: request
+
+    # This alias allows easier management for subrequests
+    # {{ render( controller( "ez_content:viewLocation", {"locationId": 123, "viewMode": "line"} ) ) }
+    ez_content:
+        alias: ezpublish.controller.content.view
+
+    # Same as above for the page controller
+    # {{ render( controller( "ez_page:viewBlock", {'block': myBlock} ) ) }}
+    ez_page:
+        alias: ezpublish.controller.page.view
+
+    ezpublish.controller_manager:
+        class: %ezpublish.controller_manager.class%
+        arguments: [@ezpublish.location_view.matcher_factory, @ezpublish.content_view.matcher_factory, @ezpublish.block_view.matcher_factory, @logger]
+
+    ezpublish.controller_listener:
+        class: %ezpublish.controller_listener.class%
+        arguments: [@controller_resolver, @ezpublish.controller_manager, @ezpublish.api.repository, @logger]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    ezpublish.page_controller_listener:
+        class: %ezpublish.page_controller_listener.class%
+        arguments: [@controller_resolver, @ezpublish.controller_manager, @ezpublish.fieldType.ezpage.pageService, @logger]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    ezpublish.fragment_listener.factory:
+        class: %ezpublish.fragment_listener.factory.class%
+        arguments: [%fragment.path%]
+        calls:
+            - [setRequest, [@?request=]]
+
+    ezpublish.decorated_fragment_renderer:
+        class: %ezpublish.decorated_fragment_renderer.class%
+        # Arguments replaced at compile time
+        arguments: []
+        calls:
+            - [setFragmentPath, [%fragment.path%]]
+            - [setSiteAccess, [@ezpublish.siteaccess]]
+        abstract: true

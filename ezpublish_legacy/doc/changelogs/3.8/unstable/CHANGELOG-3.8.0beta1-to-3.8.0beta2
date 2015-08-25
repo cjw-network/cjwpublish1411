@@ -1,0 +1,81 @@
+Changes from 3.8.0beta1 to 3.8.0beta2
+
+*Kernel:
+eZXML:
+- Rewritten and separated "simplified XML" edit field output routine.
+- Allowed to use inline tags (including custom inline tags) inside headers.
+- Added possibility to define a way of processing space characters in eZXML
+  input.
+  (see 'TrimSpaces' and 'AllowMultipleSpaces' settings in ezxml.ini)
+- Added possibility to allow empty paragraphs.
+  (see 'AllowEmpty' setting in 'paragraph' section of content.ini)
+
+*Bugfixes:
+- Fixed bug #7832: No conditions with "like" in function
+  eZPersistentObject::conditionTextByRow.
+  ( Merged from stable/3.7 ( 3.7.6 ) rev. 15543 )
+- Fixed inability to proceed with an uploaded package in the setup wizard.
+- Removing references to product category after it has been removed.
+- Fixed bug #8087: Sorting of classes in policy function limitation lists.
+- Fixed bug #8090: Admin Interface Copyright Line Needs To Be Updated For 2006.
+- Fixed bug #8002: Hidden nodes are shown when fetching reverse_related_objects.
+- Fixed bug #8015: Clear basket when user logs out.
+- Fixed bug #8078: Fatal error after click on "Cancel" button in Global settings.
+- Fixed bug: eZContentObjectTreeNode::fethNode should not fetch temporary nodes.
+  ( Merged from stable/3.7 ( 3.7.6 ) rev. 15582 )
+- Fixed broken image passthrough when clustering is enabled.
+- Fixed bug: Content cache might be not cleared when clustering is enabled
+  due to occurence of '//' in the wildcard.
+- Fixed bug 6970: Bug Impossible to pass parameters to PDF template.
+  ( Merged from stable/3.5 rev. 15602, stable/3.6 rev. 15603, stable/3.7 rev. 15604 )
+- Fixed bug #8095: shorten operator doesn't return proper results 
+  with parameter middle.
+  ( Merged from stable/3.7 ( 3.7.6 ) rev. 15607 )
+- Fixed bug #6665: updateviewcount.php bug.
+  ( Merged from stable/3.7 ( 3.7.6 ) rev. 15617 )
+- Fixed bug #7753: flatten.php missing in ez.
+  ( Merged from stable/3.6 ( 3.6.8 ) rev. 15630 )
+- Fixed bug #8124: Object name "L'azienda" causes query error.
+- Fixed bug #8121: Possible wrong navigation menu used when deleting objects.
+  ( Merged from stable/3.7 ( 3.7.6 ) rev. 15657 )
+- Fixed bug #8100: Sorting of classes in Multiplexer Event selection list.
+- Fixed bug #8130: Error nesting "ul" XML tags.
+- Fixed bug #7602: Upload media files with automatic location doesn't work
+  correctly.
+- Fixed bug: Wrong headers numbering in automatic XML headers numeration.
+- Fixed bug: Tables and lists are rendered 2 times in XML->XHTML output.
+- Fixed bug: Wrong headers numbering in eztoc template operator.
+- Fixed bug: Specifying non-existent classes only in 'ShowClasses' setting causes 
+  'content structure' menu show all classes.
+- Fixed some mysql deadlocks that may have happened when several users
+  were concurrently publishing something.
+- Fixed bug #8079: Undefined post variable: SelectedNodeIDArray.
+- Fixed bug #8099: Backslash escaping.
+- Fixed bug #8000, #7711: Whitespaces between adjacent xml tags incorrectly
+  removed.
+- Fixed bug #8111: XML tags not allowed between custom tags.
+- Fixed bug #8031: No empty lines/paragraphs possible.
+- Fixed bug: php and tpl errors/warnings when creating object with 'ezmedia'
+  datatype in non-compiled template mode.
+- Fixed bug #8102: {include} parameters don't respect bounds.
+  ( Merged from stable/3.7 ( 3.7.6 ) rev. 15717 )
+
+*INI settings:
+- Added site.ini:[shopSettings].ClearBasketOnLogout setting:
+  Means that the basket will (or NOT) be cleared when a user logs out.
+- Added ezxml.ini:[InputSettings].TrimSpaces setting:
+  True value means that spaces will be stripped off in the old way and false
+  means that all spaces remain.
+- Added ezxml.ini:[InputSettings].AllowMultipleSpaces setting:
+  True means that space characters sequence will be replaced by one space
+  character.
+- Added content.ini:[paragraph].AllowEmpty setting:
+  Is this allowed to have empty paragraphs in eZXML input.
+
+*DataTypes:
+
+*eZTemplate:
+- Added a new parameter "ignore_visibility" ("true" by default) to 
+  "reverse_related_objects_count" and "reverse_related_objects" functions. 
+  That allows fetching visible objects only or all reverse related objects.
+

@@ -1,0 +1,18 @@
+# globale config.yml wird nach den Configs vom SiteBundle geladen und überschreibt so die Settings
+# @see src/Cjw/MultiSiteBundle/cjwpublish/CjwMultiSiteKernel.php registerContainerConfiguration()
+
+# 5.2 in 5.3 ändert sicht die db settings
+#doctrine:
+#    dbal:
+#        connections:
+#            default_connection:
+#                driver: pdo_mysql
+#                host: localhost
+#                dbname: dbname
+#                user: user
+#                password: xxx
+#                charset: UTF8
+#                options: {  }
+
+parameters:
+    database_prefix: 'ez1411_'

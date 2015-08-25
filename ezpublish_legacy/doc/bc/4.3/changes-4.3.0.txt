@@ -1,0 +1,190 @@
+Changes to BC and behavior  in version 4.3.0
+============================================
+
+INI setting changes
+-------------------
+
+- Webshop tab hidden by default
+
+  As a first step towards removing the shop functionality from the kernel and
+  move it into an extension, we have now disabled this tab by default.
+  You can re-enable it by adding Tabs[]=shop to menu.ini[TopAdminMenu]
+  
+- Design tab hidden by default
+
+  Additionally Menu management left menu item has been moved to Setup tab.
+  To re-enable design tab add Tabs[]=design to menu.ini[TopAdminMenu]
+  
+- roles & policy link disabled in setup tab
+
+  Since this link also present on User accounts tab, and belongs there. This link
+  has been disabled on Setup tab in menu.ini under [Leftmenu_setup]
+
+- site.ini[RSSSettings]DefaultVersion
+
+  Changed default version from 1.0 to 2.0 as RSS 2.0 is the most widespread feed
+  format, and the fact that it support images in the feed.
+
+- design.ini [StylesheetSettings]CSSFileList
+
+  Deprecated in favour of FrontendCSSFileList & BackendCSSFileList
+  settings, will be removed in a future version (normally in two versions).
+
+- design.ini [JavaScriptSettings]JavaScriptList
+
+  Deprecated in favour of FrontendJavaScriptList & BackendJavaScriptList
+  settings, will be removed in a future version (normally in two versions).
+
+- site.ini [ContentSettings]CachedViewPreferences[full]
+
+  admin2 design does not use any of the admin_navigation_* preferences anymore
+  expect admin_navigation_content, this setting should additionally now default 
+  to 1 instead of 0 so new users gets access to preview tab straight away.
+  Additinally many preferences on this setting was not really used within content/view
+  and therefore was not needed here and just further decreased cache efficiency.
+
+  So as of 4.3, setting in admin siteaccess is this by default:
+  CachedViewPreferences[full]=admin_navigation_content=1;admin_children_viewmode=list;admin_list_limit=1
+
+- site.ini [MailSettings]TransportAlias
+
+  Added the list of available mail transports, used by the class eZMailTransport
+  to instantiate the transport class based on the setting [MailSettings]Transport
+  when sending an email.
+
+- site.ini [DesignSettings]DesignLocationCache
+
+  Cache locations of design base directories. This setting is disabled by
+  default,and enabled after setup wizard has run. Enabling it before running
+  the setup wizard might throw notices if using a debugger at the same time.
+
+
+Change of behavior 
+-------------------
+
+- Look & Feel url hardcoded in ini
+
+  Because of enhancement  "#15672: Use ini setting for menu items in admin", url to
+  Look and Feel object is defined in menu.ini[Leftmenu_setup]Links[]
+  ( and if you have re-enabled design tab also menu.ini[Leftmenu_design]Links[] )
+  using object id 54. If you have an old install this object id might be a different one
+  and you'll need to override the setting.
+
+- eZTreeMenuOperator/ 'treemenu' does not return pre generated data_map
+
+  Because of enhancement  "#3005: Increase performance eZTreeMenuOperator", data_map
+  is no longer part of the hash-structure for each element, and you'll need to access
+  it as normal using the node (so $item.node.data_map instead of $item.data_map ).
+
+- eZDir::recursiveDelete() performs a new check by default
+
+  The directory to be removed must be under the root directory of eZ Publish,
+  unless the second parameter of the function is set to false. This is a
+  safety measure introduced to solve: "#015823: Running cache clearing
+  procedure from upgrade 4.2.0 using root removes all linux system files"
+
+- templateInit( $name = false )
+
+  Parameter $name is now totally ignored as you have always gotten same instance anyway, so
+  instead make sure you call $tpl->resetVariables(); after you get instance instead.
+  Note: this function has also been deprecated, use eZTemplate::factory()
+
+- Function query() of eZMySQLDB and eZMySQLiDB triggers an E_USER_ERROR in case of error
+
+  Previously, executing a bad query only resulted in "false" being returned as
+  well as an error entry in the var/error.log file. Now, executing a bad query
+  will stop the execution to have a common error handling between PostgreSQL,
+  MySQL and MySQLi backends.
+
+- Function loginUser() of eZUser doesn't use the email address for updating the hash
+
+  Previously when updating the HashType in site.ini to md5_user, loginUser() was
+  using the email address to store the hash. Now it uses the login column of
+  the ezuser table instead.
+
+- The content/removelocation operation now requires a unique parameter
+  (node_list) which is an array of node ID which no longer have to belong to
+  the same object. 'node_id', 'object_id' and 'move_to_trash' parameters have
+  been removed.
+
+eZContentClass::instantiate() changes
+-------------------------------------
+
+- $userID now has to be false if you want to create objects for current user
+  If you don't set it to false, new object id will no longer be stored in user
+  session for use by policy system to let anonymous user re edit object.
+
+Deprecated functionality
+------------------------
+
+- ezi18n() and ezx18n() functions has been deprecated in favor of new
+  ezpI18n::tr() function that takes advantage of autoloading so you don't need
+  to require_once the i18n.php file. These two function will be removed in a future
+  version.
+
+- kernel/common/ezincludefunctions.php 
+  All functions in this file has been deprecated, functions not already deprecated:
+  kernel_include(), kernel_common(), datatype_class(), extension_path(),
+  ext_include(), ext_activate(), ext_class(), lib_include(), lib_class() and kernel_class()
+  These functions will be removed in a future version.
+
+- kernel/common/image.php: imageInit()
+  Function will be removed in a future version, use eZImageManager::factory() instead.
+
+- kernel/common/template.php: templateInit()
+  Function will be removed in a future version, use eZTemplate::factory() instead.
+
+- cronjobs/ldapusermanage.php
+  This cronjob will be removed in a future version, functionality is part
+  of regular ldap logins. See issue http://issues.ez.no/16319
+
+- kernel/content/ezcontentoperationcollection.php: removeAssignment()
+  Function will be removed in a future version, use removeNodes() instead
+  which can work on nodes not belonging to the same object.
+
+Renamed methods
+---------------
+
+Removed features
+----------------
+
+Removed methods
+---------------
+
+- All internal i18n.php functions have been removed, as in:
+  ezcurrentLanguage(), ezinsertarguments() and eZTranslateText()
+  
+- eZArchiveHandler
+  This class and related sub-class eZTARArchiveHandler has been removed
+  They have been deprecated since 4.1.
+  
+- eZModuleManager
+  eZModuleManager class has been deprecated since 4.1, in favor of the setting
+  [ModuleSettings] ModuleList in module.ini
+
+- eZImportLookupTable
+  This class is removed after being deprecated since 4.1
+
+
+Removed globals
+---------------
+
+- eZImageManager
+
+  eZImageManager::instance() now uses static variable instead, this can be reset
+  with eZImageManager::resetInstance().
+
+
+- eZPublishTemplate & eZPublishTemplate_*
+
+  See above notes on templateInit() (it reuses eZTemplate::factory, thus does not need these)
+
+
+- eZTemplateInstance
+
+  eZTemplate::instance() now uses static variable instead.
+
+- eZMailTransport
+
+  eZMailTransport does not use globals anymore.
+

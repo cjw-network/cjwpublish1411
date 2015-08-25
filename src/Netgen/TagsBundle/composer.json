@@ -1,0 +1,21 @@
+{
+    "name": "netgen/tagsbundle",
+    "description": "Netgen Tags Bundle is an eZ Publish 5 bundle for taxonomy management and easier classification of content, providing more functionality for tagging content than ezkeyword field type included in eZ Publish kernel.",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Netgen",
+            "homepage": "http://www.netgenlabs.com"
+        }
+    ],
+    "require": {
+        "ezsystems/ezpublish-kernel": "*"
+    },
+    "suggest": {
+        "ezsystems/eztags-ls": "Legacy extension, to activate tags management in admin interface."
+    },
+    "autoload": {
+        "psr-0": {"Netgen\\TagsBundle": ""}
+    },
+    "target-dir": "Netgen/TagsBundle"
+}

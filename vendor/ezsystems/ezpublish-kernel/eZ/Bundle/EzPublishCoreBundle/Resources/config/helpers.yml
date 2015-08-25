@@ -1,0 +1,47 @@
+parameters:
+    # Helpers
+    ezpublish.translation_helper.class: eZ\Publish\Core\Helper\TranslationHelper
+    ezpublish.field_helper.class: eZ\Publish\Core\Helper\FieldHelper
+    ezpublish.content_preview_helper.class: eZ\Publish\Core\Helper\ContentPreviewHelper
+    ezpublish.config_scope_listener.class: eZ\Bundle\EzPublishCoreBundle\EventListener\ConfigScopeListener
+    ezpublish.dynamic_settings_listener.class: eZ\Bundle\EzPublishCoreBundle\EventListener\DynamicSettingsListener
+    ezpublish.config_resolver.resettable_services: []
+    ezpublish.config_resolver.dynamic_settings_services: []
+
+services:
+    # Helpers
+    ezpublish.translation_helper:
+        class: %ezpublish.translation_helper.class%
+        arguments:
+            - @ezpublish.config.resolver
+            - @ezpublish.api.service.content
+            - %ezpublish.siteaccesses_by_language%
+            - @?logger
+
+    ezpublish.field_helper:
+        class: %ezpublish.field_helper.class%
+        arguments: [@ezpublish.translation_helper, @ezpublish.api.service.content_type, @ezpublish.api.service.field_type]
+
+    ezpublish.content_preview_helper:
+        class: %ezpublish.content_preview_helper.class%
+        arguments: [@ezpublish.api.service.content, @ezpublish.api.service.location, @event_dispatcher, @ezpublish.config.resolver]
+        calls:
+            - [setSiteAccess, [@ezpublish.siteaccess]]
+
+    ezpublish.config_scope_listener:
+        class: %ezpublish.config_scope_listener.class%
+        arguments:
+            - @ezpublish.config.resolver.core
+            - @ezpublish.view_manager
+        tags:
+            - { name: kernel.event_subscriber }
+
+    ezpublish.dynamic_settings_listener:
+        class: %ezpublish.dynamic_settings_listener.class%
+        arguments:
+            - %ezpublish.config_resolver.resettable_services%
+            - %ezpublish.config_resolver.dynamic_settings_services%
+        calls:
+            - [setContainer, [@service_container]]
+        tags:
+            - { name: kernel.event_subscriber }

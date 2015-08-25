@@ -1,0 +1,35 @@
+Changes from 3.8.0rc1 to 3.8.0
+
+*Kernel:
+- Added ability to load cluster file handlers from an extension.
+- Added pgsql cluster file handler.
+
+*Bugfixes:
+- Fixed bug #7476: Passing 'floor'ed values to 'for' fails.
+  ( Merged from stable/3.6 ( 3.6.8 ) rev. 15862 )
+- Fixed bug #8186: Unwanted whitespace with inline element <b>/<strong>.
+- Fixed bug #8052: module_params operator outputs debug information.
+  ( Merged from stable/3.6 ( 3.6.8 ) rev. 15870 )
+- Fixed bug: Prices of products using dynamic VAT charging were always displayed
+  without VAT included.
+- Fixed bug #8185: ezdomnode removeChildren will change $this to stdClass.
+- Fixed bug #8141: Smartcache no longer clearing reverse related nodes.
+- Fixed bug #8040: Login Fatal error Undefined class name 'ezcontentobjecttreenode'.
+  (Merged from stable/3.7 (3.7.6) rev. 15888)
+- Fixed bug #8175: Table in setupwizard (step : "Site package" ) doesn't look good.
+- Fixed bug #8034: cache-block with expiry=0 always expires when TemplateCompiling 
+  is disabled.
+- Fixed bug #8176: ezurlalias cache dont use atomic file feature, can cause lot of crashes.
+- Fixed bug #8195: Three really small fixes for xhtml validation.
+- Fixed bug #8193: Wrong Last-Modified header using ezfilepasstroughhandler.php.
+- Fixed bug #8181: Language name is not consistent.
+- Fixed bug #8198: Impossible to remove TOC anchor in the output of <header> element.
+  (Anchor is moved now to <header> tag template)
+- Fixed bug #8201: Wrong comment in binaryfile.ini.
+  ( Merged from stable/3.5 ( 3.5.11 ) rev. 15943 )
+- Fixed bug #8166: Dobbel [articlethumbnail].
+  ( Merged from stable/3.5 ( 3.5.11 ) rev. 15947 )
+- Fixed bug #7562: Package file exports are corrupt
+  ( Merged from stable/3.5 ( 3.5.11 ) rev. 15953 )
+- Fixed HTTP headers generated when serving images by claster
+  to work properly with squid.

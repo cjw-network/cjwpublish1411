@@ -1,0 +1,29 @@
+cjwsite_default_route:
+    resource: "@CjwSiteCjwpublishBundle/Resources/config/routing.yml"       # bundle name needs to be replaced by page builder
+    prefix:   /
+
+login:
+    path:   /login
+    defaults: { _controller: ezpublish.security.controller:loginAction }
+login_check:
+    path:   /login_check
+logout:
+    path:   /logout
+
+_ezpublishRoutes:
+    resource: "@EzPublishCoreBundle/Resources/config/routing/internal.yml"
+
+_ezpublishLegacyRoutes:
+    resource: "@EzPublishLegacyBundle/Resources/config/routing.yml"
+
+_ezpublishRestRoutes:
+    resource: "@EzPublishRestBundle/Resources/config/routing.yml"
+    prefix:   %ezpublish_rest.path_prefix%
+
+_ezpublishRestOptionsRoutes:
+    resource: "@EzPublishRestBundle/Resources/config/routing.yml"
+    prefix: %ezpublish_rest.path_prefix%
+    type: rest_options
+
+_liip_imagine:
+  resource: "@LiipImagineBundle/Resources/config/routing.xml"

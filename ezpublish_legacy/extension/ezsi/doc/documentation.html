@@ -1,0 +1,789 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
+<title>Documentation for the eZSI extension</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:Date: $Date: 2005-12-18 01:56:14 +0100 (Sun, 18 Dec 2005) $
+:Revision: $Revision: 4224 $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin-left: 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left {
+  clear: left }
+
+img.align-right {
+  clear: right }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font-family: serif ;
+  font-size: 100% }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+tt.docutils {
+  background-color: #eeeeee }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="documentation-for-the-ezsi-extension">
+<h1 class="title">Documentation for the eZSI extension</h1>
+<!-- -*- coding: utf-8 -*- -->
+<div class="contents topic">
+<p class="topic-title first"><a id="table-of-contents" name="table-of-contents">Table of Contents</a></p>
+<ul class="simple">
+<li><a class="reference" href="#author" id="id1" name="id1">Author</a></li>
+<li><a class="reference" href="#introduction" id="id2" name="id2">Introduction</a></li>
+<li><a class="reference" href="#what-is-ezsi" id="id3" name="id3">What is eZSI ?</a></li>
+<li><a class="reference" href="#how-does-this-extension-work" id="id4" name="id4">How does this extension work ?</a><ul>
+<li><a class="reference" href="#use-case-1" id="id5" name="id5">Use case 1</a></li>
+<li><a class="reference" href="#use-case-2" id="id6" name="id6">Use case 2</a></li>
+<li><a class="reference" href="#use-case-3" id="id7" name="id7">Use case 3</a></li>
+<li><a class="reference" href="#si-block-functionnal-specification" id="id8" name="id8">si-block functionnal specification</a></li>
+<li><a class="reference" href="#esi-processing-part-1" id="id9" name="id9">ESI processing part 1</a></li>
+<li><a class="reference" href="#esi-processing-part-2" id="id10" name="id10">ESI processing part 2</a></li>
+<li><a class="reference" href="#cronjob-workflow" id="id11" name="id11">Cronjob workflow</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#installation" id="id12" name="id12">Installation</a><ul>
+<li><a class="reference" href="#extracting-the-extension" id="id13" name="id13">Extracting the extension</a></li>
+<li><a class="reference" href="#creating-the-new-table" id="id14" name="id14">Creating the new table</a></li>
+<li><a class="reference" href="#declaring-the-extension" id="id15" name="id15">Declaring the extension</a></li>
+<li><a class="reference" href="#setting-up-the-cronjob" id="id16" name="id16">Setting up the cronjob</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#removing-the-extension" id="id17" name="id17">Removing the extension</a><ul>
+<li><a class="reference" href="#removing-all-si-blocks-calls" id="id18" name="id18">Removing all {si-blocks} calls</a></li>
+<li><a class="reference" href="#removing-the-cronjob" id="id19" name="id19">Removing the cronjob</a></li>
+<li><a class="reference" href="#removing-the-table" id="id20" name="id20">Removing the table</a></li>
+<li><a class="reference" href="#deleting-si-blocks" id="id21" name="id21">Deleting si-blocks</a></li>
+<li><a class="reference" href="#undeclaring-the-extension" id="id22" name="id22">Undeclaring the extension</a></li>
+<li><a class="reference" href="#deleting-the-extension" id="id23" name="id23">Deleting the extension</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#configuring-the-extension" id="id24" name="id24">Configuring the extension</a><ul>
+<li><a class="reference" href="#templatefunctionsettings" id="id25" name="id25">TemplateFunctionSettings</a></li>
+<li><a class="reference" href="#siblocksettings" id="id26" name="id26">SIBlockSettings</a></li>
+<li><a class="reference" href="#sifilessettings" id="id27" name="id27">SIFilesSettings</a></li>
+<li><a class="reference" href="#ftpsettings" id="id28" name="id28">FTPSettings</a></li>
+<li><a class="reference" href="#developmentsettings" id="id29" name="id29">DevelopmentSettings</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#template-function" id="id30" name="id30">Template function</a><ul>
+<li><a class="reference" href="#si-block-function" id="id31" name="id31">{si-block} function</a></li>
+<li><a class="reference" href="#key-generation" id="id32" name="id32">Key generation</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#important-notes" id="id33" name="id33">Important notes</a><ul>
+<li><a class="reference" href="#si-block-vs-cache-block" id="id34" name="id34">{si-block} VS {cache-block}</a></li>
+<li><a class="reference" href="#personnalized-pages" id="id35" name="id35">Personnalized pages</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#setting-up-apache-for-ssi" id="id36" name="id36">Setting up Apache for SSI</a><ul>
+<li><a class="reference" href="#enabling-mod-filter" id="id37" name="id37">Enabling mod_filter</a></li>
+<li><a class="reference" href="#enablig-mod-include" id="id38" name="id38">Enablig mod_include</a></li>
+<li><a class="reference" href="#adding-mod-filter-rules" id="id39" name="id39">Adding mod_filter rules</a></li>
+<li><a class="reference" href="#specific-rewrite-rule" id="id40" name="id40">Specific Rewrite Rule</a></li>
+<li><a class="reference" href="#virtualhost-example" id="id41" name="id41">VirtualHost example</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id1" id="author" name="author">Author</a></h1>
+<p>Jérôme Renard &lt;<a class="reference" href="mailto:jr&#64;ez.no">jr&#64;ez.no</a>&gt;</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id2" id="introduction" name="introduction">Introduction</a></h1>
+<p>eZ Publish needed an extension that could be able to generate
+ESI or SSI tags in order to cache the HTML page as much as possible.
+This is what the eZSI extension has been designed for.</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id3" id="what-is-ezsi" name="what-is-ezsi">What is eZSI ?</a></h1>
+<p>eZSI makes it possible to generate either ESI or SSI tags in
+the HTML page generated by eZ Publish.</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id4" id="how-does-this-extension-work" name="how-does-this-extension-work">How does this extension work ?</a></h1>
+<p>I hope the images below will be cleared enough to describe
+how this extension work :</p>
+<div class="section">
+<h2><a class="toc-backref" href="#id5" id="use-case-1" name="use-case-1">Use case 1</a></h2>
+<img alt="images/usecase1.png" src="images/usecase1.png" />
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id6" id="use-case-2" name="use-case-2">Use case 2</a></h2>
+<img alt="images/usecase2.png" src="images/usecase2.png" />
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id7" id="use-case-3" name="use-case-3">Use case 3</a></h2>
+<img alt="images/usecase3.png" src="images/usecase3.png" />
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id8" id="si-block-functionnal-specification" name="si-block-functionnal-specification">si-block functionnal specification</a></h2>
+<img alt="images/esiblock.png" src="images/esiblock.png" />
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id9" id="esi-processing-part-1" name="esi-processing-part-1">ESI processing part 1</a></h2>
+<img alt="images/esipart1.png" src="images/esipart1.png" />
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id10" id="esi-processing-part-2" name="esi-processing-part-2">ESI processing part 2</a></h2>
+<img alt="images/esipart2.png" src="images/esipart2.png" />
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id11" id="cronjob-workflow" name="cronjob-workflow">Cronjob workflow</a></h2>
+<img alt="images/cronjobspecification.png" src="images/cronjobspecification.png" />
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id12" id="installation" name="installation">Installation</a></h1>
+<div class="section">
+<h2><a class="toc-backref" href="#id13" id="extracting-the-extension" name="extracting-the-extension">Extracting the extension</a></h2>
+<p>Save the extension in your &quot;extension&quot; folder and extract it
+with your favorite extracting tool. You can also run the
+following command</p>
+<pre class="literal-block">
+tar zxvf ezsi.tar.gz
+</pre>
+<p>this will create a folder called &quot;ezsi&quot; under the &quot;extension&quot; folder</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id14" id="creating-the-new-table" name="creating-the-new-table">Creating the new table</a></h2>
+<p>You have to create the new table needed by ezsi.
+You can use the following command</p>
+<pre class="literal-block">
+mysql -u &lt;user&gt; -p&lt;password&gt; &lt;ezpublishdatabase&gt; &lt; path/to/ezpublish/extension/ezsi/sql/mysql/schema.sql
+</pre>
+<p>This table must be stored in the same database as eZ Publish.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id15" id="declaring-the-extension" name="declaring-the-extension">Declaring the extension</a></h2>
+<p>In order to have the extension working you have add the following
+line</p>
+<pre class="literal-block">
+ActiveExtensions[]=ezsi
+</pre>
+<p>in</p>
+<pre class="literal-block">
+settings/override/site.ini.append.php
+</pre>
+<p>And update the autoload array</p>
+<pre class="literal-block">
+php bin/php/ezpgenerateautoloads.php -e
+</pre>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id16" id="setting-up-the-cronjob" name="setting-up-the-cronjob">Setting up the cronjob</a></h2>
+<p>In order to update SI blocks, ezsi is shipped with a cronjob which
+calls all pages which contain SI blocks. It is up to you do decide
+which frequency to use to launch the cronjob. The recommandation here
+it to take all your ttl and caculate the average. After that you will
+have enough informations to define a frequency. You can also add the
+following line into your ezpublish.cron file since all the global
+variables are already set:</p>
+<pre class="literal-block">
+0,15,30,45 * * * * cd $EZPUBLISHROOT &amp;&amp; $PHP runcronjobs.php siblockupdate -q 2&gt;&amp;1
+</pre>
+<p>Remember that this is just an example. Here expired si-blocks will be
+updated every 15 minutes. It is up to you to decide which frequency to use.</p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id17" id="removing-the-extension" name="removing-the-extension">Removing the extension</a></h1>
+<p>If you plan to remove this extension then following
+the process describe below is recommanded</p>
+<div class="section">
+<h2><a class="toc-backref" href="#id18" id="removing-all-si-blocks-calls" name="removing-all-si-blocks-calls">Removing all {si-blocks} calls</a></h2>
+<p>You will have to remove all {si-block} calls in your templates.
+The following command will help you to find them</p>
+<pre class="literal-block">
+grep -nR &quot;{si-block&quot; extension/ design/
+</pre>
+<p>If you are using SVN then you can use the following command
+to avoid a lot of noise in the results of the above command</p>
+<pre class="literal-block">
+grep -nR &quot;{si-block&quot; extension/ design/ | grep -v svn
+</pre>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id19" id="removing-the-cronjob" name="removing-the-cronjob">Removing the cronjob</a></h2>
+<p>You also have to remove the cronjob described above from
+your crontab. Run <tt class="docutils literal"><span class="pre">crontab</span> <span class="pre">-e</span></tt> and remove the according line.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id20" id="removing-the-table" name="removing-the-table">Removing the table</a></h2>
+<p>You can now remove the ezsi_files table. To do this simply
+run the following SQL query</p>
+<pre class="literal-block">
+DROP TABLE ezsi_file
+</pre>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id21" id="deleting-si-blocks" name="deleting-si-blocks">Deleting si-blocks</a></h2>
+<p>If the si-blocks have been stored on the local file system then
+they are stored in <tt class="docutils literal"><span class="pre">var/si-blocks/*</span></tt>. You can simple run the following
+command to remove them</p>
+<pre class="literal-block">
+rm -rf var/si-blocks/
+</pre>
+<p>If the SI blocks are stored in an external system, FTP for example
+then the you simply have to remove the 'si-blocks' folder.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id22" id="undeclaring-the-extension" name="undeclaring-the-extension">Undeclaring the extension</a></h2>
+<p>Remove the following line</p>
+<pre class="literal-block">
+ActiveExtensions[]=ezsi
+</pre>
+<p>in</p>
+<pre class="literal-block">
+settings/override/site.ini.append.php
+</pre>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id23" id="deleting-the-extension" name="deleting-the-extension">Deleting the extension</a></h2>
+<p>You can now remove the 'ezsi' folder which is located
+in the &quot;extension&quot; folder.</p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id24" id="configuring-the-extension" name="configuring-the-extension">Configuring the extension</a></h1>
+<p>All the useful configuration directives are located in
+the following file</p>
+<pre class="literal-block">
+extension/ezsi/settings/ezsi.ini.append.php
+</pre>
+<div class="section">
+<h2><a class="toc-backref" href="#id25" id="templatefunctionsettings" name="templatefunctionsettings">TemplateFunctionSettings</a></h2>
+<p>Possible configuration</p>
+<ul class="simple">
+<li>ForceRegenerationString=&lt;string&gt;</li>
+<li>ForceRegenerationValue=&lt;string&gt;</li>
+</ul>
+<p>It is possible to force the regeneration of a block by passing
+&lt;ForceRegenerationString&gt;=&lt;ForceRegenerationValue&gt; in the URL.
+<a class="reference" href="http://www.site.com/path/to/page">http://www.site.com/path/to/page</a>?&lt;ForceRegenerationString&gt;=&lt;ForceRegenerationValue&gt;
+will force eZ Publish to regenerate the SI blocks defined in this page.</p>
+<p>For example with the following configuration</p>
+<pre class="literal-block">
+ForceRegenerationString=force_siblocks_update
+ForceRegenerationValue=yes
+</pre>
+<p>Will for the ezsi extension to update it SI blocks for
+any page called with the following URL
+<a class="reference" href="http://wwww.site.com/url/alias?force_siblocks_update=yes">http://wwww.site.com/url/alias?force_siblocks_update=yes</a></p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id26" id="siblocksettings" name="siblocksettings">SIBlockSettings</a></h2>
+<p>Possible configuration:</p>
+<ul class="simple">
+<li>BlockHandler=ESI</li>
+<li>BlockHandler=SSI</li>
+<li>BlockFilePathPrependString=&lt;string&gt;</li>
+</ul>
+<p>If you choose</p>
+<pre class="literal-block">
+BlockHandler=ESI
+</pre>
+<p>Then you should be able to use Akamaï or Varnish or whatever HTTP proxy
+which recognizes ESI markup. You will see the following markup
+in your templates</p>
+<pre class="literal-block">
+&lt;esi:include src=&quot;si-blocks/xxxxxxx.htm&quot; ttl=&quot;yy&quot;/&gt;
+</pre>
+<p>If you choose</p>
+<pre class="literal-block">
+BlockHandler=SSI
+</pre>
+<p>Then you should be able to use Apache's mod_include.
+Before using SSIs make sure your Apache server is ready to accept
+SSI calls. Please refer to the following documention before using them:
+<a class="reference" href="http://httpd.apache.org/docs/2.0/mod/mod_include.html">http://httpd.apache.org/docs/2.0/mod/mod_include.html</a>
+You will see the following markup in your templates</p>
+<pre class="literal-block">
+&lt;!--#include virtual=&quot;si-blocks/xxxxxx.htm&quot; --&gt;
+</pre>
+<p>Defining a value to BlockFilePathPrependString is useful when SI blocks
+and HTTP are not on the same server. The extension will automatically
+generate the string 'si-blocks/&lt;cachefilename&gt;.htm' but this is not
+sufficient for remote file systems.
+We need informations on how to acess the file.
+This may be a hostname to access the file directly
+like <a class="reference" href="http://siblocks.mysite.com/si-blocks">http://siblocks.mysite.com/si-blocks</a>/&lt;cachefilename&gt;.htm
+If you plan to use a local storage then this directive
+<em>MUST</em> be empty.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id27" id="sifilessettings" name="sifilessettings">SIFilesSettings</a></h2>
+<p>two options are possible here:</p>
+<ul class="simple">
+<li>FS ( local File System )</li>
+<li>FTP</li>
+</ul>
+<p>If you choose</p>
+<pre class="literal-block">
+FileHandler=FS
+</pre>
+<p>Then all SI blocks will be written on the local file system.
+All the files will be stored in <tt class="docutils literal"><span class="pre">var/si-blocks/*</span></tt>.</p>
+<p>If you choose</p>
+<pre class="literal-block">
+FileHandler=FTP
+</pre>
+<p>Then all SI bocks will be stored on a remote FTP. Its configuration
+is described below. The blocks will be stored in <tt class="docutils literal"><span class="pre">si-blocks/*</span></tt>.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id28" id="ftpsettings" name="ftpsettings">FTPSettings</a></h2>
+<p>These settings are only used for the FTP file handler.
+If you choose</p>
+<pre class="literal-block">
+FileHandler=FS
+</pre>
+<p>They will not be used.
+The configuration directives are:</p>
+<ul class="simple">
+<li>Host=&lt;string&gt;</li>
+<li>Port=&lt;integer&gt;</li>
+<li>Login=&lt;string&gt;</li>
+<li>Password=&lt;string&gt;</li>
+<li>Timeout=&lt;integer&gt;</li>
+<li>DestinationFolder=&lt;string&gt;</li>
+</ul>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id29" id="developmentsettings" name="developmentsettings">DevelopmentSettings</a></h2>
+<p>ActivateSIMarkup=enabled|disabled
+When set to disable the extension will not insert
+the SI tags in the HTML page. Thism makes it possible
+to plan the use of SI blocks without breaking the HTML
+of the page. Useful for development and debugging :)</p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id30" id="template-function" name="template-function">Template function</a></h1>
+<div class="section">
+<h2><a class="toc-backref" href="#id31" id="si-block-function" name="si-block-function">{si-block} function</a></h2>
+<p>In order to have SI blocks generated in your HTML file you have
+to call a new template function : si-block. The syntax is the following:</p>
+<pre class="literal-block">
+{si-block key=string $key [tll=integer $ttl]}
+     your template code here
+{/si-block}
+</pre>
+<p>The <em>key</em> attribute is mandatory and can be a scalar or an array.
+You can use a hash if you want but no key will be taken into account.
+You can not use objects as keys.</p>
+<p>The <em>ttl</em> is optionnal. However is you plan to use ESI and
+Akamaï it is recommended to use it. You can choose between
+4 units :</p>
+<ul class="simple">
+<li>h (hours)</li>
+<li>m (minutes)</li>
+<li>s (seconds)</li>
+<li>d (days)</li>
+</ul>
+<p>Specify a floating point time is syntactically correct however
+the extension will convert it into an int at runtime. This means
+that for example setting ttl=&quot;9.5h&quot; will not throw any syntax
+error but the real TTL will be 9h.</p>
+<p>You can put any template code between {si-block} instructions.
+The template code inside these blocks will be interpreted and
+stored into a static HTML file.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id32" id="key-generation" name="key-generation">Key generation</a></h2>
+<p>At a lower level the key for each block is composed by the
+following informations :</p>
+<ul class="simple">
+<li>value of the &quot;key&quot; attribute</li>
+<li>location of the {si-block} call in the template</li>
+<li>template name</li>
+<li>siteaccess name</li>
+<li>urlalias</li>
+<li>view parameters</li>
+</ul>
+<p>This means that you do not have to think about unicity
+in your keys everything is already done in the template
+function. Although it is not recommended you can even use
+the same key in the same template but at different locations
+in this file. The final key will be different. This will make
+the template more difficult to maintain though.</p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id33" id="important-notes" name="important-notes">Important notes</a></h1>
+<div class="section">
+<h2><a class="toc-backref" href="#id34" id="si-block-vs-cache-block" name="si-block-vs-cache-block">{si-block} VS {cache-block}</a></h2>
+<p>SI blocks are not a replacement for cache-blocks since there is
+neither subtree_expiry nor a a complex key system.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id35" id="personnalized-pages" name="personnalized-pages">Personnalized pages</a></h2>
+<p>It is not possible to usr SI blocks for personnalized pages.
+If you do this all user will see the same page.</p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id36" id="setting-up-apache-for-ssi" name="setting-up-apache-for-ssi">Setting up Apache for SSI</a></h1>
+<p>This extension is able to generate SSI markup however
+Apache must be configure as described below. In order
+to be able to use SSIs with eZ Publish, you need Apache 2.2.</p>
+<div class="section">
+<h2><a class="toc-backref" href="#id37" id="enabling-mod-filter" name="enabling-mod-filter">Enabling mod_filter</a></h2>
+<p>Apache needs a specific module to be able to parse SSI markup on the fly once the HTML
+content is generated.This module is call mode_filter.
+The documentation is available at this URL <a class="reference" href="http://httpd.apache.org/docs/2.2/mod/mod_filter.html">http://httpd.apache.org/docs/2.2/mod/mod_filter.html</a>
+This module is generally available with the default apache2 setup.
+The only this you have to do is to execute the following command</p>
+<pre class="literal-block">
+a2enmod filter
+</pre>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id38" id="enablig-mod-include" name="enablig-mod-include">Enablig mod_include</a></h2>
+<p>This module makes it possible to parse SSI markup and is called
+by mod_filter. Documentation for this module is available at this
+URL : <a class="reference" href="http://httpd.apache.org/docs/2.0/mod/mod_include.html">http://httpd.apache.org/docs/2.0/mod/mod_include.html</a>
+This module is generally available with the default apache2 setup.
+The only thing you have to do is to execute the following command</p>
+<pre class="literal-block">
+a2enmod include
+</pre>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id39" id="adding-mod-filter-rules" name="adding-mod-filter-rules">Adding mod_filter rules</a></h2>
+<p>In your site VirtualHost you can simply copy/paste the following
+configuration directive</p>
+<pre class="literal-block">
+FilterDeclare SSI
+FilterProvider SSI INCLUDES resp=Content-Type $text/html
+FilterChain SSI
+</pre>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id40" id="specific-rewrite-rule" name="specific-rewrite-rule">Specific Rewrite Rule</a></h2>
+<p>In order to be able to find and execute SSI calls you must add
+the following RewriteRules in you site VirtualHost. This directive
+must be at the top of other directives</p>
+<pre class="literal-block">
+Rewriterule ^/var/si-blocks/.* - [L]
+</pre>
+<p>Do not forget to reload Apache configuration once you are done.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id41" id="virtualhost-example" name="virtualhost-example">VirtualHost example</a></h2>
+<p>Here is a complete example of a working VirtualHost that contains
+all the needed mod_filter configuration directives.</p>
+<pre class="literal-block">
+&lt;VirtualHost *&gt;
+
+   ServerName site.com
+   DocumentRoot /var/www/site.com
+
+   &lt;Directory /var/www/site.com&gt;
+       # The +Includes options is needed to accept SSI markup parsing
+       Options Indexes FollowSymLinks +Includes
+       AllowOverride None
+   &lt;/Directory&gt;
+
+   DirectoryIndex index.php
+
+   &lt;IfModule mod_rewrite.c&gt;
+       RewriteEngine On
+       Rewriterule ^/var/si-blocks/.* - [L]
+       Rewriterule ^/var/storage/.* - [L]
+       Rewriterule ^/var/[^/]+/storage/.* - [L]
+       RewriteRule ^/var/cache/texttoimage/.* - [L]
+       RewriteRule ^/var/[^/]+/cache/texttoimage/.* - [L]
+       Rewriterule ^/design/[^/]+/(stylesheets|images|javascript)/.* - [L]
+       Rewriterule ^/share/icons/.* - [L]
+       Rewriterule ^/extension/[^/]+/design/[^/]+/(stylesheets|images|javascripts?)/.* - [L]
+       Rewriterule ^/packages/styles/.+/(stylesheets|images|javascript)/[^/]+/.* - [L]
+       RewriteRule ^/packages/styles/.+/thumbnail/.* - [L]
+       RewriteRule ^/favicon\.ico - [L]
+       RewriteRule ^/robots\.txt - [L]
+
+       # Uncomment the following lines when using popup style debug.
+       # RewriteRule ^/var/cache/debug\.html.* - [L]
+       # RewriteRule ^/var/[^/]+/cache/debug\.html.* - [L]
+
+       RewriteRule .* /index.php
+   &lt;/IfModule&gt;
+
+    FilterDeclare SSI
+    FilterProvider SSI INCLUDES resp=Content-Type $text/html
+    FilterChain SSI
+&lt;/VirtualHost&gt;
+</pre>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+    "name": "whiteoctober/breadcrumbs-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "description": "A small breadcrumbs bundle for Symfony2",
+    "keywords": ["breadcrumbs", "symfony"],
+    "homepage": "https://github.com/whiteoctober/BreadcrumbsBundle",
+    "authors": [
+        {
+            "name": "Rich Sage",
+            "email": "rich.sage@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "symfony/framework-bundle": "2.*"
+    },
+    "autoload": {
+        "psr-0": { "WhiteOctober\\BreadcrumbsBundle": "" }
+    },
+    "target-dir": "WhiteOctober/BreadcrumbsBundle"
+}

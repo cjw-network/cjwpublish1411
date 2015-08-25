@@ -1,0 +1,22 @@
+framework:
+    secret:         secret
+    router:         { resource: "%kernel.root_dir%/routing.yml" }
+    templating:     { engines: ['twig'] }
+    test:           ~
+    translator:     ~
+    default_locale: en
+    session:
+        storage_id: session.storage.filesystem
+
+twig:
+    debug:            %kernel.debug%
+    strict_variables: %kernel.debug%
+
+services:
+    pagerfanta.view.my_view_1:
+        class: Pagerfanta\View\OptionableView
+        arguments:
+            - @pagerfanta.view.default
+            - { proximity: 2, previous_message: Anterior, next_message: Siguiente }
+        public: false
+        tags: [{ name: pagerfanta.view, alias: my_view_1 }]

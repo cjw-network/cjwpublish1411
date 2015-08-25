@@ -1,0 +1,18 @@
+cjwpublish:
+    site:
+        domains:
+            - www.cjwpublish.com
+            - cjwpublish.com
+#            - admin.cjwpublish.com
+
+# ein fehler wird ausgeloest wenn die parameter gelesen werden
+# v so soll es zukunftig aussehen
+#imports:
+#    - { resource: parameters.yml }
+
+#cjwpublish:
+#    site:
+#         domains:
+#            - www.%cjwsite.name.project%.%cjwsite.name.toplevel%
+#            - %cjwsite.name.project%.%cjwsite.name.toplevel%
+#            - admin.%cjwsite.name.project%.%cjwsite.name.toplevel%

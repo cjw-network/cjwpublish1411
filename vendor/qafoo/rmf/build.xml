@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     This build file is copyright of Qafoo GmbH. All rights reserved.
+-->
+<project name="REST Micro Framework" default="verify" basedir="./">
+    <!--
+        Define Qafoo basedir property, this means the root directory of all
+        Qafoo components.
+    -->
+    <dirname property="qafoo:basedir" file="${ant.file.Qafoo}" />
+
+    <!--
+        Import project specific settings.
+    -->
+    <property file="${basedir}/build.properties" />
+
+    <!--
+        Import the build-commons framework.
+    -->
+    <import file="setup/src/main/xml/base.xml" />
+
+</project>

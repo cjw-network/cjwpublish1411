@@ -1,0 +1,19 @@
+{% extends site_bundle_name ~ '::pagelayout.html.twig' %}
+
+{% block content %}
+    {% if module_result.errorCode is defined %}
+        {% include site_bundle_name ~ ':exception:404.html.twig' %}
+
+        {% if app.environment != 'prod' %}
+            <p>Error Code: {{ module_result.errorCode }}</p>
+        {% endif %}
+    {% else %}
+        {{ module_result.content|raw }}
+    {% endif %}
+{% endblock %}
+
+{% block javascript_footer %}
+    {{ parent() }}
+{% endblock %}
+
+{% block page_ads %}{% endblock %}

@@ -1,0 +1,21 @@
+parameters:
+    ezpublish.session_set_dynamic_name_listener.class: eZ\Bundle\EzPublishCoreBundle\EventListener\SessionSetDynamicNameListener
+    ezpublish.session_init_by_post_listener.class:  eZ\Bundle\EzPublishCoreBundle\EventListener\SessionInitByPostListener
+    ezpublish.session.attribute_bag.storage_key: "_ezpublish"
+
+services:
+    ezpublish.session_set_dynamic_name_listener:
+        class: %ezpublish.session_set_dynamic_name_listener.class%
+        arguments: [@ezpublish.config.resolver, @?session, @?session.storage]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    ezpublish.session_init_by_post_listener:
+        class: %ezpublish.session_init_by_post_listener.class%
+        arguments: [@?session]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    session.attribute_bag:
+        class: %session.attribute_bag.class%
+        arguments: [%ezpublish.session.attribute_bag.storage_key%]

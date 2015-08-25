@@ -1,0 +1,114 @@
+ezpublish:
+    siteaccess:
+        # cjwpublish_user__en
+        default_siteaccess: %cjwsite.name.project%_user__en
+
+        list:
+            - %cjwsite.name.project%_user__en
+            - %cjwsite.name.project%_user__de
+            - %cjwsite.name.project%_admin__en
+            - %cjwsite.name.project%_admin__de
+
+        groups:
+            %cjwsite.name.project%_user_group:
+                - %cjwsite.name.project%_user__en
+                - %cjwsite.name.project%_user__de
+            %cjwsite.name.project%_admin_group:
+                - %cjwsite.name.project%_admin__en
+                - %cjwsite.name.project%_admin__de
+
+        # https://doc.ez.no/display/EZP/Siteaccess+Matching
+        match:
+            # www.cjwpublish.com.cjwpublish1411.fw.lokal \Cjw\MultiSiteBundle\Matcher\MapHost: => begins_with
+            # www.cjwpublish.com.cjwpublish1411.fw.lokal/de/ => www.cjwpublish.com/de => siteaccess: cjwpublish_user__de
+            # www.cjwpublish.com.cjwpublish1411.fw.lokal/ => www.cjwpublish.com/en/(default) => default uri en => siteaccess: cjwpublish_user__en
+            \Cjw\MultiSiteBundle\Matcher\MapHostURI:
+                www.cjwpublish.com/en/(default): %cjwsite.name.project%_user__en
+                www.cjwpublish.com/de: %cjwsite.name.project%_user__de
+                www.cjwpublish.com/admin_en: %cjwsite.name.project%_admin__en
+                www.cjwpublish.com/admin_de: %cjwsite.name.project%_admin__de
+                cjwpublish.com/en/(default): %cjwsite.name.project%_user__en
+                cjwpublish.com/de: %cjwsite.name.project%_user__de
+                cjwpublish.com/admin_en: %cjwsite.name.project%_admin__en
+                cjwpublish.com/admin_de: %cjwsite.name.project%_admin__de
+
+
+
+            # \Cjw\MultiSiteBundle\Matcher\MapHost: => begins_with
+            # www.cjwpublish.com.cjwpublish1411.fw.lokal => www.cjwpublish.com => siteaccess: cjwpublish_user__en
+#            \Cjw\MultiSiteBundle\Matcher\MapHost:
+#                www.cjwpublish.com: cjwpublish_user__en
+
+# only useable for single ez installations
+#            Map\URI:
+#                de: %cjwsite.name.project%_user__de
+#                en: %cjwsite.name.project%_user__en
+#                admin_en: %cjwsite.name.project%_admin__en
+#                admin_de: %cjwsite.name.project%_admin__de
+
+
+#            Map\Host:
+#                admin.%cjwsite.name.project%.%cjwsite.name.toplevel%: %cjwsite.name.project%_admin
+#                www.%cjwsite.name.project%.%cjwsite.name.toplevel%: %cjwsite.name.project%_user__de
+
+
+
+
+    system:
+        # ezpublish.system.default. ... default is used if no siteaccess config exists for the setting
+        default:
+            repository: main
+            var_dir: var/%cjwsite.name.project%
+            #anonymous_user_id: %cjwsite.anonymous_user_id%
+            # comment the following 2 lines out for multi lingual setup
+            #languages: [eng-GB, ger-DE]
+
+        %cjwsite.name.project%_user_group:
+            legacy_mode: false
+
+            # https://doc.ez.no/display/EZP/Language+Switcher
+            # http://share.ez.no/blogs/huck-florent/language-switcher-using-bootstrap3
+            translation_siteaccesses: [%cjwsite.name.project%_user__de, %cjwsite.name.project%_user__en]
+            content:
+                tree_root:
+                    # https://github.com/ezsystems/ezpublish-kernel/blob/master/doc/specifications/multisite/design_routing.md
+                    # https://doc.ez.no/display/EZP/Multisite+using+content_root
+                    # Root locationId. Default is top locationId
+                    location_id: %cjwsite.default.tree_root_location_id%
+                    # Every URL aliases starting with those prefixes will be considered
+                    # being outside of the subtree starting at root_location.
+                    # Default value is an empty array.
+                    # Prefixes are not case sensitive.
+                    excluded_uri_prefixes: [ /media, /images ]
+            #The page to show when accessing IndexPage (/)
+            index_page: /content/location/%cjwsite.default.homepage_location_id%
+            session:
+                # https://doc.ez.no/display/EZP/Session+configuration
+                name: eZSESSID
+#                cookie_domain: mydomain.com
+#                cookie_path: /foo
+#                cookie_lifetime: 86400
+#                cookie_secure: false
+#                cookie_httponly: true
+            user:
+                layout: %cjwsite.name.bundle%::pagelayout.html.twig
+                login_template: %cjwsite.name.bundle%:user:login.html.twig
+
+        %cjwsite.name.project%_user__en:
+            languages: [ eng-GB, ger-DE ]
+            translation_siteaccesses: [ %cjwsite.name.project%_user__en, %cjwsite.name.project%_user__de ]
+
+        %cjwsite.name.project%_user__de:
+            languages: [ ger-DE, eng-GB ]
+            #translation_siteaccesses: [ %cjwsite.name.project%_user__de, %cjwsite.name.project%_user__en ]
+
+        %cjwsite.name.project%_admin__en:
+            legacy_mode: true
+            languages: [ eng-GB, ger-DE ]
+            translation_siteaccesses: [ %cjwsite.name.project%_admin__en, %cjwsite.name.project%_admin__de ]
+
+        %cjwsite.name.project%_admin__de:
+            legacy_mode: true
+            languages: [ ger-DE, eng-GB ]
+            translation_siteaccesses: [ %cjwsite.name.project%_admin__de, %cjwsite.name.project%_admin__en ]
+

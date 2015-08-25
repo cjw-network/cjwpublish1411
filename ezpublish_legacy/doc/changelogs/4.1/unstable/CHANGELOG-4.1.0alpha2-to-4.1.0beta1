@@ -1,0 +1,65 @@
+Changes from 4.1.0alpha2 to 4.1.0beta1
+
+*Kernel:
+- Implemented enhancement #13410: Don't do a url alias lookup for redirects to modules
+- Implemented enhancement #14202: Deprecate eZImportLookupTable
+- Implemented enhancement #11025: "Warning: eZTemplate:def" enhancement
+- Implemented enhancement #14301: Move logic to check if a user is allowed to log in on a specific site access into eZUser
+- Implemented enhancement #11952: Remove FileName dependency from extended attribute filter extensions
+- Implemented enhancement #14002: Add constants for sort field values to eZContentObjectTreeNode
+- Implemented enhancement #14388: In ezldapuser.php, Mysql Improved database implementation not effective
+- Implemented enhancement #14423: eZExecution::uncleanShutdownHandler() should also handle static class methods
+- Implemented enhancement #11386: Add RedirectIfDiscarded in kernel/content/action.php
+- Implemented enhancement #14352: Script to fix missing an duplicated remote id's on ezcontentobject_tree w/ patch
+- Implemented enhancement #14344: Improve site.ini ViewCacheSettings[] to allow several view cache hints for better cache efficiency
+- Implemented enhancement #13027: Allow template overrides based on remote_id
+- Implemented enhancement #14264: Improve security by regenerating session id on login
+- Implemented enhancement #9275: Logout should redirect like login
+- Implemented enhancement #12878: Missing log-message if SMTP-Connection failed
+- Implemented enhancement #12880: fetch related object - don't use ignore visiblity
+- Implemented enhancement #11675: ezcontentobject - mysql query optimization
+- Implemented enhancement #12114: TopUserGroupNodeID hardcoded in LDAP login handler
+- Implemented enhancement #14481: Add new triggers
+- Implemented enhancement #14471: Disable load_data_map by default in 4.1 when fetching many nodes
+- Implemented enhancement #13767: Provide a default exception handler
+- Implemented enhancement #14029: Enhance the DB-layer to detect if the database connection is lost
+- Implemented enhancement #13401: eZ 4.0 - Template functions improvements
+- Implemented task #14396: PostgreSQL requirements change
+- Implemented enhancement #14313: Add a tool to allow for easy switching between translation SAs.
+- Implemented enhancement #14116: Rely on autoload system to load "handler" classes
+- implemented enhancement #13527: webdav always moves delete documents to trash
+
+*Design:
+
+*eZTemplate:
+
+*eZLocale:
+
+*Package system:
+
+*Scripts:
+
+*Translations:
+
+*Bugfixes:
+- Fixed bug #14382: PHP Warning on / after clearing all caches
+- Fixed bug #13719: ezurlwildcard.php contains a loose function
+- Fixed bug #11987: Incompatible with PHP setting variables_order = "GPCS"
+- Fixed bug #12450: Undefined variable: def in kernel/classes/ezworkflowtype.php on line 90
+- Fixed bug #14358: runcronjobs does not remove its mutex files
+- Fixed bug #14317: wordmatch.ini used in kernel but only bundled with OE
+- Fixed bug #14409: Wrong URL in RSS feed when URLTranslator is disabled
+- Fixed bug #13661: ezconvertdbcharset.php implicitly requires UseBuiltinEncoding=false
+- Fixed bug #13674: ezconvertdbcharset.php doesn't convert all datatypes correctly + some other problems
+- Fixed bug #13560: --purge option of ezcache.php does not delete all cache files?
+- Fixed bug #13346: Warnings with NodeTreeCaching=enabled
+- Fixed bug #11756: fatal error in bin\php\ezconvertmysqltabletype.php
+- Fixed bug #14458: Viewcache cachehash does not include siteaccess type (uri/host..)
+- Fixed bug #14465: Swap node does not fix main node assignement
+- Fixed bug #14499: Remove leftover debug-code in eZContentObject->setName()
+- Fixed bug #12801: shop/basket.php: Variable $item is used multiple times.
+- Fixed bug #14376: 2 PHP Warnings "Invalid argument supplied for foreach()" in /content/browse/1
+- Fixed bug #13681: Database update query 4.0.0 > 4.0.1
+- Fixed bug #11499: Template override conditions :: node/view/*.tpl :: parent_class_identifier condition is not always verified
+- Fixed bug #10655: ezuser table / empty entries
+- Fixed bug #14540: Strict standards: Only variables should be passed by reference in kernel/classes/packagehandlers/ezextension/ezextensionpackagehandler.php on line 176

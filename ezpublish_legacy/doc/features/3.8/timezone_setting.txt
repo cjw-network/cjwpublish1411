@@ -1,0 +1,16 @@
+*Title: Timezone setting
+
+*Documentation:
+In order to run multiple installations of eZ Publish on one server, using 
+different timezones, it's now possible to override the OS default timezone.
+
+*Example:
+Override site.ini, and add :
+<code>
+[TimeZoneSettings]
+TimeZone=America/Antigua
+</code>
+
+*Notice: 
+This will not work on threaded web servers or on Windows.
+Use only with Apache 1.3 or 2.0 prefork on *nix.

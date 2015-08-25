@@ -1,0 +1,30 @@
+Changes from 4.0.0rc1 to 4.0.0
+
+*Kernel:
+- Implemented enhancement #11102: INI setting datatype: value of Ini file location configuration option is not displayed in class attribute view
+- Implemented task #12087: Enum to Selection conversion script
+
+*Bugs:
+- Fixed bug #11815: create temporary table on slave but insert row over primary.a
+  ( Merged from stable/3.9 rev. 20928, stable/3.10 rev. 20929 )
+- Fixed bug #12125: Reference and declaration problem in collaboration
+- Fixed bug #12127: Reference and declaration problem in image handling
+- Fixed bug #12131: eZMySQLiDB driver doesn't ignore the information_schema database
+- Fixed bug #12119: ShowAccessDeniedReason enabled will cause PHP Warning
+- Fixed bug #11385: xml text datatype: &gt; and &lt; become < and > after storing draft
+- Fixed bug #7419: DB connection errors in error.log after installation.
+- Fixed bug #10886: Mysql root connection warning.
+- Fixed bug #12140: Crash during subtree content copy
+- Fixed bug #12068: ezxml and search problem
+- Fixed bug #12118: Log in to administration interface-checkbox in webin produces the wrong url
+- Fixed bug #12146: Fatal error: Call to undefined method eZContentObjectPackageHandler::attribute()
+- Fixed bug #12147: Missing XML formatting in produced packages
+- Fixed bug #12106: eZWebDAVFileServer E_STRICT warning.
+- Fixed bug #12093: Default setting for URL alias generation
+- Fixed bug #12009: Clear requirement of eZ Components
+- Fixed bug #12109: eZkeyword searches "part of a tag"
+- Fixed bug #11894: INSTALL, README files not updated for 4.0
+- Fixed bug #11844: Missing autoload inclusion in some of the update scripts
+- Fixed bug #12159: Missing washes for ezselection datatype class edit template
+- Fixed bug #11972: Remove "enable unicode setup" option
+- Fixed bug #12154: Check for write permission to the autoload folder during setup.

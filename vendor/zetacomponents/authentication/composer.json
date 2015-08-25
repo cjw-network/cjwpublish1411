@@ -1,0 +1,50 @@
+{
+    "authors": [
+        {
+            "name": "Sergey Alexeev"
+        },
+        {
+            "name": "Sebastian Bergmann"
+        },
+        {
+            "name": "Jan Borsodi"
+        },
+        {
+            "name": "Raymond Bosman"
+        },
+        {
+            "name": "Frederik Holljen"
+        },
+        {
+            "name": "Kore Nordmann"
+        },
+        {
+            "name": "Derick Rethans"
+        },
+        {
+            "name": "Vadym Savchuk"
+        },
+        {
+            "name": "Tobias Schlitt"
+        },
+        {
+            "name": "Alexandru Stanoi"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "src"
+        ]
+    },
+    "description": "The purpose of the Authentication component is to provide support for different means of identification and authentication of users using different providers and protocols.",
+    "homepage": "https://github.com/zetacomponents",
+    "license": "Apache-2.0",
+    "name": "zetacomponents/authentication",
+    "type": "library",
+    "require": {
+        "zetacomponents/base": "~1.8"
+    },
+    "require-dev": {
+        "zetacomponents/unit-test": "*"
+    }
+}

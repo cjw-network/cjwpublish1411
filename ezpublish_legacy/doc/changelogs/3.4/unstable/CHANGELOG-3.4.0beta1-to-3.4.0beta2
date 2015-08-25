@@ -1,0 +1,55 @@
+Changes from 3.4.0beta1 to 3.4.0beta2
+
+*Kernel:
+- Added can_read, can_create and can_delete attributes to kernel/classes/ezcontentobjecttreenode.php
+- Made menu.ini part of the standard distribution, can be copied when
+  setting up site manually.
+- Fixed bug in content/class and content/check_access fetch function, it
+  previously checked if an ID was string, correct is to check if it is not a
+  numeric.
+- Changed template creation system to use class identifier as match
+  key instead of class ID.
+- Added command line support for contentobject exporting.
+- Added class ezoe.php which has function to return required OE version.
+
+*DataType:
+- Added information collector support for the eZEmail datatype.
+
+*Bugfixes:
+- Fixed a bug in notification system checking user permissions.
+- Fixed a 'bug' with ByIP debugging for redirection output.
+  http://ez.no/community/bug_reports/debugredirection
+- Fixed bug in google navigation bound checking. (Merged from 3.3, rev. 6454)
+  http://ez.no/community/bug_reports/3_4_checking_of_offset_needed
+- Fixed bug of can't add datatype after datatype object relation list if
+  template compiling is enabled.
+  http://ez.no/index.php/community/bug_reports/can_t_add_float_attribute_after_object_relation_list_attribute
+- Fixed problem with 'Couldn't load codepage file share/codepages/utf-8' being
+  displayed when UTF-8 was used as charset.
+  http://ez.no/community/bug_reports/warning_couldn_t_load_codepage_file_share_codepages_utf_8
+- Fixed bug in localization of date/time strings. (Merged from 3.3, rev. 6475)
+  http://ez.no/index.php/community/bug_reports/long_day_names_not_localized
+- Fixed bug of image shows as icon in related objects in admin interface.
+- Fixed bug in digest notifications (wrong timestamp, and not being run at
+  all). (Merged from 3.3, rev. 6487)
+  http://ez.no/community/bug_reports/digests_not_timestamping_correctly
+  http://ez.no/community/bug_reports/digest_notification_doesn_t_work
+- Fixed a bug in a template with a missing default case. (Merged from 3.3, rev. 6491)
+  http://ez.no/community/bug_reports/no_default_case_in_datatypes_tpl
+- Fixed a whole bunch of warnings, notices and typoes related to the installer and template compiler.
+  http://ez.no/community/bug_reports/3_4alpha4_blog_misc_errors
+- Fixed a bug in the resource acquisition part of the template compiler; it did
+  not generate code to generate a cache file if it was deleted.
+- Fixed duplicate row entry in contentclass table when copying content classes.
+  http://ez.no/community/bug_reports/class_copy_doubles_rows_in_table
+- Fixed "Undefined variable" and "Undefined index" notices in the template compiler.
+  http://ez.no/community/bug_reports/template_compile_undefined_index_result
+- Fixed problem with next/previous navigator on images in gallery and weblogs.
+  http://ez.no/community/bug_reports/galleries_next_previous_image
+- Fixed bug in ezuri with user specified parameters.
+  http://ez.no/community/bug_reports/package_wizard_and_not_allowed_in_the_name
+
+*Library:
+
+eZDB:
+- Made sure the connect string puts the connection values in single quotes

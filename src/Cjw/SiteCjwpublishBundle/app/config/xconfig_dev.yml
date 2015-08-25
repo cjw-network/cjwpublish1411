@@ -1,0 +1,4 @@
+imports:
+    - { resource: config.yml }
+    - { resource: ../../ezpublish/config/config_dev.yml }
+

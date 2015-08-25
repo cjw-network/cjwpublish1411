@@ -1,0 +1,115 @@
+Changes from 3.5.0 to 3.5.1
+
+*Kernel:
+- Added support for user parameters in layout/set/ URLs.
+- Added pdf view mode to CachedViewModes, merged from stable/3.4 rev. 10621.
+- Modified: It is now possible to include additional PHP files for the
+  simpletags operator.
+- Fixed enhancement #5754: Fetch objects by translation
+- Fixed: canCreateClassList() sometimes returns incomplete eZContentClass objects.
+- Fixed problem with anonymous user having access to other peoples drafts in
+  content/draft.
+  (Merged from release/3.4.5 rev. 10928)
+
+eZPersistentObject:
+- Fixed: $fieldFilters parameter to storeObject() were not used to filter.
+  (Merged from release/3.4-5 rev. 10898)
+- Fixed: attributes() functions can return duplicate attributes in some cases.
+  (Merged from release/3.4.5 rev. 10901)
+
+Webdav:
+- Made sure extensions are enabled in webdav handler.
+  (Merged from release/3.4.5 rev. 10888)
+- Made sure site.ini and template.ini reloads its cache after extension
+  enabling.
+  (Merged from release/3.4.5 erv. 10890)
+
+*Datatypes:
+
+eZ Identifier:
+- Fixed: Aqcuiring a unique ID is now done the first time an object is created
+  and not only when it is created.
+  (Merged from stable/3.4 (3.4.5) rev. 10568)
+- Fixed: Acquiring a new unique ID is not present in previous versions.
+  (Merged from stable/3.4 (3.4.5) rev. 10568)
+- Fixed: Sort key were not in lowercase.
+  (Merged from stable/3.4 (3.4.5) rev. 10568)
+
+*Bugfixes
+- Fixed doxygen comment in ezrole.
+  http://ez.no/community/bug_reports/ezrole_createtemporaryversion_claims_to_be_static_but_isn_t
+  (Merged from stable/3.4, rev. 10357)
+- Fixed bug: Deleting nodes -> role assignment isn't deleted.
+  http://ez.no/community/bug_reports/3_5rc2_deleting_nodes_role_assignment_isn_t_deleted
+  (Merged from stable/3.4/ rev. 10363)	  
+- Fixed bug: Call to undefined function: ezi18n in eztopmenuoperator.php.
+  http://ez.no/community/bug_reports/fatal_error_call_to_undefined_function_ezi18n_in_eztopmenuoperator_php
+  (Merged from stable/3.5/ rev. 10368).
+- Fixed bug: Wrong highlited tab and wrong redirection using "look and feel"
+  http://ez.no/community/bugs/3_5_0rc2_wrong_highlited_tab_and_wrong_redirection_using_look_and_feel_option
+- Fixed bug: Override template content/browse.tpl is not possible when match like section or class_identifier.
+  http://ez.no/community/bugs/ovveride_template_browse_and_section_id
+- Fixed bug: errors when usign 'attribute' template-operator.
+  http://ez.no/community/bugs/object_ezcontentclassattribute_problems
+  (Merged from stable/3.4 rev.10415)
+- Fixed bug in 'ezinisetting' datatype validation.
+  http://ez.no/community/bugs/3_5rc2_global_settings_common_ini_settings_will_not_save
+- Fixed bug: possible undefined offset in sortKeyByClassAttributeID function
+  http://ez.no/community/bugs/3_5rc2_undefined_offset_undefined_index_in_ezcontentobjecttreenode_php
+- Fixed bug: fatal error when $node variable is not defined in template
+  http://ez.no/community/bugs/template_compile_include_crash_when_node_not_defined
+- Fixed bug that caused errors when searching for exact phrases with ezsearchengine plugin.
+- Fixed bug  recursive object inclusion in xml field.
+  http://ez.no/bugs/view/5989
+- Fixed "ezauthor" type bugs. Added remove action check in validation function.
+  http://ez.no/bugs/view/6008
+  http://ez.no/bugs/view/5765
+- Fixed bugs in eZAuthor class. Author's 'id' was treated like an array's index and vice versa.
+- Fixed bug #6035: Bug Using '&' in node title displays &amp; in line view.
+- Fixed bug using template caching, and not viewcache. Template cache is now cleared properly.
+  Example : {cache-block} would not expire properly earlier when content cache was disabled. 
+  Merged from stable/3.4 rev. 10531.
+- Fixed bug #6030: Wrong function's name in workflow/edit.php.
+- Fixed: Some windows-* character-sets were missing from transformation.ini,
+  they will now load the latin transformation file when used.
+- Fixed: Adding eZ Identifier datatype does not generate ID for existing objects (Bug #6109)
+  (Merged from stable/3.4 (3.4.5) rev. 10568)
+- Fixed: Extensions could not override template.ini entries. (Bug #6129)
+  (Merged from stable/3.4 (3.4.5) rev. 10607)
+- Fixed bug #6092: Extra whitespace is added after link.
+- Fixed bug 6102: Bug PDF Lists Content Empty.
+- Fixed: User setting DefaultSectionID in site.ini (Bug #6039)
+  (Merged from stable/3.4 (3.4.5) rev. 10632)
+- Fixed bug: Classification for paragraph is not rendered.
+- Added missing soap.php to distribution.
+- Fixed bug #6144: URL management page counter faulty.
+- Fixed bug #6040: RSSImport URLS are stored incorrectly into ezstring attributes.
+  (Merged from stable/3.3 (3.3-7) rev. 10709)
+- Fixed bug #6151: Buggy node fetching when using classfilter with nonexistent
+  class identifier.
+
+- Fixed bug #5967: Undefined variable warnings in compiled templates.
+  (Merged from stable/3.4 (3.4.5) rev. 10741)
+- Fixed bug #6034: eZMYSQLDB::query() unproper error handling
+  (Merged from stable/3.4 (3.4.5) rev. 10747)
+- Fixed bug #4411: Modules does not work after creating node named like module.
+  (Merged from stable/3.4 (3.4.5) rev. 10769)
+- Fixed bug #6179: Bug Symlinked entries in the extension dir will not been shown.
+  (Merged from stable/3.4 (3.4.5) rev. 10780)
+- Fixed bug #5983: User id is not stored in workflow processes.
+  (Merged from stable/3.4 (3.4.5) rev. 10784)
+- Fixed bug #6204: lib/compat.php missing by client code.
+  (Manually merged from release/3.4.5 (3.4.5) rev. 10865)
+- Fixed bug #6204: lib/compat.php missing by client code.
+  (Manually merged from release/3.4.5 (3.4.5) rev. 10865)
+- Fixed bug: Registering new user while being logged in causes troubles for the
+  currently logged in user.
+  (Merged from release/3.4.5 (3.4.5) rev. 10869)
+- Fixed: SQL errors in ezkeyword and ezenum datatypes when running
+  on PostgreSQL.
+- Fixed bug: template cache is not cleaning when template compiler is enabled
+- Fixed bug #6217: Wrong package version.
+  (Merged from release/3.4.5 (3.4.5) rev. 10919)
+
+*Templates:
+- Added nl2br operator to eztext view output to keep newlines in textfield datatype.

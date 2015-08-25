@@ -1,0 +1,1554 @@
+#?ini charset="utf-8"?
+# eZ Publish configuration file.
+#
+# NOTE: It is not recommended to edit this files directly, instead
+#       a file in override should be created for setting the
+#       values that is required for your site. Either create
+#       a file called settings/override/site.ini.append or
+#       settings/override/site.ini.append.php for more security
+#       in non-virtualhost modes (the .php file may already be present
+#       and can be used for this purpose).
+
+
+[Cache]
+# Array with cache items to extend ezcache
+CacheItems[]
+
+# Example of use:
+#CacheItems[]=custom
+#
+#[Cache_custom]
+#
+# [optional] Name of the cache item, key (custom) is used camel-cased if not set
+#name=Custom cache
+# [optional] Id of cache item, to be used from command line, key (custom) is used if not set
+#id=custom
+# [optional] If cache item should be cleared using cluster instead of plain file handler, def: false
+#isClustered=true
+# [optional] tags that will trigger clearing of this item, default: empty array
+#tags[]=content
+#tags[]=custom
+# [optional] If cache uses eZExpiryHandler, then this is the key to get expiry time
+#expiryKey=global-custom-cache
+# [optional] (bool) If this cache is enabled or not, default: true
+#enabled=false
+# [optional] Path where cache is stored, either directory or file if class/purgeClass
+# variables are unset, relative to current cache directory is assumed
+#path=custom_cache.php
+# [optional] custom cache clear function "<class>::clearCache()" to be called
+#class=eZSomeClassName
+# [optional] custom cache purge function "<class>::purgeCache()" to be called
+#purgeClass=eZSomeClassName
+
+CacheItems[]=rest
+CacheItems[]=restRoutes
+
+[Cache_rest]
+name=REST Application cache
+id=rest
+tags[]=content
+tags[]=rest
+path=rest
+isClustered=true
+
+[Cache_restRoutes]
+name=REST Routes memory cache
+id=rest-routes
+tags[]=rest
+class=ezpRestRoutesCacheClear
+purgeClass=ezpRestRoutesCacheClear
+
+[DatabaseSettings]
+DatabaseImplementation=ezmysqli
+Server=localhost
+Port=
+User=root
+Password=
+Database=nextgen
+# Enable slave servers
+# The slave servers will only be used for read queries
+# Useful for load balanced environments
+UseSlaveServer=disabled
+#SlaveServerArray[]=localhost
+#SlaveServerPort[]=
+#SlaverServerUser[]=nextgen
+#SlaverServerPassword[]=nextgen
+#SlaverServerDatabase[]=nextgen
+# The number of times to reconnect if the first fails
+ConnectRetries=0
+# The charset to use for the database connection
+# If left empty the charset set in i18n.ini will be used,
+# which is often the most reasonable setting.
+Charset=
+# Use charset conversion routines in DB if possible
+UseBuiltinEncoding=true
+Socket=disabled
+# This controls if the queries should have an analysis done
+# for the debug output (Requires SQLOutput=enabled)
+# NOTE: Currently this only works for MySQL.
+QueryAnalysisOutput=disabled
+SQLOutput=disabled
+# When this setting is larger than 0 the Queries would only be shown in the
+# SQLOutput if the execution time took more than <setting> miliseconds.
+SlowQueriesOutput=0
+# If enabled the system will store stack traces for all begin/commits in the
+# system. When an unbalanced nested transactions are detected it will output
+# all begin/commits with information on where it occured as a deep tree.
+# This tree can be used to debug the code and find the missing commit.
+DebugTransactions=disabled
+
+# Alias for implementations
+ImplementationAlias[]
+ImplementationAlias[mysql]=eZMySQLiDB
+ImplementationAlias[mysqli]=eZMySQLiDB
+ImplementationAlias[postgresql]=eZPostgreSQLDB
+ImplementationAlias[ezmysql]=eZMySQLiDB
+ImplementationAlias[ezmysqli]=eZMySQLiDB
+ImplementationAlias[ezpostgresql]=eZPostgreSQLDB
+ImplementationAlias[pgsql]=eZPostgreSQLDB
+
+UsePersistentConnection=disabled
+# Use transactions to ensure that integrity of a database is maintained.
+# MySQL needs transaction safe-tables like the InnoDB table handler.
+Transactions=enabled
+
+
+[Event]
+# (This is private api and might change in future versions)
+# List of global event listeners/filters in the form:
+#Listeners[]=<event>@<callback>
+# eg:
+#Listeners[]=request/input@ezxFormHandler::input
+
+Listeners[]
+
+
+[ExtensionSettings]
+ExtensionDirectory=extension
+# Use extension reordering to avoid issues because of ActiveExtensions and
+# ActiveAccessExtensions not being correctly defined
+# Known issues:
+#   - Breaks clustering settings in siteaccess and extensions support
+#     Only known workaround is to disable this setting and order manually
+#   - Still loads an extension even if dependant extension is not loaded
+#   - Does not fix order issues across the two extensions settings
+#     ( ActiveExtensions and ActiveAccessExtensions )
+ExtensionOrdering=enabled
+# A list of active extensions, add new ones to activate them
+# The extension itself will then have it's settings directory read (if any)
+# and any extra configurability is done automatically.
+ActiveExtensions[]
+# Same as ActiveExtensions but will be loaded after the siteaccess is chosen.
+# This allows for activating different extensions on different siteaccesses
+ActiveAccessExtensions[]
+
+
+[InformationCollectionSettings]
+# Which email collected information is sent to
+EmailReceiver=
+
+
+[Session]
+# "Remember me" feature of the login.
+# Number of seconds a session cookie will last,
+# if an user wants to store current session to the cookie
+# should click on "Remember me" checkbox on login page.
+# Empty or 0 means this ability will be disabled and CookieTimeout will be used.
+RememberMeTimeout=
+
+# eZ Publish legacy session handler (class name) : not applicable if using the symfony stack
+# When empty uses ezpSessionHandlerPHP, a session handler that lets php remain in control
+# of the session handling (def: files, as defined by session.save_handler in php.ini)
+# To get back old behavior for logged in/anonymous count & session clearing, use ezpSessionHandlerDB
+# and enable ForceStart setting.
+Handler=
+
+# Number of seconds a session will last, 3 days is standard
+# Overwrites session.gc_maxlifetime when used with ezpSessionHandlerPHP
+SessionTimeout=259200
+
+## DB (ezpSessionHandlerDB) Handler specific settings
+# Number of seconds before a session is considered inactive/logged out, 1 hour is standard
+ActivityTimeout=3600
+
+## Backward compatibility settings: not applicable if using the symfony stack
+# Makes session always start even if not needed (for anonymous users that just browse the site)
+# by default it will not start before it is used
+ForceStart=disabled
+
+# Decides how the name of the session value is handled.
+# Possible values are:
+# default - Let PHP decide the session name, this also rules
+#           out the possiblity for per-siteaccess sessions.
+# custom  - Use SessionNamePrefix for name. per-siteaccess sessions are possible.
+SessionNameHandler=default
+# The name of the session ID, is prefixed with the current
+# siteaccess to provide login per siteaccess.
+# Only alphanumeric characters are allowed (ref: php.net/session_name)
+# Note: Will only work if SessionNameHandler is set to custom
+SessionNamePrefix=eZSESSID
+# Whether the session name should be unique per siteaccess.
+# By enabling this you will be able to get one unique login per siteaccess.
+# Session name is md5 encoded to avoid issues with non alphanumeric characters.
+# Note: Will only work if SessionNameHandler is set to custom
+SessionNamePerSiteAccess=enabled
+
+## Optional settings for override php.ini session cookie settings
+#  Lifetime of the session cookie, defined in seconds.
+#  Leaving the field empty or undefined means to use the default PHP setting
+#  - PHP setting: session.cookie_lifetime
+#CookieTimeout=<int>
+# Example for 6 minutes
+#CookieTimeout=360
+#  Path on the domain where the cookie will work. Use a single slash ('/') for all paths on the domain.
+#  - PHP setting: session.cookie_path
+#CookiePath=<string>
+#  Cookie domain, for example 'www.php.net'. To make cookies visible on all subdomains then the
+#  domain must be prefixed with a dot like '.php.net'.
+#  - PHP setting: session.cookie_domain
+#CookieDomain=<string>
+#  If <true> cookie will only be sent over secure connections.
+#  - PHP setting: session.cookie_secure
+#CookieSecure=false|true
+#  Tells browser to not allow scripts to access cookie, only supported on php 5.2+
+#  - PHP setting: session.cookie_httponly
+#CookieHttponly=false|true
+
+# Controls how baskets are cleaned up when session expires.
+# It can take on these values:
+# - cronjob - Cleanup values in a cronjob, Note: runcronjobs.php must be run
+# - pageload - Cleanup on pageload when the session expires (Controlled by PHP)
+BasketCleanup=cronjob
+# Controls the number of seconds the cleanup can run
+# The default is 2 minutes
+BasketCleanupTime=120
+# Controls how many seconds the cleanup will stay idle between
+# operations. This can be increased to help keep the load down
+BasketCleanupIdleTime=2
+# The maximum number of basket entries it will fetch in one batch
+# Can be increased to improve the amount of time it uses for each
+# cronjob run or decreased to reduce memory usage and load on server.
+BasketCleanupFetchLimit=3000
+# Controls how often baskets are cleaned up in the cronjob
+# A value of 10 means it will clean up in average 1 out of
+# 10 times.
+BasketCleanupAverageFrequency=10
+
+[DebugSettings]
+# Master switch for debug, if disabled no debug will be shown
+# If enabled it's up to the DebugByIP and DebugIPList to decide what to do.
+# Use either enabled or disabled
+DebugOutput=disabled
+# Controls which debug types to always log.
+# This ensures logging even if debug output is off
+#
+# Available debug types are:
+# error - For major errors, very important to log
+# warning - Smaller errors, important for development but not for live site
+# debug - Temporary debug, usually only important to see in the web browser
+# notice - General notices, enabling this can fill up the log files quickly
+# strict - Strict notices, suggests changes to your code which will ensure the best interoperability and forward compatibility
+AlwaysLog[]
+AlwaysLog[]=error
+# Debug switch for scripts, will only take place if DebugOutput is set to enabled
+# By default it is off to not give debug for scripts.
+# Use either enabled or disabled
+ScriptDebugOutput=disabled
+# Whether debug is set per IP address. If set to enabled it will user
+# DebugIPList for valid ips otherwise all ips get debug.
+# Use either enabled or disabled
+DebugByIP=disabled
+# A array with IP addresses or networks which will get debug information
+DebugIPList[]
+# Examples
+#DebugIPList[]=1.2.3.4
+#DebugIPList[]=192.0.0.42
+#DebugIPList[]=192.0.0.0/27
+
+# Whether debug is set per UserID. If set to enabled only users with
+# IDs (in DebugUserIDList) can get debug.
+# Use either enabled or disabled
+DebugByUser=disabled
+# An array with UserIDs which will get debug information
+DebugUserIDList[]
+# Examples
+#DebugUserIDList[]=14
+
+# Controls how debug is displayed, inline means that the debug is displayed in
+# page itself while popup will create a new popup window with the debug.
+# Popup window might not work in all browsers.
+# Use either disabled, inline or popup
+# If you use popup you must make sure that a rewrite rules exists for .html files
+# or that your site is running in non-virtual host mode. Also some browsers
+# have problems with this feature.
+Debug=inline
+# Controls if redirects should be debuggable, set to enable to get a redirect
+# page with debug info.
+# This is useful for development while production sites should have it off
+DebugRedirection=disabled
+
+# Whether debug warnings/errors should be displayed on the page or not.
+# If not they will appear in debug log only.
+DisplayDebugWarnings=disabled
+
+# Whether to skip showing debug strings in the debug output.
+DebugLogOnly=disabled
+
+# Developer toolbar with clear cache and quick settings features
+DebugToolbar=enabled
+
+# Display list of php included files used to render the current page
+DisplayIncludedFiles=disabled
+
+# Quick settings list for the developer toolbar
+# You can use any enabled/disabled setting
+QuickSettingsList[]
+QuickSettingsList[]=DebugSettings;DebugOutput;site.ini;Debug output
+QuickSettingsList[]=DebugSettings;DebugRedirection;site.ini;Debug redirection
+QuickSettingsList[]=TemplateSettings;Debug;site.ini;Template debug
+QuickSettingsList[]=TemplateSettings;ShowXHTMLCode;site.ini;Inline template debug
+QuickSettingsList[]=TemplateSettings;ShowUsedTemplates;site.ini;List of used templates
+QuickSettingsList[]=DatabaseSettings;SQLOutput;site.ini;SQL debug output
+
+[HTMLForms]
+## Settings dealing with HTML forms and security aspects of it.
+# Setting to specify a secret for the csrf protection, it
+# is highly recommended that you specify this pr project.
+Secret=ThisTokenIsNotSoSecretChangeIt
+
+[URLTranslator]
+# Controls whether the url translation is enabled or not.
+# With url translation enabled you can enter the path of content object
+# in the url like my/nice/path and get the content object.
+# Also the url translation allows for custom translations of urls
+# Use either enabled or disabled
+Translation=enabled
+# Controls if custom url translations should be disabled for system urls where
+# first part of url is defined in module.ini Modulelist, eg. 'content'
+TranslatableSystemUrls=enabled
+
+# Type of word separator for url aliases, can be one of:
+# dash - Use a dash
+# underscore - Use an underscore
+# space - Use a space
+# Any other value returns in a dash
+WordSeparator=dash
+TransformationGroup=urlalias
+# Uncomment this to get the new-style url aliases with Unicode support
+# TransformationGroup=urlalias_iri
+# Uncomment this to get the old-style url aliases
+#TransformationGroup=urlalias_compat
+# Length limit on urlAliasName, the limit pr path item in the url.
+# Set to 0 to disable.
+UrlAliasNameLimit=255
+
+# Controls whether wildcard translation is to be used or not
+# If enabled wilcard translations will be used if a normal
+# translation is not available and it is also used to remember
+# old sub trees. It's recommended to have this enabled
+# unless you have problems with it.
+WildcardTranslation=enabled
+# Controls how many times the wildcard matches can iterate.
+# The wildcard matcher system will iterate if the translated
+# url is not a complete url, this allows urls lookup to be
+# recursive and is required for proper subtree history.
+MaximumWildcardIterations=20
+# OBSOLETE: Use Translation setting instead
+# Enable this if you want to percieve the url as a path element
+# for the node tree. By entering the path in the url and ending it
+# with a .html you will get the correct node.
+NodeTranslation=enabled
+
+# List of classes you want to call as an eZURLALiasFilter
+FilterClasses[]
+FilterClasses[]=eZURLAliasFilterAppendNodeID
+
+# This configuration group is related
+# to the eZURLAliasFilterAppendNodeID URL filter
+# This makes it possible to filter on which type of
+# content the node id will be appended.
+#
+# For example if you want to append the nodeID
+# for folder and article content objects you could
+# use the following configuration
+#
+# ApplyOnClass[]
+# ApplyOnClass[]=folder
+# ApplyOnClass[]=article
+[AppendNodeIDFilterSettings]
+ApplyOnClass[]
+
+
+[SiteSettings]
+# Name of the site, will be used in default templates in titles.
+SiteName=eZ Publish
+# URL of site, often used to link to site in emails etc.
+# must not start with http:// and must not end with /, eg:
+# SiteURL=example.com
+# SiteURL=example.com/french
+# SiteURL=example.com/index.php/english
+SiteURL=example.com
+# The parts of the url that is used for siteaccess mathing
+# if any, needed for reverse lookups. Will use siteaccess name
+# if undefined and current matching type is uri.
+# Note: can not be defined in ActiveAccessExtension settings
+# eg: SiteUriParts[]=english
+#SiteUriParts[]
+# List of metadata to set in pagelayout
+MetaDataArray[author]=eZ Systems
+MetaDataArray[copyright]=eZ Systems
+MetaDataArray[description]=Content Management System
+MetaDataArray[keywords]=cms, publish, e-commerce, content management, development framework
+# Which page to show when the root index (/) is accessed
+IndexPage=/content/view/full/2/
+# What to do when a module does not exists, use either defaultpage or displayerror
+# If defaultpage is used, the DefaultPage will be shown when an error occured
+ErrorHandler=displayerror
+# The default page to show, e.g. after user login this will be used for default redirection
+DefaultPage=/content/view/full/2/
+# Default access is needed when uri type matching is done, this is
+# because with empty urls it's not possible to fetch the access
+DefaultAccess=admin
+# How the login page should be handled, use embedded to show inside default pagelayout
+# or custom for loginpagelayout.tpl
+LoginPage=custom
+# The SSL port, the default should be OK for most sites but can be
+# changed if different. If the port is detect all redirects will
+# be done with https protocol.
+SSLPort=443
+# If you are using a SSL Proxy you will need to enter here the name of the proxy server
+SSLProxyServerName=localhost
+# A list of sites this server provides, this usually the
+# siteaccess for the user view when installing multiple packages.
+# e.g.
+# SiteList[]=news
+# SiteList[]=plain
+SiteList[]
+
+# Enables/Disables 64bit compatibility mode.
+# Affects some php's functions like crc32.
+64bitCompatibilityMode=enabled
+
+# Use this variable on FASTCGI/CGI setups to define the Server variable name of the HTTP authentication string.
+# Only Webdav and SOAP interfaces have a dependency on this setting.
+HTTPAUTHServerVariable=Authorization
+
+# Use this setting to specify additional URL for login and then use it in your login template
+# to perform login action to other site then the current one. For example from user site you
+# can login directly to the admin interfase. Note that standard eZ Publish templates do not
+# support this feature.
+AdditionalLoginFormActionURL=
+
+# Array of allowed hosts for redirects with full URL from eZ Publish modules.
+# Note: Current host and configured hosts (HostMatchMapItems/HostUriMatchMapItems) are always considered trusted
+AllowedRedirectHosts[]
+# AllowedRedirectHosts[]=www.sometrustedhost.com
+
+# Settings for the search engine framework in eZ Publish
+[SearchSettings]
+SearchEngine=eZSearchEngine
+# How the search and advanced search page works,
+# by default the search view does the search but it's
+# possible to do the search in pure template code.
+# Possible values are:
+# default - The view code does the search and passes result to template
+# template - The template does the search and passes the result back to the view code
+SearchViewHandling=default
+# Whether to log search stats or not
+LogSearchStats=enabled
+# The upper value for search limits fetched from HTTP Post variables
+# This is needed to avoid users on a site to have ridiciously huge limits
+MaximumSearchLimit=30
+# Controls whether empty searches are allowed, by default it is disabled
+# since those kind of searches will take a lot of resources.
+# If empty searching is enabled you must make sure your template
+# submits enough limitations to the search, if not expect to really
+# slow down your site
+AllowEmptySearch=disabled
+# Enable or disable wildcard support for search. Note that enabling wildcard search
+# might heavily influence the performance of the system.
+EnableWildcard=false
+# Set minimum number of characters in wildcard search
+MinCharacterWildcard=3
+# Only use stop words if total objects is greater than StopWordThresholdValue
+StopWordThresholdValue=100
+# Do not search words which are present in more than StopWordThresholdPercent % of total objects
+StopWordThresholdPercent=60
+# Controls whether objects are indexed when they are published, or delayed
+# and processed later by a cronjob, can be set class based via 'classbased'
+# In this case DelayedIndexingClassList should be set with class identifiers
+DelayedIndexing=disabled
+# List of class identifiers to use delayed indexing with.
+DelayedIndexingClassList[]
+# Search extension path list. Add extension name where the search plug-in is
+# located to this list.
+ExtensionDirectories[]
+
+
+[UserSettings]
+# The possibility to deny login after MaxNumberOfFailedLogin failed login attempts.
+# Max number of failed login attempts.
+# If the max number is '0' the possibility will be disabled
+MaxNumberOfFailedLogin=0
+# An array with IP addresses or networks which will be always allowed to login after a few failed login attempts.
+TrustedIPList[]
+#TrustedIPList[]=192.0.0.42
+#TrustedIPList[]=192.0.0.0/27
+# If true and failed login attempts of current user execeed MaxNumberOfFailedLogin the user will get a message.
+ShowMessageIfExceeded=false
+
+# Minimum password length
+MinPasswordLength=3
+# If true it will automatically generate a password if it is empty
+# and email it to the user.
+GeneratePasswordIfEmpty=true
+GeneratePasswordLength=6
+# The ID of the anonymous user, this user will
+# be used for everyone who is not logged in.
+AnonymousUserID=10
+# Where to store newly self registered users
+DefaultUserPlacement=12
+# Which section to place newly self registered users
+# (Using 0 means that the user will get the section ID
+#  from its new location)
+DefaultSectionID=0
+# What kind of feedback is sent back to the site for newly created
+# users. Use a semi-colon separated list of feedback types.
+# Only email is supported nativly, set to blank to disable.
+# Example on setting up custom feedback type:
+# 'registrationFeedback' function will be used on the class, look in
+# kernel/user/register.php for how the email code is implemented!
+#[RegistrationFeedback_<custom_type>]
+#Class=<custom_type_class_name>
+##File is optional, autoload will be used if not set
+#File=<custom_type_file_path>
+#
+RegistrationFeedback=email
+# Where to send email of newly registered users if no
+# email_receiver is returned by user/registrationfeedback.tpl
+RegistrationEmail=
+# Type of verification for user registration, email is only
+# type supported nativly, set to blank to disable.
+# Example on how to set up custom verification:
+# 'verifyUser' function will be used on the class, look in
+# kernel/user/register.php for how the email code is implemented!
+# return value of function decides if user mail should be sent or not.
+#[VerifyUserType_<custom_type>]
+#Class=<custom_type_class_name>
+##File is optional, autoload will be used if not set
+#File=<custom_type_file_path>
+#
+VerifyUserType=email
+# If set to enabled, user password would be send in the registration email
+# This password WON'T be stored in plain text
+PasswordInRegistrationEmail=disabled
+# If set to disabled, the registration confirmation mail won't be sent to the user
+# that created the account
+EmailRegistrationInfo=enabled
+# If set to disabled, the user will not be automatically logged in while registering
+# even if the user is automatically activated
+RegisterAutoLogin=enabled
+# Which content class to use for user creation
+UserClassID=4
+# Which content class to use for user group creation
+UserGroupClassID=3
+# Which class group that has user classes, controls which classes
+# is shown on the user navigation part. If empty all classes are used.
+UserClassGroupID=2
+# Which user is considered the creator
+UserCreatorID=14
+# Use either md5_password, md5_user, md5_site or plaintext
+# md5_password generates password hash from password only.
+# md5_user generates password hash from user and password.
+# md5_site generates password hash from site, user and password
+# plaintext does not generate a hash but has the password as it is, this is not
+# recommended since it is a huge security risc.
+# note: password hashes generated with md5_site will not work after
+#       changing the site name.
+HashType=md5_user
+# What SiteName should be used when hashing the user_password
+# with the 'md5_site' HashType
+SiteName=ez.no
+# true means update hash to HashType if it differs when logging in
+# This is useful if you're upgrading from an older eZ Publish site
+# or another system that uses mysql as password type, it will then
+# update the hash to whather is set.
+UpdateHash=true
+# Authenticate match, a list of authenticate fields to use
+# Available are login and email
+AuthenticateMatch=login;email
+# Controls whether a unique email is required for all users,
+# if set to true and email is set in AuthenticateMatch then only
+# one email address instance is allowed on the site.
+# Set to false to disable it
+RequireUniqueEmail=true
+# since 4.5, Controls whether users are required to confirm their emails
+# If set to true, users must retype their emails when registering
+# or editing their profiles
+RequireConfirmEmail=false
+# Controls whether special characters are allowed in passwords in additional to
+# characters in the range a-z, A-Z and 0-9.
+UseSpecialCharacters=false
+
+# Custom validation of user login name
+# Will only affect new users, and existing users when they edit their credentials
+UserNameValidationRegex[]
+UserNameValidationErrorText[]
+DefaultUserNameValidationErrorText=User login name did not validate!
+
+# Examples of validation
+#UserNameValidationRegex[sw]=/^\s/
+#UserNameValidationErrorText[sw]=The username cannot start with a whitespace.
+#UserNameValidationRegex[ew]=/\s$/
+#UserNameValidationErrorText[ew]=The username cannot end with a whitespace.
+#UserNameValidationRegex[rw]=/\s+/
+#UserNameValidationErrorText[rw]=The username cannot contain repeated whitespace.
+#UserNameValidationRegex[lb]=/\n|\r/
+#UserNameValidationErrorText[lb]=The username cannot contain line breaks.
+#UserNameValidationRegex[t]=/\t/
+#UserNameValidationErrorText[t]=The username cannot contain tabs.
+
+# Alternative example only allowing 'word' charthers
+#UserNameValidationRegex[w]=/\W/
+#UserNameValidationErrorText[w]=The username can only contain a-z, digits or underline.
+# Or
+#UserNameValidationRegex[wh]=/[^A-Za-z0-9_-]/
+#UserNameValidationErrorText[wh]=The username can only contain a-z, digits, underline or hyphen.
+
+# While testing add this at the end, just remember to remove it when your done..
+#UserNameValidationRegex[test]=/\w/
+#UserNameValidationErrorText[test]=The username seems to be ok!
+
+# Which url to redirect after a logout
+LogoutRedirect=/user/login
+# Use the LastAccessURI to decide where to redirect the user on logout
+RedirectOnLogoutWithLastAccessURI=disabled
+# Text attribute of class 'User' that contains URI where to redirect
+# the user to after login.
+#LoginRedirectionUriAttribute[user]=front_page_uri
+# Text attribute of class 'User group' that contains URI where
+# to redirect the user belonging to this group to after login.
+#LoginRedirectionUriAttribute[group]=front_page_uri
+
+LoginHandler[]=standard
+#LoginHandler[]=LDAP
+#LoginHandler[]=textfile
+
+# Defines the available single sign on handlers.
+SingleSignOnHandlerArray[]
+
+# Extension directories for login handlers. Login handler must be placed in
+# extension/<extension_directory>/login_handler/<login_handler|lowercase>user.php,
+# and class should be named eZ<login_handler>User
+ExtensionDirectory[]
+
+
+[SiteAccessSettings]
+# Set to true if you want to force VirualHost mode (with RewriteRules in apache)
+# If this is set to true nonVirtualHost mode will not work correctly
+ForceVirtualHost=false
+# Set to true if you want the setup system to be activated
+CheckValidity=true
+# Set the true if you don't want anonymous access to your site
+RequireUserLogin=true
+
+# A list over current active siteaccesses
+AvailableSiteAccessList[]
+
+# A list of related siteaccesses sharing the same database
+RelatedSiteAccessList[]
+
+# A list of module or module/views that don't require user login
+AnonymousAccessList[]
+AnonymousAccessList[]=user/register
+AnonymousAccessList[]=user/success
+AnonymousAccessList[]=user/activate
+AnonymousAccessList[]=user/forgotpassword
+
+# An array of access types which are tried, possible entries are: host, host_uri, uri, port and servervar
+MatchOrder=uri;host;port
+
+# MatchOrder : uri
+# Possible values: disabled, map, element, text or regexp
+# disabled - turns off uri matching
+# map - match URL using URIMatchMapItems array
+# element  - maps a url element to a siteaccess name
+# text - match URL using pre or post sub-strings (URIMatchSubtextPre, URIMatchSubtextPost)
+# regexp   - match against a regexp and extract a portion of it
+URIMatchType=element
+URIMatchElement=1
+URIMatchRegexp=([^/]+)/
+URIMatchRegexpItem=1
+#URIMatchSubtextPre=
+#URIMatchSubtextPost=
+
+# Add array entries here if you chose URIMatchType=map
+# Each entry consists of the uri;accessname
+URIMatchMapItems[]
+URIMatchMapItems[]=admin;admin
+URIMatchMapItems[]=ADMIN;admin
+
+# MatchOrder : host
+# Use either disabled, map, element, text or regexp
+HostMatchType=map
+HostMatchElement=0
+HostMatchRegexp=^(.+)\.example\.com$
+HostMatchRegexpItem=1
+HostMatchSubtextPre=
+HostMatchSubtextPost=.example.com
+# Add array entries here if you chose HostMatchType=map
+# Each entry consists of the hostname;accessname
+#HostMatchMapItems[]=example.com;user
+#HostMatchMapItems[]=admin.example.com;admin
+
+# MatchOrder : host_uri
+# Add array entries here if you use MatchOrder host_uri
+# Each entry consists of the hostname;uri;accessname[;start|end|part|strict]
+# Last optional paramter controls host matching method, 'strict' by default
+#
+# Note: Only strict matching is supported by static cache, reason is the rewrite
+#       rules needs a strict convention between host/uri & match (basis for folder name).
+#       Uri part is also optional, so you can do pure host matching with this as well.
+#       Empty hostname parts are not possible.
+#
+# Ordering: eZ Publish searches HostUriMatchMapItems[] from top to bottom, so place
+#           more specific entries at the top and entries with empty uri parts at the bottom.
+
+# Change HostUriMatchMethodDefault to one of these options to chenge default value
+HostUriMatchMethodDefault=strict
+
+HostUriMatchMapItems[]
+## This example will match on example.com/nor
+#HostUriMatchMapItems[]=example.com;nor;example_nor
+## This example will match on example.com/eng & www.example.com/eng
+#HostUriMatchMapItems[]=example.com;eng;example_eng;end
+## This example will match on example.com/eng & example.com.localhost/eng
+#HostUriMatchMapItems[]=example.com;eng;example_eng;start
+## This example will match on example.com/eng, www.example.com/eng & example.com.localhost/eng
+#HostUriMatchMapItems[]=example.com;eng;example_eng;part
+## This example will match on example.com
+#HostUriMatchMapItems[]=example.com;;examle
+
+# MatchOrder : servervar
+# Set name of server variable used to match a siteaccess
+ServerVariableName=SITEACCESS
+
+# Wheter to add siteaccess to the url if current siteaccess
+# is the same as default siteaccess. Changing this setting will
+# require clearing the cache.
+#
+# This setting also works with host_uri matching removing uri part
+# from url if it's default siteacces. In this case, make sure
+# host name without url part goes to same siteaccess in your
+# match order chain.
+#
+# For instance if the default siteaccess is 'en' and you enable
+# this you can access the siteacccess with 'index.php' instead of
+# 'index.php/en/'.
+RemoveSiteAccessIfDefaultAccess=disabled
+
+# Hides this part from the start of the url alias
+# If you use this setting, you also need to use the PathPrefix setting in logfile.ini.
+PathPrefix=
+
+# Which URLs to exclude from being affected by PathPrefix setting.
+# URLs containing the specified texts after siteaccess name will not be affected by PathPrefix
+PathPrefixExclude[]
+#PathPrefixExclude[]=media
+#PathPrefixExclude[]=users
+
+# Whether to show hidden nodes
+# If set to false, user is not able to see any hidden nodes
+# Should be overriden for particular siteaccesses
+ShowHiddenNodes=false
+
+# Whether to detect mobile devices or not
+DetectMobileDevice=disabled
+
+# URL address to the mobile devices optimized interface
+MobileSiteAccessURL=http://m.example.com
+
+# List of available siteaccesses capable to handle mobile devices
+MobileSiteAccessList[]
+
+# Number of seconds a session cookie will last
+MobileDeviceDetectCookieTimeout=7200
+
+# Mobile device filter class name.
+# Default implementation uses RegExp to match against User Agent string as well as against User Agent codes
+# See [SiteAccessSettings].MobileUserAgentRegexps array for the list of available RegExps
+# and [SiteAccessSettings].MobileUserAgentCodes value for the list of available codes
+MobileDeviceFilterClass=ezpMobileDeviceRegexpFilter
+
+# List of available regular expressions to match against User Agent
+# Key is a User Agent alias which helps to determine the device or mobile OS in the template
+MobileUserAgentRegexps[AndroidDevice]=/android.*mobile/i
+MobileUserAgentRegexps[AndroidTabletDevice]=/android(?!.*mobile)/i
+MobileUserAgentRegexps[IPhoneDevice]=/(iphone|ipod)/i
+MobileUserAgentRegexps[IPadDevice]=/ipad/i
+MobileUserAgentRegexps[OperaBrowser]=/opera mini/i
+MobileUserAgentRegexps[BlackBerryDevice]=/blackberry/i
+MobileUserAgentRegexps[BlackBerryTabletDevice]=/rim tablet os/i
+MobileUserAgentRegexps[PalmDevice]=/(pre\/|palm os|palm|hiptop|avantgo|plucker|xiino|blazer|elaine)/i
+MobileUserAgentRegexps[WindowsDevice]=/(iris|3g_t|windows ce|opera mobi|windows ce; smartphone;|windows ce; iemobile)/i
+MobileUserAgentRegexps[Generic]=/(mini 9.5|vx1000|lge |m800|e860|u940|ux840|compal|wireless| mobi|ahong|lg380|lgku|lgu900|lg210|lg47|lg920|lg840|lg370|sam-r|mg50|s55|g83|t66|vx400|mk99|d615|d763|el370|sl900|mp500|samu3|samu4|vx10|xda_|samu5|samu6|samu7|samu9|a615|b832|m881|s920|n210|s700|c-810|_h797|mob-x|sk16d|848b|mowser|s580|r800|471x|v120|rim8|c500foma:|160x|x160|480x|x640|t503|w839|i250|sprint|w398samr810|m5252|c7100|mt126|x225|s5330|s820|htil-g1|fly v71|s302|-x113|novarra|k610i|-three|8325rc|8352rc|sanyo|vx54|c888|nx250|n120|mtk |c5588|s710|t880|c5005|i;458x|p404i|s210|c5100|teleca|s940|c500|s590|foma|samsu|vx8|vx9|a1000|_mms|myx|a700|gu1100|bc831|e300|ems100|me701|me702m-three|sd588|s800|8325rc|ac831|mw200|brew |d88|htc\/|htc_touch|355x|m50|km100|d736|p-9521|telco|sl74|ktouch|m4u\/|me702|8325rc|kddi|phone|lg |sonyericsson|samsung|240x|x320|vx10|nokia|sony cmd|motorola|up.browser|up.link|mmp|symbian|smartphone|midp|wap|vodafone|o2|pocket|kindle|mobile|psp|treo)/i
+
+# List of various codes to match against User String
+MobileUserAgentCodes=1207|3gso|4thp|501i|502i|503i|504i|505i|506i|6310|6590|770s|802s|a wa|acer|acs-|airn|alav|asus|attw|au-m|aur |aus |abac|acoo|aiko|alco|alca|amoi|anex|anny|anyw|aptu|arch|argo|bell|bird|bw-n|bw-u|beck|benq|bilb|blac|c55/|cdm-|chtm|capi|cond|craw|dall|dbte|dc-s|dica|ds-d|ds12|dait|devi|dmob|doco|dopo|el49|erk0|esl8|ez40|ez60|ez70|ezos|ezze|elai|emul|eric|ezwa|fake|fly-|fly_|g-mo|g1 u|g560|gf-5|grun|gene|go.w|good|grad|hcit|hd-m|hd-p|hd-t|hei-|hp i|hpip|hs-c|htc |htc-|htca|htcg|htcp|htcs|htct|htc_|haie|hita|huaw|hutc|i-20|i-go|i-ma|i230|iac'|iac-|iac/|ig01|im1k|inno|iris|jata|java|kddi|kgt'|kgt/|kpt |kwc-|klon|lexi|lg g|lg-a|lg-b|lg-c|lg-d|lg-f|lg-g|lg-k|lg-l|lg-m|lg-o|lg-p|lg-s|lg-t|lg-u|lg-w|lg/k|lg/l|lg/u|lg50|lg54|lge-|lge/|lynx|leno|m1-w|m3ga|m50/|maui|mc01|mc21|mcca|medi|meri|mio8|mioa|mo01|mo02|mode|modo|mot |mot-|mt50|mtp1|mtv |mate|maxo|merc|mits|mobi|motv|mozz|n100|n101|n102|n202|n203|n300|n302|n500|n502|n505|n700|n701|n710|nec-|nem-|newg|neon|netf|noki|nzph|o2 x|o2-x|opwv|owg1|opti|oran|p800|pand|pg-1|pg-2|pg-3|pg-6|pg-8|pg-c|pg13|phil|pn-2|pt-g|palm|pana|pire|pock|pose|psio|qa-a|qc-2|qc-3|qc-5|qc-7|qc07|qc12|qc21|qc32|qc60|qci-|qwap|qtek|r380|r600|raks|rim9|rove|s55/|sage|sams|sc01|sch-|scp-|sdk/|se47|sec-|sec0|sec1|semc|sgh-|shar|sie-|sk-0|sl45|slid|smb3|smt5|sp01|sph-|spv |spv-|sy01|samm|sany|sava|scoo|send|siem|smar|smit|soft|sony|t-mo|t218|t250|t600|t610|t618|tcl-|tdg-|telm|tim-|ts70|tsm-|tsm3|tsm5|tx-9|tagt|talk|teli|topl|hiba|up.b|upg1|utst|v400|v750|veri|vk-v|vk40|vk50|vk52|vk53|vm40|vx98|virg|vite|voda|vulc|w3c |w3c-|wapj|wapp|wapu|wapm|wig |wapi|wapr|wapv|wapy|wapa|waps|wapt|winc|winw|wonu|x700|xda2|xdag|yas-|your|zte-|zeto|acs-|alav|alca|amoi|aste|audi|avan|benq|bird|blac|blaz|brew|brvw|bumb|ccwa|cell|cldc|cmd-|dang|doco|eml2|eric|fetc|hipt|http|ibro|idea|ikom|inno|ipaq|jbro|jemu|java|jigs|kddi|keji|kyoc|kyok|leno|lg-c|lg-d|lg-g|lge-|libw|m-cr|maui|maxo|midp|mits|mmef|mobi|mot-|moto|mwbp|mywa|nec-|newt|nok6|noki|o2im|opwv|palm|pana|pant|pdxg|phil|play|pluc|port|prox|qtek|qwap|rozo|sage|sama|sams|sany|sch-|sec-|send|seri|sgh-|shar|sie-|siem|smal|smar|sony|sph-|symb|t-mo|teli|tim-|tosh|treo|tsm-|upg1|upsi|vk-v|voda|vx52|vx53|vx60|vx61|vx70|vx80|vx81|vx83|vx85|wap-|wapa|wapi|wapp|wapr|webc|whit|winw|wmlb|xda-
+
+# Enabling non automatic conversion of siteaccess names
+# NormalizeSANames=enabled - for backward compability (all non alpha characters are converted to underscore)
+# RedirectOnNormalize=enabled - when transformation occurs, the page will hold a 301 status
+NormalizeSANames=enabled
+RedirectOnNormalize=disabled
+
+[PortAccessSettings]
+# MatchOrder : port
+# Add entries here if you have port in MatchOrder
+# Each entry consists of the port=accessname
+1337=user
+1338=admin
+
+
+[RoleSettings]
+EnableCaching=true
+# A list of modules to omit policy checking on,
+# You should add 'role' to the list if you loose
+# access to the role module
+# You can also specify views by adding a / and the viewname
+PolicyOmitList[]
+PolicyOmitList[]=user/login
+PolicyOmitList[]=user/logout
+PolicyOmitList[]=user/register
+PolicyOmitList[]=user/activate
+PolicyOmitList[]=user/success
+PolicyOmitList[]=user/forgotpassword
+PolicyOmitList[]=layout
+PolicyOmitList[]=manual
+PolicyOmitList[]=ezinfo
+PolicyOmitList[]=paypal/notify_url
+PolicyOmitList[]=switchlanguage
+# This is a fake omission: we need a manual policy check, therefore implemented directly in oauth/authorize.php
+PolicyOmitList[]=oauth/authorize
+
+# Should we try to show reason for access denied in view
+ShowAccessDeniedReason=disabled
+
+# Specifies max level for the 'ParentDepth' limitation.
+MaxParentDepthLimitation=20
+
+
+# If you disable some modules or part of a module you can use the
+# SiteAccessRules group, this defines a list of rules which are
+# run in order.
+#
+# The following is an example of how to disable content/search
+# and the rss module
+#
+[SiteAccessRules]
+Rules[]
+# # Set access policy to allowed
+# Rules[]=access;enable
+# # Special syntax which means any module
+# # This means that for now all modules are enabled
+# Rules[]=moduleall
+# # Set policy to denied
+# Rules[]=access;disable
+# # If content/search module use current policy (denied)
+# Rules[]=module;content/search
+# # If rss module use current policy (denied)
+# Rules[]=module;rss
+
+
+[DesignSettings]
+# The standard design, is used as fallback design
+# if the element is not in the sitedesign
+StandardDesign=standard
+# The design of the site
+SiteDesign=admin
+# AdditionalSiteDesignArray contains an array
+# of sitedesigns. These sitedesigns will be used
+# if the design was not found in the main
+# sitedesign. StandardDesign is the fallback design.
+AdditionalSiteDesignList[]
+
+# Whether to cache location of design directories
+DesignLocationCache=disabled
+
+
+[SetupSettings]
+# The pagelayout to use for first time setups
+PageLayout=setup_pagelayout.tpl
+# List of tests to be run, critical tests must pass for the setup to continue
+CriticalTests=directory_permissions;phpversion;database_extensions;image_conversion;safe_mode;memory_limit;execution_time;magic_quotes_runtime;allow_url_fopen;php_session;file_upload;zlib_extension;dom_extension;iconv_extension;mbstring_extension;intl_extension;xsl_extension;timezone;ezcversion
+OptionalTests=variables_order;php_magicquotes;curl_extension;imagegd_extension;imagemagick_program;database_all_extensions;php_register_globals;texttoimage_functions;open_basedir
+OverrideSiteDesign=standard
+
+
+[RegionalSettings]
+# The locale for your site
+Locale=eng-GB
+# Set this if the http locale in the locale is wrong
+HTTPLocale=
+# Set this if you want to run the entire PHP system in a given
+# locale, this means that PHP will be locale aware when dealing
+# with strings (e.g making characters in a string into lowercase). (C is a
+# special locale meaning 7-bit ASCII). Examples for this setting include
+# "german", "de_DE.ISO-8859-1"; depending on your operating system.
+SystemLocale=
+# The default language for content objects
+# Note: Changing this can have catastrophic consequences
+#       since there might not be any content objects with
+#       the selected language. Instead the content/translations
+#       page should be used for adding/removing translations.
+ContentObjectLocale=eng-GB
+# If enabled, ShowUntranslatedObjects will force showing the objects
+# existing in other languages than those specified in SiteLanguageList
+ShowUntranslatedObjects=disabled
+# Prioritized list of languages. Only objects existing in these
+# languages will be shown (unless ShowUntranslatedObjects is enabled).
+# If an object exists in more languages, that one which is first in
+# SiteLanguageList will be used to render it.
+SiteLanguageList[]
+# Controls how xml is stored in content objects.
+# disabled - Store with utf8
+# enabled  - Store with current charset
+# if any other text is entered it is assumed to be a charset and will be used
+ContentXMLCharset=enabled
+# Use either disabled to disable all text translation (faster) or enabled.
+# Text translation is automatically disabled when the Locale is set to eng-GB
+TextTranslation=enabled
+TranslationCache=enabled
+# Translation cache files will be stored in the directory located outside of the
+# siteaccess VarDir. Empty value disables sharing of translation cache.
+# Useful if you want to share translation cache between siteaccesses that
+# only differes by content, db and var directory.
+SharedTranslationCacheDir=
+# Sets if modified time should be checked or not on ts files when checking
+# if translation cache is valid
+TranslationCheckMTime=enabled
+# Use either enabled to see which locale files are loaded or disabled to supress debug
+Debug=disabled
+# By enabling development mode all untranslated texts will be translated
+# using the bork rules.
+# See lib/ezi18n/classes/ezborktranslator.php for more information.
+DevelopmentMode=disabled
+TranslationRepository=share/translations/
+TranslationExtensions[]
+
+# NOTE: The LanguageSwitcher settings are not frozen, meaning they might still change.
+# The class which is used in the language switcher module to forward users to
+# selected translation siteaccesses.
+LanguageSwitcherClass=ezpLanguageSwitcher
+# Example mapping between translation siteaccesses and the name to use for the
+# language switcher link, e.g. the name which will be used when making links to
+# these siteaccesses.
+# Example: TranslationSA[<name of siteaccess>]=<name of language switcher link, pointing to this siteaccess>
+# TranslationSA[]
+# TranslationSA[eng]=English
+# TranslationSA[nor]=Norwegian
+# TranslationSA[fre]=French
+
+# Example mapping between languages and siteaccess, mapping is done by convention if not defined
+# like eg: eng-GB => eng
+# In both cases sa name needs to be present in [SiteAccessSettings]\RelatedSiteAccessList[]
+# Example: LanguageSA[<language>]=<name of siteaccess>
+# LanguageSA[]
+# LanguageSA[eng-GB]=site1_eng
+# LanguageSA[nor-NB]=site1_nor
+# LanguageSA[fre-FR]=site1_fre
+
+
+[UnitSettings]
+# List of units which acts as binary measures
+BinaryUnits=byte;bit
+# True means use Ki, Mi etc. for binary measures instead of K, M etc.
+# This is good if you want to follow proper naming standards.
+UseSIUnits=false
+
+
+[FileSettings]
+# The directory eZ Publish should use when creating temporary files.
+# e.g when creating an image variation
+TemporaryDir=/tmp/
+# Permission for temporary files, setting it to 0777 means that anyone
+# can read and write the files and can be considered a security risk.
+# It's preferred to use 0770 and make sure the web server has correct
+# user/group access.
+TemporaryPermissions=0777
+# Where to place new files for storage, it's relative to var directory
+StorageDir=storage
+# Permission for storage directories, setting it to 0777 means that anyone
+# can read and write the directories and can be considered a security risk.
+# It's preferred to use 0770 and make sure the web server has correct
+# user/group access.
+StorageDirPermissions=0777
+# Permission for storage files, setting it to 0666 means that anyone
+# can read and write the files and can be considered a security risk.
+# It's preferred to use 0660 and make sure the web server has correct
+# user/group access.
+StorageFilePermissions=0666
+# Permission for log files, setting it to 0666 means that anyone
+# can read and write the files and can be considered a security risk.
+# It's preferred to use 0660 and make sure the web server has correct
+# user/group access.
+LogFilePermissions=0666
+# Directory depth for storing files, this means that it will create
+# directories out of the first n characters to make sure not too
+# many files are placed in one directory. For instance a file name
+# newfile.png will be placed in n/e/w/newfile.png.
+DirDepth=3
+# The root directory where all log files, cache files
+# and other stored files are created.
+# Only directories relative to the eZ Publish root are supported. Absolute directories are NOT SUPPORTED
+VarDir=var
+# The name of the cache dir, as a subdir of VarDir
+# Using an absolute dir will be accepted, but won't work with some features and is NOT SUPPORTED
+CacheDir=cache
+# The name of the log dir, it's a subdir of VarDir
+LogDir=log
+# Directories eZDir is allowed to delete from (see eZDir::recursiveDelete()).
+# By default, it is only possible to delete from inside eZ Publish root directory.
+# Directories listed will be added as authorized directory prefixes.
+# Values must be absolute paths.
+AllowedDeletionDirs[]
+#AllowedDeletionDirs[]=/var/share/somedir
+
+
+[TemplateSettings]
+# A list of directories to look for eztemplateautoload.php files
+# These files will be used to automatically load in template functions and operators
+# You can new ones if you create custom template code.
+AutoloadPathList[]
+AutoloadPathList[]=lib/eztemplate/classes/
+AutoloadPathList[]=kernel/common/
+AutoloadPathList[]=lib/ezpdf/classes/
+AutoloadPathList[]=kernel/private/eztemplate/
+# A list of extensions which have template autoloads.
+# Only specify the extension name, not the path.
+# The extension must contain a subdirectory called autoloads.
+ExtensionAutoloadPath[]
+# Enabled to see which template files are loaded or disabled to supress debug
+# Warning: Will add debug xhtml comments to your source code, including mails!
+# Note: No debug on templates starting with <!DOCTYPE to not trigger quirks mode!
+Debug=disabled
+# If enabled will add code to display the template name in the browser
+# If Debug is disabled then nothing happens
+ShowXHTMLCode=enabled
+# Whether to show debug of functions and operators when
+# processing nodes.
+# This only meant for kernel developers to check which
+# operators and functions are called.
+# Note: Will only work when template compiler is off
+ShowMethodDebug=disabled
+# If enabled will add a table with templates used to render a page.
+# DebugOutput should be enabled too.
+ShowUsedTemplates=disabled
+# Determines whether the internal node tree should be cached, by enabling this the loading
+# and parsing of templates is significantly reduced.
+NodeTreeCaching=disabled
+# Determines whether the templates should be compiled to PHP code, by enabling this the loading
+# and parsing of templates is omitted and template processing is significantly reduced.
+# Note: The first time the templates are compiled it will take a long time, use the
+#       bin/php/eztc.php script to prepare all your templates.
+TemplateCompile=enabled
+# If you share compiled templates with other site accesses
+ShareCompiledTemplates=disabled
+# Where to store shared compiled templates
+SharedCompiledTemplatesDir=
+# Controls whether further optimizations should be performed on compiled
+# templates
+TemplateOptimization=enabled
+# Controls whether to include formatting in compiled templates or not.
+UseFormatting=disabled
+# Controls all template base caching mechanisms, if disabled they will never be
+# used.
+# The elements currently controlled by this is:
+# - cache-block
+TemplateCache=enabled
+# Controls whether expired cache-blocks with 'subtree_expiry' parameter will
+# be removed from disk immediately or not.
+# If enabled it should increase performance of large sites but you should remove
+# expired caches manually or using cronjob 'cronjobs/subtreeexpirycleanup.php'.
+# Since 4.6, this cronjob is not activated by default.
+DelayedCacheBlockCleanup=disabled
+# Controls whether compiled templates should be stored gzip compressed on disk.
+# This drastically reduces disk usage.
+TemplateCompression=disabled
+# Controls if development is enabled or not.
+# When enabled the system will perform more checks like modification time on
+# compiled vs source file and will reduce need for clearing template compiled
+# files.
+# Note: Live sites should not have this enabled since it increases file access
+#       and can be slower.
+# Note: When switching this setting the template compiled files must be cleared.
+DevelopmentMode=disabled
+
+# NOTE:
+# The following settings are for template compilation development only
+# and are not useful for normal sites.
+#
+# Whether to include comments inside cache files or not.
+CompileComments=disabled
+# Whether to include debug accumulators.
+CompileAccumulators=disabled
+# Whether to include debug timing points.
+CompileTimingPoints=disabled
+# Whether to fallback code for resource handling
+# Should not be needed unless one has to debug the compilation process
+CompileResourceFallback=disabled
+# If disabled the template compilation will not include placement information for nodes
+# The placement information is used to display line and column numbers for warnings and errors.
+CompileNodePlacements=enabled
+# If disabled the template compilation files will only be generated but
+# not executed, this means that the normal template process is used for the result.
+CompileExecution=enabled
+# If enabled the templates are always compiled even if a
+# sufficient cache already exists.
+CompileAlwaysGenerate=disabled
+# An array with node trees to include in the compiled template file.
+# Including them will increase the size of the cache files and
+# is only useful for template compilation development.
+# Possible entries are:
+# transformed - The tree after node transformation has been done
+# static      - The tree after static extraction has been done
+# combined    - The tree after static element combines has been done
+# original    - The originally parsed tree
+CompileIncludeNodeTree[]
+#CompileIncludeNodeTree[]=final
+#CompileIncludeNodeTree[]=transformed
+#CompileIncludeNodeTree[]=static
+#CompileIncludeNodeTree[]=combined
+#CompileIncludeNodeTree[]=original
+
+
+[ContentSettings]
+# Node where all new related objects are default placed
+# OBSOLETE: See content.ini for more advanced settings
+SurplusNode=3
+# Where to place view cache files, it's a subdir of the global cache dir.
+CacheDir=content
+# Whether to use view caching or not
+ViewCaching=enabled
+# A list of viewmodes which will be cached
+CachedViewModes=full;sitemap;pdf
+# View cache tweaks for cache strategy on specific node id's
+# ViewCacheTweaks[<node_id>]=<setting>[;<setting2>]
+# currently supported settings:
+# disabled: Same as setting cache_ttl=0 in template, just a bit more efficient by knowing about it in advance
+# pr_user: cache page pr user, more efficient then disabling view cache and using cache-blocks
+# ignore_discountlist do not include users shop discountlist in cache hash
+# ignore_userroles do not include users roles in cache hash
+# ignore_userlimitedlist do not include users limted policy assignement list in cache hash
+# ignore_viewparameters do not include view parameters in cache hash
+# ignore_userpreferences do not include users preferencest in cache hash
+# ignore_siteaccess_name do not include siteaccess name in cache path, use default siteaccess instead
+# ignore_siteaccess_type do not include siteaccess type in cache hash
+# Note: you can also set 'global' as <node_id> to set tweaks globally for all tweaks but 'disabled' as you have other settings for that
+ViewCacheTweaks[]
+# A semicolon separated list of the user preferences (possibly with the default value after the '=' sign)
+# on which the viewmode, determined by an array key, dependes.
+# Ex.: CachedViewPreferences[full]=show_more_info=0;show_right_menu
+CachedViewPreferences[]
+# A list of viewmodes which displays more than just it's immediate children
+# These viewmodes are too complex to cleanup file by file and needs to
+# be expired globally.
+ComplexDisplayViewModes=sitemap
+# The threshold for file cleanup, if it is exceeded a global expiry is used instead
+# The value is the number of affected nodes
+CacheThreshold=250
+# What to do when editing an object that has draft versions newer than the current version.
+# Use 'showversions' to select which version to edit, or 'usecurrent' to always edit the current version.
+EditDirtyObjectAction=showversions
+# Set to 'enabled' to make eZ Publish pre-cache the view cache files on publishing
+PreViewCache=disabled
+# List of siteaccesses that will have preview cache generated on publish.
+PreCacheSiteaccessArray[]=admin
+PreCacheSiteaccessArray[]=base
+# A list of users to pre-generate the content cache for
+# The list should contain the User ID or a special identifier, possible identifiers are:
+# - 'anonymous' for the anonymous user.
+# - 'current' for the currently logged in user
+# The default is to pregenerate for anonymous users
+PreviewCacheUsers[]
+PreviewCacheUsers[]=anonymous
+# Set to 'enabled' to make eZ Publish store all published objects as static
+# HTML. This requires also settings in staticcache.ini and special URL rewrite
+# rules.
+StaticCache=disabled
+# Sets a Cache Handler
+StaticCacheHandler=eZStaticCache
+# maximum cache generation time. If a file stays in generation mode for more than
+# this value in seconds, it is considered timed out (process died, for instance),
+# and generation is taken over by the requesting process
+CacheGenerationTimeout=60
+# Handler responsible of storing changes made on a content class when objects exist
+# and require an update. This might be a huge task that can lead to time out,
+# you may consider using the 'eZContentClassEditDeferredHandler' provided with the
+# eZ Script Monitor extension.
+ContentClassEditHandler=eZContentClassEditHandler
+# Length limit on contentObjectName, must be between 1 and 255.
+ContentObjectNameLimit=150
+# End sequence for object name when reaching length limit.
+ContentObjectNameLimitSequence=...
+
+# List of datatypes that should not expose their content through external calls (Ajax/REST)
+DatatypeBlackListForExternal[]
+DatatypeBlackListForExternal[]=ezuser
+
+# Use this setting to change the redirection after publishing a node.
+# It can contain the following values:
+# - parentNode - redirect to the parent of the edited object's main node (default value)
+# - node       - redirect to the edited object's main node
+# - rootNode   - redirect to siteaccess root node (ie. content.ini/NodeSettings/rootNode )
+# - uri        - redirect to a specific URI (see RedirectAfterPublishUri settings below)
+RedirectAfterPublish=parentNode
+
+# If RedirectAfterPublish=uri, indicates to which URI user will be redirected
+# after publishing a node.
+# example : RedirectAfterPublishUri=/content/dashboard
+# if empty : will be redirected to parent node
+#RedirectAfterPublishUri=
+
+[MailSettings]
+# The type of transport for emails, can be either: sendmail, SMTP or file
+# Window users should probably use SMTP
+# For debug purposes you can use file for sending mail to a log file
+Transport=sendmail
+# A list of possible handlers for sending mails, use the setting Transport to specify which one to use
+TransportAlias[]
+TransportAlias[file]=eZFileTransport
+TransportAlias[sendmail]=eZSendmailTransport
+TransportAlias[smtp]=eZSMTPTransport
+# Configuration for SMTP
+TransportServer=
+# Connection type in SMTP: <empty>(no encryption)|ssl|sslv2|sslv3|tls
+TransportConnectionType=
+# Default SMTP port is 25, default Secure SMTP port(SSL,TLS) is 465
+TransportPort=25
+TransportUser=
+TransportPassword=
+# The FQDN, used by extended HELO
+# See part "4.1.1.1  Extended HELLO (EHLO) or HELLO (HELO)" of http://www.faqs.org/rfcs/rfc2821.html
+SenderHost=localhost
+AdminEmail=nospam@ez.no
+# The address which will be set as the From header of the e-mail, unless
+# overridden by the template variable email_sender.
+EmailSender=
+# The address which will be set as the Reply-To header of the e-mail, unless
+# overridden by the template variable email_reply_to. If not set, the senders
+# address will be used, either from the template, or the EmailSender setting.
+EmailReplyTo=
+# Which charset are allowed to send directly, those that do not match
+# is converted to OutputCharset before being sent.
+AllowedCharsets[]
+AllowedCharsets[]=us-ascii
+AllowedCharsets[]=utf-8
+AllowedCharsets[]=iso-8859-1
+AllowedCharsets[]=iso-8859-15
+AllowedCharsets[]=cp1252
+# Which charset to convert emails to if they are not in correct format
+OutputCharset=utf-8
+# Content type of mails, for instance text/plain or text/html
+ContentType=text/plain
+# The line endings used for headers in mail messages. If you need to use
+# control characters like LF or CR you need to use it's urlencoded value, for
+# example %0A for LF and %0D for CR. The default setting is what RFC 2045
+# requires: CRLF
+# If it contains auto the system will try to determine the line-ending
+# based on the current operating system.
+HeaderLineEnding=auto
+# Set additional sendmail options here.
+# -f <sender> is default in PHP SafeMode.
+# Please use a line for every (sub)option. e.g.
+# SendmailOptions[]=-r
+# SendmailOptions[]=muchspam@ez.no
+SendmailOptions[]
+# If enabled, all emails will be sent to DebugReceiverEmail instead of to their original recipient(s)
+DebugSending=disabled
+# Receiver email address to use when DebugSending is enabled
+DebugReceiverEmail=
+# Headers to exclude from the sent message, case insensitive, only relevant when using SMTP
+# You might want to add bcc here, if your mail server does not hide bcc recipients from each other
+ExcludeHeaders[]
+
+
+[ShopSettings]
+# This settings controls when the basket is cleared.
+# It can contain the following values:
+# - disabled - Means that the basket is cleared when the shop/checkout
+#              trigger is done. In practice this means when a user
+#              has payed the product and payment system is finished.
+#              This is the default value since it means the user can
+#              cancel the order and go back to the shop with the
+#              basket still intact.
+# - enabled - Means to clear the basket as soon as the user clicks
+#             confirm in the shop/confirmorder trigger. This may
+#             needed by some payment system, check the documentation
+#             for the system to see if this needs to be enabled.
+#             The inpact on the users is that the basket will not be
+#             available when the payment is cancelled.
+#
+# To put it in context the entire checkout process consists of these triggers:
+# - shop/confirmorder - The user shown the total price with shipping
+#                       and other calculations. When the user clicks
+#                       confirm the shop/checkout trigger is started.
+# - shop/checkout     - Starts a new temporary order and runs any payment
+#                       methods (or other workflows). Once it is done
+#                       the order is activated and the basket is cleared.
+ClearBasketOnCheckout=disabled
+# This settings is used when a user logs out.
+# It can contain the following values:
+# - disabled - Means that the basket will NOT be cleared when a user logs out.
+# - enabled  - Means that the basket will be cleared when a user logs out.
+ClearBasketOnLogout=disabled
+# Controls what happens after an item is added to the basket
+# It can contain one of these entries:
+# - basket - Redirect back to the basket to show the newly added item
+# - reload - Redirect back to where the user was previously, this allows
+#            the user to continue shopping.
+RedirectAfterAddToBasket=basket
+
+# Controls if we should send an order confirmation email to admin and the user or not
+# when an order is completed and confirmed.
+SendOrderEmail=enabled
+
+# since 5.3 it is possible to define a list with the dataypes containing prices
+# This will allow you to define your own price datatypes and work with them
+# in the shop module
+# Setting is commented out by default
+#ProductDatatypeStringList[]
+#ProductDatatypeStringList[]=ezprice
+#ProductDatatypeStringList[]=ezmultiprice
+#ProductDatatypeStringList[]=customprice
+
+[OverrideSettings]
+Cache=enabled
+
+
+[FormProcessSettings]
+# Whether the form module is allowed or not
+# The form is by design insecure so don't enable unless you know
+# what you are doing.
+Module=disabled
+
+
+#
+# Settings for RSS
+#
+[RSSSettings]
+# RSS import handler Extension settings
+# Must be placed in <extension directory>/<active extension>/rss/ezrssimporthandler.php
+ActiveExtensions[]
+
+# List of numbers of objects being included in the RSS feed.
+# This list is being shown in the RSS export edit admin interface.
+NumberOfObjectsList[]
+NumberOfObjectsList[]=5
+NumberOfObjectsList[]=10
+NumberOfObjectsList[]=20
+NumberOfObjectsList[]=30
+NumberOfObjectsList[]=40
+NumberOfObjectsList[]=50
+# Selected by default in the RSS export edit GUI.
+NumberOfObjectsDefault=20
+
+# Cache Time in Seconds
+#
+# The timespan a RSS feed is served from the cache in seconds.
+# After the end of the timespan, the RSS feed is regenerated and
+# again served from the cache.
+#
+# This means that changes to the content being fed show up
+# after the maximum cache time at the latest.
+#
+# "CacheTime = 0" turns off cacheing.
+CacheTime=1200
+
+# The list of available RSS versions.
+AvailableVersionList[]
+AvailableVersionList[]=1.0
+AvailableVersionList[]=2.0
+AvailableVersionList[]=ATOM
+# Selected by default in the RSS export edit GUI.
+DefaultVersion=2.0
+
+# Default source to child mapping
+# DefaultFeedItemClasses[<source_class>]=<child_class>[;<child_class_2>]
+DefaultFeedItemClasses[]
+#eg: DefaultFeedItemClasses[folder]=article
+
+## Default class attribute to rss/atom feed attribute mapping
+#[RSSSettings_<class_identifier>]
+## Requried to be able to map title attribute
+#FeedObjectAttributeMap[title]=<class_attribute_identifier>
+## Optional to map description field
+#FeedObjectAttributeMap[description]=<class_attribute_identifier>
+## Optional to map category field
+#FeedObjectAttributeMap[category]=<class_attribute_identifier>
+## Optional to fetch subtree of these items
+#Subnodes[<source_class_identifier>]=true
+
+# Eg:
+#[RSSSettings_article]
+#FeedObjectAttributeMap[title]=title
+#FeedObjectAttributeMap[description]=intro
+#FeedObjectAttributeMap[category]=tags
+
+
+[BackwardCompatibilitySettings]
+# Enables or disables compatibility with admin design from
+# eZPublish 3.4. Since some of the new features are unavailable from
+# 3.4 design you can set this setting to 'enabled' to turn
+# 'new features' off ( e.g. 'locations' will always be visible
+# during editing an object ) to prevent unexpected situations.
+UsingDesignAdmin34=disabled
+
+# Enables or disables the advanced edit interface for the
+# "ezobjectrelationlist" (aka "Object relations") datatype.
+# The default setting is "disabled", which means that the
+# system will provide an interface that is consistent with the
+# "ezobjectrelation" datatype. When "enabled", the old/advanced
+# interface will be shown, and thus the datatype will allow
+# embedded editing of objects. In addition, it will also allow
+# the creation of new objects (without node assignments).
+AdvancedObjectRelationList=disabled
+
+# Enables or disables compatibility with typed object relations
+# from eZ Publish 3.9. If disabled, the system will skip relations
+# of the "XML linked" type when fetching/inspecting all relations.
+ObjectRelationTyped=enabled
+
+#
+# Settings control amount of mails  allowed to to be sent to one email address
+#
+[TipAFriend]
+MaxRequestsPerTimeframe=5
+TimeFrame=1
+#in hours
+# Email used as sender email in tipafriend mails, this is needed when you use
+# smtp servers with closed relaying
+# Assign a non-empty value to FromEmail for it to be used as from address.
+FromEmail=
+
+#
+# Settings for SSL zones
+# For more information please look at doc/features/3.8/ssl_zones.txt.
+#
+[SSLZoneSettings]
+# Enable/disable the SSL zones functionality.
+SSLZones=disabled
+# Content subtrees we must use SSL for.
+# (currently, only content/view and content/edit respect this setting)
+#
+# Examples:
+# SSLSubtrees[]=/news
+# SSLSubtrees[]=/polls
+SSLSubtrees[]
+
+# Default access mode is plain HTTP.
+#
+# Define a view as 'ssl' to force HTTPS access mode for this view.
+# If a view is defined as 'keep' then access mode is unknown
+# for this view, and the previous access mode is kept.
+#
+# Define a view as 'nossl' to force HTTP for this module. Further
+# SSL redirections will be ignored
+#
+# Examples:
+# ModuleViewAccessMode[shop/add]=ssl
+# ModuleViewAccessMode[shop/basket]=ssl
+#
+# Do not remove this line unless you know what you're doing:
+ModuleViewAccessMode[]
+ModuleViewAccessMode[content/*]=keep
+ModuleViewAccessMode[layout/*]=keep
+
+
+[HTTPHeaderSettings]
+# Enable/disable custom HTTP header data.
+CustomHeader=disabled
+
+# Only apply custom headers for anonymous users
+OnlyForAnonymous=disabled
+
+# Only apply the fallback root [/] custom headers for the content/view module
+# If disabled, custom headers for the root path will be applied to all modules and their views
+OnlyForContent=enabled
+
+# Header list. Contains all HTTP which should override standard ones.
+HeaderList[]
+HeaderList[]=Cache-Control
+HeaderList[]=Pragma
+HeaderList[]=Expires
+
+# Default Cache-Control header
+# HTTP Headers are specified using the following format :
+# <HTTP header>[<eZ Publish path|module{/view}>]=<value>{;<depth>{;<level>}}
+# Note: to use a semicolon in the value, you need to escape it with a backslash.
+#
+# Example :
+# # Set Pragma HTTP header to no-cache for whole site, except /news, and 2 levels below news.
+# Pragma[]
+# Pragma[/]=no-cache;2
+# Pragma[/news]=;2;0
+
+# Cache-Control values are set directly
+Cache-Control[]
+Cache-Control[/]=no-cache, must-revalidate
+
+# Pragma values are set directly
+Pragma[]
+Pragma[/]=no-cache
+
+# Expires specifies time offset compared to current time
+# Default expired 2 hours ago ( no caching )
+Expires[]
+Expires[/]=-7200
+
+# Use a custom HTTP header to get the client IP
+# false is the default value
+ClientIpByCustomHTTPHeader=false
+# Useful example when client get connected via (reverse-)proxy
+#ClientIpByCustomHTTPHeader=X-Forwarded-For
+
+[TimeZoneSettings]
+# Override this value to set timezone to other than OS default.
+# See /usr/share/zoneinfo/zone.tab for possible values ( 3rd column ).
+# Example: TimeZone=America/Antigua
+#
+# Notice: This will not work on threaded web servers or on Windows.
+#         Use only with Apache 1.3 or 2.0 prefork on *nix.
+TimeZone=
+
+
+[eZINISettings]
+# Use 'ReadonlySettingList' to set read-only settings.
+# usage:
+# for specific setting:
+#   ini-filename/section_name/setting_name
+# for all settings in section:
+#   ini-filename/section_name/*
+# for all settings in ini-file:
+#   ini-filename/*
+ReadonlySettingList[]
+ReadonlySettingList[]=template.ini/PHP/PHPOperatorList
+ReadonlySettingList[]=image.ini/ImageMagick/ExecutablePath
+ReadonlySettingList[]=image.ini/ImageMagick/Executable
+
+# Dynamic ini template operator
+# Changes global setting for ezini and ezini_hasvariable template
+# operators for the default setting of 'dynamic' parameter
+# When enabled these calls are not compiled as ini values into
+# templates, but read dynamically
+# Note: only read during template compilation
+DynamicTemplateMode=disabled
+
+
+[ProxySettings]
+# If an user wants to use proxy in linkcheck.php/rssimport.php or downloading site packages in "setup wizard".
+# If empty proxy will not be used.
+# Example:  http://<host>:<port>
+ProxyServer=
+User=
+Password=

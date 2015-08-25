@@ -1,0 +1,28 @@
+{% extends site_bundle_name ~ '::pagelayout.html.twig' %}
+
+{% block content %}
+
+
+<h1>{{ ez_render_field(content, 'title') }}</h1>
+
+    {# http://brentertainment.com/other/docs/cookbook/form/twig_form_customization.html #}
+    {{ form( form ) }}
+
+
+    {#{{ form_start(form) }}#}
+    {#{{ form_errors(form) }}#}
+
+    {#{{ form_widget(form.children[getFullContentName['message']]) }}#}
+
+    {#{{ form_row(form.children[getFullContentName['message']], {'attr': {'value': 'abcd' }}) }}#}
+
+
+
+
+{% endblock %}
+
+
+
+
+   
+ 

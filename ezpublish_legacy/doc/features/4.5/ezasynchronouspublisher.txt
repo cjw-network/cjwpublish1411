@@ -1,0 +1,275 @@
+=======================
+Asynchronous publishing
+=======================
+
+Synopsis
+========
+
+This feature enables content publishing to be made through a queue that gives complete control over the amount of
+concurrent publishing operations. The goal is to make the database load manageable and avoid timeouts.
+
+Setting it up
+=============
+
+eZ Publish settings
+-------------------
+The feature is disabled by default. To enable it, content.ini must be overriden, and the following block must be added
+to the override file::
+
+    [PublishingSettings]
+    AsynchronousPublishing=enabled
+
+By default, up to 10 concurrent publishing operations will be allowed. If you want to change this, another INI setting
+must be added to the override::
+
+    [PublishingSettings]
+    AsynchronousPublishing=disabled
+    PublishingProcessSlots=20
+
+System configuration
+--------------------
+Publishing operations are handled by a system daemon. This daemon must be running, or content just won't be published.
+
+PHP
+'''
+The asynchronous publishing script/daemon requires the pcntl functions to be available in order to run, as it heavily
+requires on parallel publishing through forking and process control. Some distributions (Ubuntu 11.0 for instance)
+disable them by default. The daemon won't be able to run if one of the required ones isn't available.
+
+If they are disabled, either change your CLI php.ini configuration, or if the option isn't available to you, override
+them locally as follows::
+
+    php -d disabled_functions=0 bin/php/ezasynchronouspublisher.php
+
+Using the init scripts as described below in 'Settings', you can also add this option to your
+ezasynchronouspublisher.conf::
+
+    PHP_EXECUTABLE=/usr/bin/php -d disabled_functions=0
+
+Manual execution
+''''''''''''''''
+The daemon can be started manually by running the following, as your webserver user::
+
+    ezroot$ php bin/php/ezasynchronouspublisher.php
+
+The script will run interactively. To start it in daemon mode (so that it actually detaches from the current session and
+will keep running even if you log out), the -n flag can be added::
+
+    ezroot$ php bin/php/ezasynchronouspublisher.php -n
+
+init scripts
+''''''''''''
+This is the method that we recommend on production. Standard init.d scripts for debian and redhat are provided, and can
+be used to have the daemon started on boot.
+
+First, the startup script for your system must be *linked* to your init.d folder. This is an example for debian::
+
+    cd /etc/init.d
+    ln -s /path/to/ezpublish/bin/startup/debian/ezasynchronouspublisher ./ezasynchronouspublisher
+    chmod +x ./ezasynchronouspublisher
+
+The daemon can therefore be started using::
+
+    /etc/init.d/ezasynchronouspublisher start
+
+It can also be stopped or restarted using the same script, by replacing start with stop or restart.
+
+Settings
+''''''''
+The init scripts come with default settings that should match most platforms. If for some reason, your webserver user
+isn't the platform's default and/or if your PHP CLI executable isn't part of your webserver user's PATH, you can
+customize these.
+
+First, copy the default configuration file for your platform to the correct directory for your OS:
+- RHEL: /etc/ezasynchronouspublisher.conf
+- Debian: /etc/default/ezasynchronouspublisher.conf
+
+Example for Debian/Ubuntu::
+    $ cp bin/startup/debian/ezasynchronouspublisher.defaults /etc/default/ezasynchronouspublisher.conf
+
+Then edit this file, uncommenting and set the required variables to the required values as according to the comments
+in the settings file.
+
+Multiple instances
+------------------
+
+One database per instance
+'''''''''''''''''''''''''
+If you need to run multiple publishing daemons, you just need to create one symlink per daemon instance. The init.d
+script name will be used as the PID file's name, and both will be independant. Note that multiple daemons on one instance
+with multiple DBs aren't yet supported.
+
+One instance with multiple databases
+''''''''''''''''''''''''''''''''''''
+As for multiple instances with one database each, you must in any case create one startup script per database.
+
+One extra step is then required to configure each init.d script. By default, the daemon will use the default siteaccess
+settings. Since this situation involves multiple databases, an explicit siteaccess name must be used. To configure the
+siteaccess each daemon should use, an extra file must be created.
+
+Each daemon can be assigned a siteaccess by creating a configuration file named::
+
+    /etc/default/ezasynchronouspublisher/<init.d name>.conf
+
+Example for an init.d script named ``/etc/init.d/myezdaemon`` ::
+
+    /etc/default/ezasynchronouspublisher/myezdaemon.conf
+
+This file currently supports one setting named siteaccess::
+
+    SITEACCESS=plain_site_admin
+
+Customization
+=============
+
+Filtering hooks
+---------------
+
+The asynchronous publishing system comes with filtering hooks that can easily be implemented in order to prevent items
+from being published asynchronously.
+
+You can configure as many filters as you want, as PHP classes. Each filter will be called sequentially, and will either
+accept the object for asynchronous publishing, or reject it. If a filter rejects an object, filters processing will be
+stopped, and the object will be published synchronously.
+
+Implementation: extend ezpAsynchronousPublishingFilter
+'''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+In order to implement a filter, you must create a class that extends the ``ezpAsynchronousPublishingFilter`` abstract class.
+This class implements the ``ezpAsynchronousPublishingFilterInterface`` interface, and enforces the definition of the ``accept()``
+method. The ``accept()`` method must return a boolean. True means the object can be published asynchronously, while false
+instructs the system to skip the asynchronous publishing feature, and publish the content directly.
+
+The abstract class provides you with the ``eZContentObjectVersion`` being published, as the ``$version`` class property. From
+this property, you can easily test the content object's property (publishing time, author, content class, section), read
+attributes, and so on.
+
+Example::
+
+    <?php
+    /**
+     * Exclude from asynchronous publishing any object that isn't an article
+     * @return bool
+     */
+    class eZAsynchronousPublishingClassFilter extends ezpAsynchronousPublishingFilter
+    {
+        public function accept()
+        {
+            $contentObject = $this->version->contentObject();
+            return in_array( $contentObject->attribute( 'class_identifier' ), $this->validClasses );
+        }
+
+        private $validClasses = array( 'article' );
+    }
+    ?>
+
+The class above will only publish asynchronously objects of class article.
+
+Settings
+''''''''
+
+Each filter must be registered using INI settings from content.ini. Below is an example for the class filtering class
+above::
+
+    [PublishingSettings]
+    AsynchronousPublishingFilters[]=eZAsynchronousPublishingClassFilter
+
+One line similar to the one above must be added for each filter.
+
+Priority handling
+-----------------
+
+By default, Asynchronous Publishing will handle publishing operations in a very simple FIFO fashion. First item in,
+first item out. While this system is a no brainer and will work well in common situations, there are a few easy to think
+of cases where you don't want this. For instance, if you have regular imports of a massive amount of content, you
+clearly don't want to publishing queue to be blocked for X minutes by the import, leaving your editors in despair while
+they wait forever for their content to be published.
+
+It wasn't possible for us to provide a fully flexible system that would never break, but it was also unacceptable not to
+provide any clean mean to cover this up. We chose to open that up by  providing a hook + handler system that will let
+anyone customize queue handling for their needs.
+
+The hook system uses the SignalSlot eZComponent. By reading the documentation for it, you will notice that you can
+attach multiple calls to any hook by simply calling several times the connect method. Hooks will be called in the order
+they were registered.
+
+preQueue hook
+''''''''''''''
+
+These hooks are called right before an object is sent to the publishing queue.
+Using these, you can freely read & write data based on the operation: content type, author, publishing time, you choose.
+The system doesn't provide any mean to store extra data, and that means you must design your own system for that, but on
+the other hand, this gives full flexibility over your mechanisms.
+
+Add MyPriorityHandler::queue() before the item is queued::
+
+    ezpContentPublishingQueue::signals()->connect( 'preQueue', 'MyPriorityHandler::queue' );
+
+Hooks can also be attached using INI settings if you want the call to be made every time::
+
+    [PublishingSettings]
+    AsynchronousPublishingQueueHooks[]=MyPriorityHandler::queue
+
+These hooks are given two parameters:
+* the content object id (integer)
+* the content object version (integer)
+
+They're not supposed to return any value.
+
+postHandling hook
+'''''''''''''''''
+
+These hooks are called right after an item has been processed by the publishing queue.
+
+They can for instance be used to delete / update data created in a preQueue hook.
+
+Add MyPriorityHandler::cleanup() after the item has been handled::
+
+    ezpContentPublishingQueue::signals()->connect( 'postHandling', 'MyPriorityHandler::cleanup' );
+
+Hooks can also be attached using INI settings if you want the call to be made every time::
+
+    [PublishingSettings]
+    AsynchronousPublishingPostHandlingHooks[]=MyPriorityHandler::cleanup
+
+These hooks are given three parameters:
+* the content object id (integer)
+* the content object version (integer)
+* the publishing proccess status (as one of the ezpContentPublishingProcess::STATUS_* constants)
+
+They're not supposed to return any value.
+
+queueReader handler
+'''''''''''''''''''
+
+This handler is the one in charge of reading from the queue and deciding what content is given to the queue handler.
+
+A default queueReader handler is providing with your default eZ Publish distribution. It simply reads the oldest inactive
+item from the processes queue, and returns it.
+
+It can be changed to a new one by extending the ``ezpContentPublishingQueue`` class, with a new implementation for the
+``next`` method and configuring the new class in ``content.ini``.
+
+Here is a possible class definition::
+
+    <?php
+    class myPublishingQueue extends ezpContentPublishingQueue
+    {
+        public static function next()
+        {
+            // do your deeds...
+            if ( $process )
+                return $process;
+            else
+                return false;
+        }
+    }
+    ?>
+
+And the matching INI (content.ini) configuration::
+
+    [PublishingSettings]
+    AsynchronousPublishingQueueReader=myContentPublishingQueue
+
+Other methods from ``ezpContentPublishingQueue`` can be overridden as well, but this is not officially supported as of
+now, and therefore not documented.

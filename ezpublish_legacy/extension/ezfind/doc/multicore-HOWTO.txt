@@ -1,0 +1,78 @@
+===============================
+eZ find & Solr multicore how-to
+===============================
+
+Since eZ Find 5.3 (which upgrades Solr to 4.7), running Solr in multicore mode
+is the default
+
+Starting solr multicore
+=======================
+
+
+To start it, use the regular command line
+    $java/: java -jar start.jar
+
+Since eZ Find 5.3, the directory solr.multicore does not exist anymore!
+
+Configuring solr additional cores
+=================================
+
+You will find in extension/ezfind/java a folder named solr.languages. This
+directory contains language specific schema configurations.
+
+
+solr.xml
+--------
+
+
+The <cores> element is used to configure the administration URL for the cores,
+as well as the list of available cores. Each 'core' sub-element configures a
+new core. The 'name' attribute determines what URL element is used to access
+this core, while the instanceDir attribute determines the subfolder of
+solr where this core configuration can be found.
+
+Creating a new core
+-------------------
+Note that even though only language specific cores are used by eZ find at the
+moment, cores can be used for much more than that.
+
+1) you need to create a new directory under java/solr and then copy the default
+configuration, extension/ezfind/java/solr/ezp-default/conf to this new
+directory, typically the target locale name::
+
+    $ cd extension/ezfind/java/solr
+    $ mkdir <new-core>
+    $ cp -rp ezp-default/conf <new-core>
+
+Finally you should copy the appropriate files from
+extension/ezfind/java/solr.languages
+
+For example, for a  french language core:
+
+    $ cp ../solr.languages/fr/* <new-core>/conf
+
+2) Make sure Solr knows about the new core
+
+This can be done in two ways: edit the solr.xml file manually
+
+2a) edit solr/solr.xml and add the newly created core here::
+
+    <core name="<new-core>" instanceDir="<new-core>" />
+
+  Then restart Solr
+
+2b) go the the Solr admin interface
+
+Select the "Core Admin"
+Click "Add new core" and fill in the directory and name of the new core
+
+You do not need to restart Solr, the core is added and ready to use
+
+
+Tips
+====
+To access the solr backoffice, you must use the URI specified in solr.xml::
+    http://localhost:8983/solr/admin/cores
+
+This will give you an overview of the solr configuration, as well as a direct
+access to each core's admin.

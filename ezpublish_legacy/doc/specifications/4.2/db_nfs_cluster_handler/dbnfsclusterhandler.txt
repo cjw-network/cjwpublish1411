@@ -1,0 +1,371 @@
+Specifications: eZDBNFSClusterHandler
+#####################################
+
+.. contents:: Table of Contents
+
+Multiple issues keep showing when using most common flavours of NFS. These are
+mostly related to attribute caching & delay added by NFS to file create / delete
+operations.
+
+This document describes most of them, and clearly shows that most workarounds will
+have a severe impact on NFS performances:
+http://www.time-travellers.org/shane/papers/NFS_considered_harmful.html
+
+Current eZFS & eZFS2 issues
+===========================
+Generation handing (stalecache) depends on real-time system operations (file
+creation). NFS totally prevents this, and makes PHP return unreliable results
+when performing file operations (creation failing with a wrong return, possibilities
+of multiple openings of the same file).
+
+Cache items expiry can also be misinterpreted by mount points as NFS can add a
+delay when checking for a file expiry or existence.
+
+Solution: mix eZDB and eZFS
+===========================
+It has been proved that the eZDB approach is more reliable and controllable than
+eZFS. The database allows these realtime operations in a satisfactory way. On
+the other hand, the eZDB approach is blamed for the storage mechanism used (files
+stored in BLOBs in the database, leading to a HUGE database and possible speed
+issues).
+
+It should be possible to mix these approaches by using both eZDB and NFS:
+ - eZDB is reliable, and can be used to store files metadatas
+ - NFS is not reliable, but can still be used to store the actual data
+
+eZDBNFS will use a custom database, much like the standard ezdbfile, to ensure
+data integrity. Cache processing (stalecache) will be performed in this database,
+while real files can be stored on NFS itself. The handler will take care of
+creating files on NFS.
+Exactly like eZDB currently does, eZDBNFS will also copy files locally to each
+eZ publish instance upon request, in order to avoid querying NFS when data have
+not changed.
+
+Implementation
+==============
+This handler's implementation is mostly based on eZDB. All the parts of
+eZDB that interact with file data will be replaced with file operations from/to
+the DFS.
+
+Architecture
+------------
+
+ * X eZ publish web servers
+
+   - local var folder: `/var/www/var/`
+   - local moint point to the NFS share: `/data/nfs`
+   - uses `eZNFSDB`
+
+ * 1 NFS server
+
+   - locally mounted on each frontend
+
+ * 2 databases
+
+   - the standard eZ publish relational DB
+   - a cluster DB, with the single ezdfsfile table
+
+
+Current eZDB API interaction
+----------------------------
+The following table indicates for each method wether it interacts with local
+data (fs), db metadata (ezdfsfile) or db filedata (ezdfsfile_data).
+
++-----------------------------+------------+-----------+-------+
+| Method                      | FS         | Metadata  | Data  |
++=============================+============+===========+=======+
+| ezdfsfileHandler             | N          | N         | N     |
++-----------------------------+------------+-----------+-------+
+| loadMetaData                | N          | R         | N     |
++-----------------------------+------------+-----------+-------+
+| fileStore                   | R          | W         | W     |
++-----------------------------+------------+-----------+-------+
+| fileStoreContents           | R          | W         | W     |
++-----------------------------+------------+-----------+-------+
+| storeContents               | R          | W         | W     |
++-----------------------------+------------+-----------+-------+
+| fileFetch                   | W          | W         | R     |
++-----------------------------+------------+-----------+-------+
+| processCache                | R/W        | R/W       | R/W   |
++-----------------------------+------------+-----------+-------+
+| isFileExpired               | N          | R         | N     |
++-----------------------------+------------+-----------+-------+
+| isLocalFileExpired          | R          | N         | N     |
++-----------------------------+------------+-----------+-------+
+| isDBFileExpired             | N          | R         | N     |
++-----------------------------+------------+-----------+-------+
+| fetchUnique                 | W          | R         | R     |
++-----------------------------+------------+-----------+-------+
+| fileFetchContents           | R          | R         | R     |
++-----------------------------+------------+-----------+-------+
+| stat                        | N          | R         | R     |
++-----------------------------+------------+-----------+-------+
+| size                        | N          | R         | R     |
++-----------------------------+------------+-----------+-------+
+| name                        | N          | N         | N     |
++-----------------------------+------------+-----------+-------+
+| fileDeleteByRegex           | N          | W         | W     |
++-----------------------------+------------+-----------+-------+
+| fileDeleteByWildcard        | N          | W         | W     |
++-----------------------------+------------+-----------+-------+
+| fileDeleteByDirList         | N          | W         | W     |
++-----------------------------+------------+-----------+-------+
+| fileDelete                  | N          | W         | W     |
++-----------------------------+------------+-----------+-------+
+| delete                      | N          | W         | W     |
++-----------------------------+------------+-----------+-------+
+| fileDeleteLocal             | W          | N         | N     |
++-----------------------------+------------+-----------+-------+
+| deleteLocal                 | W          | N         | N     |
++-----------------------------+------------+-----------+-------+
+| deleteLocal                 | W          | N         | N     |
++-----------------------------+------------+-----------+-------+
+| purge                       | R/W        | R/W       | R/W   |
++-----------------------------+------------+-----------+-------+
+| fileExists                  | N          | R         | R     |
++-----------------------------+------------+-----------+-------+
+| exists                      | N          | R         | R     |
++-----------------------------+------------+-----------+-------+
+| passthrough                 | N          | R         | R     |
++-----------------------------+------------+-----------+-------+
+| copy                        | N          | R/W       | R/W   |
++-----------------------------+------------+-----------+-------+
+| fileLinkCopy                | N          | R/W       | R/W   |
++-----------------------------+------------+-----------+-------+
+| fileMove                    | N          | R/W       | R/W   |
++-----------------------------+------------+-----------+-------+
+| move                        | N          | R/W       | R/W   |
++-----------------------------+------------+-----------+-------+
+| getFileList                 | N          | R         | R     |
++-----------------------------+------------+-----------+-------+
+| cleanPath                   | N          | R         | N     |
++-----------------------------+------------+-----------+-------+
+| startCacheGeneration        | N          | W         | N     |
++-----------------------------+------------+-----------+-------+
+| endCacheGeneration          | N          | W         | N     |
++-----------------------------+------------+-----------+-------+
+| abortCacheGeneration        | N          | W         | N     |
++-----------------------------+------------+-----------+-------+
+| checkCacheGenerationTimeout | N          | R         | N     |
++-----------------------------+------------+-----------+-------+
+| _cacheType                  | N          | N         | N     |
++-----------------------------+------------+-----------+-------+
+| _get                        | N          | N         | N     |
++-----------------------------+------------+-----------+-------+
+
+Handing atomicity
+-----------------
+Atomicity of all file operations is critical.
+
+Since this handler would be using 2 storage mediums (DB for metadata, NFS for
+actual data, we need to make sure all operations are totally secured. No process
+should be able to access a file during write operations. For instance, when a new
+file is added to NFS, we have to:
+
+ * lock this file for writing (stalecache in DB)
+ * write the metadata to the database (stalecache before rename)
+ * write the data to NFS (using the "stale" name)
+ * make the file available for reading by other processes, in an order that will
+   totally prevent readings before the operation is complete.
+
+Possible write algorithm of a new file
+--------------------------------------
+
+ 1) start generation
+
+   * create the database entry of the .generating file
+   * further processes requesting to read this file will be locked it a wait
+     loop since no stale file exists
+
+ 2) write file metadata to DB
+
+ 2) write file to NFS
+
+   * we can safely use the real filename (without .generating here) since the
+     file will not be accessed by any other process (blocked by 1)
+
+ 3) end generation
+
+   * delete the .generating entry
+
+Possible read algorithm for a file not found locally
+----------------------------------------------------
+We assume that the file is remotely valid, but doesn't exist / is expired
+locally.
+
+ 1) Check file validity in database
+ 2) Copy the file from the local NFS mountpoint to the local folder.
+
+   * NFS seems to ensure data safety when reading a file: if a file has an open
+     handle and is modified / deleted from NFS during this time, reading can
+     be completed safely since NFS keeps a local copy of opened files.
+
+Database
+--------
+
+Structure
+'''''''''
+
+This is the SQL CREATE for the database table required by eZDFS::
+
+    CREATE TABLE ezdfsfile (
+      datatype      VARCHAR(60)   NOT NULL DEFAULT 'application/octet-stream',
+      name          TEXT          NOT NULL,
+      name_trunk    TEXT          NOT NULL,
+      name_hash     VARCHAR(34)   NOT NULL DEFAULT '',
+      scope         VARCHAR(20)   NOT NULL DEFAULT '',
+      size          BIGINT(20)    UNSIGNED NOT NULL,
+      mtime         INT(11)       NOT NULL DEFAULT '0',
+      expired       BOOL          NOT NULL DEFAULT '0',
+      PRIMARY KEY (name_hash),
+      INDEX ezdfsfile_name (name(250)),
+      INDEX ezdfsfile_name_trunk (name_trunk(250)),
+      INDEX ezdfsfile_mtime (mtime),
+      INDEX ezdfsfile_expired_name (expired, name(250))
+    ) ENGINE=InnoDB;
+
+Fields details
+''''''''''''''
+
+ * ezdfsfile.datatype:
+
+   File datatype
+
+ * ezdfsfile.name
+
+   File path
+
+ * ezdfsfile.name_trunk
+
+   File's name trunk. Contains for some types of files (viewcache for instance)
+   the common part that will be used to perform multiple removal operations
+   faster.
+
+ * ezdfsfile.name_hash
+
+   MD5 transformed ezdfsfile.name. Used for quick access to a file (faster than
+   ezdfsfile.name
+
+ * ezdfsfile.scope
+
+   File's scope
+
+ * ezdfsfile.size
+
+   File size in bytes
+
+ * ezdfsfile.mtime
+
+   File's mtime, as a unix timestamp
+
+ * ezdfsfile.expired
+
+   Will contain 1 if the file is considered as expired (e.g. deleted)
+   Might be deprecated by ezdfsfile.status
+
+Ini Settings
+------------
+
+New settings are introduced by eZDFS in file.ini::
+
+    [ClusteringSettings]
+    # Cluster file handler.
+    # Since 4.1 name of the filehandlers have changed
+    # you may choose between :
+    # - eZFSFileHandler
+    # - eZFS2FileHandler (requires linux or Windows + PHP >= 5.3)
+    # - ezdfsfileHandler
+    # - eZDFSFileHandler: handles NFS mount based architectures using
+    # and it is case sensitive
+    FileHandler=eZFSFileHandler
+
+    [eZDFSClusteringSettings]
+    # Path to the NFS mount point
+    # Can be relative to the eZ publish root, or absolute
+    MountPointPath=
+    # Database backend
+    DBBackend=eZDFSFileHandlerMySQLBackend
+    DBHost=dbhost
+    DBPort=3306
+    DBSocket=
+    DBName=cluster
+    DBUser=root
+    DBPassword=
+    DBConnectRetries=3
+    DBExecuteRetries=20
+
+Misc
+====
+
+Issues
+------
+
+Class name tests
+----------------
+In a few places, we test the class returned by eZClusterFileHandler. This is
+hardcoded and won't work with the new handler.
+
+To fix this, an interface, eZClusterFileHandlerInterface has to be created (we
+can't use eZClusterFileHandler as a root class, as this name is already used
+for the singleton method eZClusterFileHandler::instance().
+
+Ideas
+-----
+
+metadata DB check delay
+'''''''''''''''''''''''
+
+Add a configurable delay that would prevent mtime checks from being performed
+everytime a file is requested, like 3 or 5 seconds. This would save TONS
+of DB calls on high traffic site.
+
+The possible drawback is that a mix of valid & expired files could be used.
+Reverse proxies could also cache temporarily invalid pages => HTTP headers ?
+
+This will not be implemented for the first version.
+
+TODO
+====
+
+N/A
+
+Testing
+=======
+
+Note: tests have been implemented in tests/tests/kernel/classes/clusterfilehandlers
+
+It is critical that this handler's developement is properly tested, in a unitary
+way.
+
+The first critical consideration is the testing structure itself. This particular
+handler requires a complex architecture:
+
+ * NFS server
+ * two local NFS mount points, NOT sharing the same cache
+ * two local eZ publish instances
+ * one local database (of course)
+ * one local cluster database
+
+Glossary
+--------
+F1: Frontend 1
+F2: Frontend 2
+DFS-DB: Cluster database
+DFS-F1: local mount point on F1 to the NFS server
+DFS-F2: local mount point on F2 to the NFS server
+
+
+Test examples
+-------------
+
+Test if a *new* file (does not exist on DB/DFS) is correctly written. The file
+is created from F1.
+
+    * Create random file on F1 in var
+    * call eZDFSFileHandler::store() on this file
+    * check if file exists:
+        * Using eZDFSFileHandler::exists() on a new instance
+        * By checking for the file's existence DFS-DB (raw SQL)
+        * By checking for the file's existence on DFS-F1 (system call)
+
+Note: a common method can be implemented to test these 3 criterias

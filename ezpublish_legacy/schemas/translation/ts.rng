@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <element name="TS">
+      <optional>
+        <attribute name="language">
+          <data type="NCName"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="sourcelanguage">
+          <data type="NCName"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="version">
+          <data type="decimal"/>
+        </attribute>
+      </optional>
+      <optional>
+        <element name="defaultcodec">
+          <text/>
+        </element>
+      </optional>
+      <oneOrMore>
+        <element name="context">
+          <element name="name">
+            <text/>
+          </element>
+          <oneOrMore>
+            <element name="message">
+              <zeroOrMore>
+                <element name="location">
+                  <attribute name="filename"/>
+                  <attribute name="line">
+                    <data type="integer"/>
+                  </attribute>
+                </element>
+              </zeroOrMore>
+              <element name="source">
+                <oneOrMore>
+                  <choice>
+                    <text/>
+                    <element name="byte">
+                      <attribute name="value">
+                        <data type="NCName"/>
+                      </attribute>
+                    </element>
+                  </choice>
+                </oneOrMore>
+              </element>
+              <optional>
+                <element name="comment">
+                  <text/>
+                </element>
+              </optional>
+              <optional>
+                <element name="translatorcomment">
+                  <text/>
+                </element>
+              </optional>
+              <element name="translation">
+                <optional>
+                  <attribute name="type">
+                    <data type="NCName"/>
+                  </attribute>
+                </optional>
+                <oneOrMore>
+                  <choice>
+                    <text/>
+                    <element name="byte">
+                      <attribute name="value">
+                        <data type="NCName"/>
+                      </attribute>
+                    </element>
+                  </choice>
+                </oneOrMore>
+              </element>
+            </element>
+          </oneOrMore>
+        </element>
+      </oneOrMore>
+    </element>
+  </start>
+</grammar>

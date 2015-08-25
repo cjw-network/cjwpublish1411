@@ -1,0 +1,201 @@
+/* SITE CSS - JAC-Systeme GmbH */
+
+/* reset browser styles */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, code,
+del, dfn, em, img, q, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td
+{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
+
+table { border-collapse: separate; border-spacing: 0; }
+caption, th, td { text-align: left; font-weight: normal; }
+table, td, th { vertical-align: top; }
+
+a img { border: none; }
+
+/* GENERAL ELEMENTS */
+
+html { -webkit-backface-visibility: hidden;}
+
+body {
+    margin: 0;
+    font-size: 14px;
+    background-color: lightgrey;
+    font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
+}
+body p, body li { text-overflow: ellipsis; }
+
+h1, h2, h3, h4, h5, h6 { font-weight: bold; }
+h1 { font-size: 18px; margin: 0 0 .75em 0; }
+h2 { font-size: 16px; margin: 0 0 .5em 0; }
+h3, h4, h5, h6 { font-size: 1em; margin: 0 0 .5em 0; }
+
+p { line-height: 1.35; }
+li { line-height: 1.5; }
+p, table, pre, ul, ol { margin: 0 0 .75em 0; }
+td { padding: .25em 1em .25em 0; }
+ul, ol { margin-left: 1.25em; }
+
+a { color: darkblue; text-decoration: none; }
+a:hover { color: darkblue; text-decoration: underline; }
+
+hr { height: 1px; border: none; }
+hr, .horiz-ruler { border-bottom: 1px dotted #ABABAB; margin-bottom: 0.75em; }
+
+textarea { height: auto; resize: none; overflow: auto; margin: 0; }
+input, textarea {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: block;
+    border: 1px solid #ababab;
+    padding: 0.25em;
+}
+button {
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid #ABABAB;
+    border-radius: 5px;
+    padding: 0.25em;
+    background-color: #EDEDED;
+    text-align: center;
+    min-width: 10em;
+}
+.box { width: 100%; outline: none; }
+.halfbox { width: 50%; outline: none; }
+
+.break { clear: both; }
+.hide { display: none; }
+.show { display: block; }
+
+.underline { text-decoration: underline !important; }
+.underline_hover:hover { text-decoration: underline !important; }
+
+.right { float: right; }
+.left { float: left; }
+.inline { display: inline; }
+
+.imageleft { float: left; margin-right: 1em; }
+.imageright { float: right; margin-left: 1em; }
+.imagecenter {  width: 100%; margin: 0; text-align: center; }
+
+.pointer { cursor: pointer; }
+.spamfilter { display: none }
+
+.red { color: red !important; }
+.red a { color: red !important; }
+a.red:hover { color: red !important; }
+
+/* PAGE LAYOUT / DESIGN  */
+
+#body {
+    width: 980px;
+    margin: 0 auto;
+    padding: 0 10px 1em 10px;
+    background-color: #FFFFFF;
+}
+
+#header {}
+
+#footer {}
+
+#breadcrumb {
+    height: 2.5em;
+    line-height: 2.5em;
+    vertical-align: middle;
+    margin: 0;
+    list-style: none;
+    overflow: hidden;
+}
+
+.navigator {}
+
+/* TREEMENU */
+
+#treemenu {
+    margin-bottom: 1em;
+    border: 1px solid #ABABAB;
+    border-radius: 5px;
+}
+.treemenu-header {
+    margin: 0;
+    font-size: 1em;
+    padding:  0.33em 0.25em 0.33em 0.5em;
+    background-color: #D1D1D1;
+    font-weight: bold;
+    border-bottom: 1px solid #D1D1D1;
+}
+#treemenu ul {
+    margin: 0;
+    margin: 0;
+    list-style: none;
+    font-weight: bold;
+}
+#treemenu li {
+    
+}
+#treemenu a {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.treemenu-spacer {
+    padding: 0.25em 0.25em 0.25em 0.5em;
+    border-bottom: 1px solid #D1D1D1;
+}
+.treemenu-spacer.treemenu-level-2 {
+    padding-left: 1em;
+    font-weight: normal;
+}
+.treemenu-selected {
+    background-color: #EDEDED;
+}
+
+/* CONTENT LAYOUT / DESIGN  */
+
+#content-main { width: 55%; float: left; margin-left: 2%; }
+#content-left { width: 20%; float: left; }
+#content-right { width: 20%; float: right; }
+.content-header { border-bottom: 1px solid #D1D1D1; padding-bottom: 0.5em; }
+
+/* FORMS */
+
+input, textarea {
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    display: block;
+    border: 1px solid #ababab;
+/*    border-radius: 5px;   */
+    padding: 0.5em;
+}
+
+.content-view-edit label {
+    display: block;
+    font-weight: bold;
+    padding: 1em 0 0.5em 0;
+}
+.content-view-edit input {
+    width: 100%;
+}
+.content-view-edit textarea {
+    width: 100%;
+    height: 11em;
+}
+.content-view-edit button {
+    margin: 1em 0 1em 0;
+    float: right;
+}

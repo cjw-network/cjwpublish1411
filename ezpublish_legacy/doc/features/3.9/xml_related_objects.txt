@@ -1,0 +1,85 @@
+*Title: Improvements to related objects added from XML block text field.
+
+* Back-compatibility and upgrading
+
+This feature is enabled only if the next setting is 'enabled':
+site.ini:[BackwardCompatibilitySettings].ObjectRelationTyped
+
+Before using this feature please run upgrade script:
+update/common/scripts/3.9/updatetypedrelation.php
+
+*Documentation:
+
+There are 4 types of relations between objects in the system:
+
+- 'Common'. Relations of common type are created when user adds related
+objects manually.
+
+- 'XML linked'. Relations of this type are added automatically when you
+save object containing XML fields with <link> tags referencing objects or nodes
+(ex: <link href='ezobject://123>... ). Note that when you remove <link> tag
+and store object, the corresponding relation will be automatically removed.
+
+- 'XML embedded'. Relations of this type are added automatically when you save
+object containing XML fields with <embed> tags embedding objects or nodes.
+Note that when you remove <embed> tag and store object, the corresponding
+relation will be automatically removed.
+
+- 'by Attribute'. Relations made by attributes of "Object relation" and
+"Object relation list" datatypes.
+
+*Database changes:
+
+A new field called 'relation_type' has been added to the 'ezcontentobject_link'
+table in order to distinguish between object relations of different types.
+The value of this field is a bit mask where all four types of relations are
+identified by powers of 2: 0 - common, 1 - embedded, 2 - linked,
+3 - by attribute.
+
+Possible values of the 'relation_type' field are:
+1 - common (0001)
+2 - embedded (0010)
+3 - common and embedded (0011)
+4 - linked (0100)
+5 - common and linked (0101)
+6 - embedded and linked (0110)
+7 - common, embedded and linked (0111)
+8 - by attribute (1000)
+
+If an object has several different relations to another content object,
+relations at the object level are grouped together and represented by one
+table row. A relation at the attribute level is always represented by
+a separate row in the 'ezcontentobject_link' table, where 'relation_type'
+is 8 and 'contentclassattribute_id' contains an ID number of an attribute
+that stores information about a relation. (Note that 'contentclassattribute_id'
+is always zero for relations at the attribute level.)
+
+*Template fetch functions:
+
+The following fetch functions have been modified: related_objects,
+related_objects_count, reverse_related_objects, reverse_related_objects_count.
+
+Parameter 'all_relations' now has mixed type. It could be boolean true/false
+like it was in 3.8, but it can be also an array. Array may consists of the
+following strings: 'common', 'xml_link', 'xml_embed', 'attribute'. Each of
+them mean corresponding relation type. Types can be mixed and placed in any
+order. Also this new parameter is fully compatible with other options.
+
+Also the following functional attributes has been added to ezcontentobject
+class:
+
+linked_contentobject_array
+embedded_contentobject_array
+reverse_embedded_contentobject_array
+reverse_linked_contentobject_array
+
+They act like corresponding fetch functions return all related or reverse-related
+objects of a specific type.
+
+*Examples:
+
+Both examples return array of objects "linked" to the object $my_object.
+
+{def $linked = fetch( 'content', 'related_objects', hash( 'object_id', $my_object.id, 'all_relations', array( 'xml_link' ) ) )}
+                                                        
+{def $linked = $my_object.linked_contentobject_array}

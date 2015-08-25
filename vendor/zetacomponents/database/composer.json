@@ -1,0 +1,59 @@
+{
+    "authors": [
+        {
+            "name": "Sergey Alexeev"
+        },
+        {
+            "name": "Sebastian Bergmann"
+        },
+        {
+            "name": "Jan Borsodi"
+        },
+        {
+            "name": "Raymond Bosman"
+        },
+        {
+            "name": "Frederik Holljen"
+        },
+        {
+            "name": "Kore Nordmann"
+        },
+        {
+            "name": "Derick Rethans"
+        },
+        {
+            "name": "Vadym Savchuk"
+        },
+        {
+            "name": "Tobias Schlitt"
+        },
+        {
+            "name": "Alexandru Stanoi"
+        },
+        {
+            "name": "Joel Arvidsson"
+        },
+        {
+            "name": "Friedel Hill"
+        },
+        {
+            "name": "Christian Michel"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "src"
+        ]
+    },
+    "description": "A lightweight database layer on top of PHP's PDO that allows you to utilize a database without having to take care of differences in SQL dialects.",
+    "homepage": "https://github.com/zetacomponents",
+    "license": "Apache-2.0",
+    "name": "zetacomponents/database",
+    "type": "library",
+    "require": {
+        "zetacomponents/base": "~1.8"
+    },
+    "require-dev": {
+        "zetacomponents/unit-test": "*"
+    }
+}

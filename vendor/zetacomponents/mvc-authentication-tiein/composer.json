@@ -1,0 +1,33 @@
+{
+    "authors": [
+        {
+            "name": "Sebastian Bergmann"
+        },
+        {
+            "name": "Kore Nordmann"
+        },
+        {
+            "name": "Derick Rethans"
+        },
+        {
+            "name": "Tobias Schlitt"
+        },
+        {
+            "name": "Alexandru Stanoi"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "src"
+        ]
+    },
+    "description": "This component provides authentication filters for the MvcTools component.",
+    "homepage": "https://github.com/zetacomponents",
+    "license": "apache2",
+    "name": "zetacomponents/mvc-authentication-tiein",
+    "type": "library",
+    "require": {
+        "zetacomponents/mvc-tools": "~1.1",
+        "zetacomponents/authentication": "~1.3"
+    }
+}

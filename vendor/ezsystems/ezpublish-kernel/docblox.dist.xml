@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<docblox>
+  <parser>
+    <target>doc/apidoc</target>
+  </parser>
+  <transformer>
+    <target>doc/apidoc</target>
+  </transformer>
+  <files>
+    <directory>.</directory>
+    <ignore>doc/*</ignore>
+    <ignore>ezp/*/Tests/*</ignore>
+    <ignore>eZ/Publish/SPI/Persistence/Storage/*/Tests/*</ignore>
+    <ignore>eZ/Publish/Core/*/Tests/*</ignore>
+  </files>
+</docblox>

@@ -1,0 +1,8 @@
+# this file enable a SiteBundle with CJW Nameconvention
+# must be located in src Folder
+cjwpublish:
+    # relative zum  ezroot/src/ Ordner
+    active_site_bundles:
+        - Jac/SiteSvvStralsundBundle
+        - Jac/SiteBerichtOnlineBundle
+        - Wm/SiteWebmanufakturBundle

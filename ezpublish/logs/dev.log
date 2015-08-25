@@ -1,0 +1,4 @@
+[2015-08-25 15:53:22] event.DEBUG: Notified event "console.command" to listener "Symfony\Bridge\Monolog\Handler\ConsoleHandler::onCommand". [] []
+[2015-08-25 15:53:22] event.DEBUG: Notified event "console.terminate" to listener "Symfony\Bundle\SwiftmailerBundle\EventListener\EmailSenderListener::onTerminate". [] []
+[2015-08-25 15:53:22] event.DEBUG: Notified event "console.terminate" to listener "FOS\HttpCacheBundle\EventListener\InvalidationSubscriber::onConsoleTerminate". [] []
+[2015-08-25 15:53:22] event.DEBUG: Notified event "console.terminate" to listener "Symfony\Bridge\Monolog\Handler\ConsoleHandler::onTerminate". [] []

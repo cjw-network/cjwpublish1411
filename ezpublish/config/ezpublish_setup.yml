@@ -1,0 +1,31 @@
+doctrine:
+    dbal:
+        connections:
+            default:
+                driver: pdo_mysql
+                host: localhost
+                user: root
+                dbname: none
+
+ezpublish:
+    repositories:
+        setup: ~
+    siteaccess:
+        # Available siteaccesses
+        list:
+            - setup
+        # Siteaccess groups. Use them to group common settings.
+        groups: []
+        default_siteaccess: setup
+        match: {}
+
+    system:
+        setup:
+            languages: []
+
+stash:
+    caches:
+        default:
+            drivers: [ BlackHole ]
+            inMemory: true
+            registerDoctrineAdapter: false

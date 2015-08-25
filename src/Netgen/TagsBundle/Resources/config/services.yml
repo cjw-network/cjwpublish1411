@@ -1,0 +1,15 @@
+parameters:
+    eztags.twig.extension.class: Netgen\TagsBundle\Twig\Extension\TagsExtension
+    eztags.controller.tag_view.class: Netgen\TagsBundle\Controller\TagViewController
+
+services:
+    eztags.twig.extension:
+        class: %eztags.twig.extension.class%
+        arguments: [@ezpublish.api.service.tags]
+        tags:
+            - { name: twig.extension }
+
+    eztags.controller.tag_view:
+        class: %eztags.controller.tag_view.class%
+        arguments: [@ezpublish.api.service.tags]
+        parent: ezpublish.controller.base

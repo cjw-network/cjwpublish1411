@@ -1,0 +1,28 @@
+*Title: Advanced related objects
+
+*Documentation:
+Object relations made with datatypes 'ezobjectrelationlist' and
+'ezobjectrelation' are now stored in 'ezcontentobject_link' table too.
+New field 'contentclassattribute_id' has been added to this table to distinguish
+between object relations of different types. The value of this field is an ID
+of an attribute that stores information about relations, or zero if this is a
+common object relation (default value of the field).
+
+All relations to an object made with datatypes will be removed when you delete
+an object. Function eZDataType::removeRelatedObjectItem removes items with
+given objectID from the relations list stored in the attribute.
+For now it is implemented for 'ezobjectrelationlist' and 'ezobjectrelation'
+datatypes.
+
+Documentation on new template fetch functions can be found in this file:
+
+related_objects_fetch_functions.txt
+
+
+*Upgrade database:
+If you are using database created with the previous version of eZ Publish (3.5 or
+ lower), follow these steps:
+1. Upgrade database structure using SQL script that you can find in update/database
+directory.
+2. Run update/common/scripts/updaterelatedobjectslinks.php script to update existing
+related objects links.

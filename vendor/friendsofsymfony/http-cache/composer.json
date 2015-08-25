@@ -1,0 +1,48 @@
+{
+    "name": "friendsofsymfony/http-cache",
+    "type": "library",
+    "description": "Tools to manage cache invalidation",
+    "keywords": [ "http", "caching", "purge", "invalidation", "varnish", "nginx" ],
+    "homepage": "https://github.com/friendsofsymfony/FOSHttpCache",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Liip AG",
+            "homepage": "http://www.liip.ch/"
+        },
+        {
+            "name": "Driebit",
+            "homepage": "http://www.driebit.nl",
+            "email": "tech@driebit.nl"
+        },
+        {
+            "name": "Community contributions",
+            "homepage": "https://github.com/friendsofsymfony/FOSHttpCache/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "guzzle/http": "3.*",
+        "symfony/event-dispatcher": "~2.3"
+    },
+    "require-dev": {
+        "guzzle/plugin-mock": "*",
+        "mockery/mockery": "*",
+        "monolog/monolog": "*",
+        "symfony/process": "~2.3"
+    },
+    "suggest": {
+        "monolog/monolog": "For logging issues while invalidating"
+    },
+    "autoload": {
+        "psr-4": {
+            "FOS\\HttpCache\\": "src/",
+            "FOS\\HttpCache\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.1.x-dev"
+        }
+    }
+}

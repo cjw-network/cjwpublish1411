@@ -1,0 +1,29 @@
+{
+    "name": "ezsystems/comments-bundle",
+    "description": "Commenting system for eZ Publish",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Jerome Vieilledent",
+            "email": "jv@ez.no"
+        },
+        {
+            "name": "Bertrand Dunogier",
+            "email": "bd@ez.no"
+        }
+    ],
+    "require": {
+        "ezsystems/ezpublish-kernel": "~5.4|>=2014.11",
+        "symfony-cmf/routing": "~1.1",
+        "ezsystems/ngsymfonytools-bundle": "~1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.1.3",
+        "matthiasnoback/symfony-dependency-injection-test": "0.*"
+    },
+    "autoload": {
+        "psr-0": {"EzSystems\\CommentsBundle": ""}
+    },
+    "target-dir": "EzSystems/CommentsBundle",
+    "minimum-stability": "dev"
+}

@@ -1,0 +1,256 @@
+Changes from 3.5.0beta1 to 3.5.0rc1
+
+*Kernel:
+- Added template 'fetch' functions to 'setup' module: version, major_version,
+  minor_version, release, state, is_development, revision, database_version,
+  database_release.
+- Added support for the template variable 'persistent_variable', which can be
+  used to communicate between content templates and other templates, even
+  though content caching is on. It can be set for example with
+  {set scope=global persistent_variable=42} and fetched with
+  {$module_result.content_info.persistent_variable}
+- Made sure all errors, warnings and notices in eZScript are sent to stderr.
+- Added support for dumping data in ezsqldumpschema.php.
+- Added support for dumping to SQL format in ezsqldumpschema.php.
+- The fetch functions content/list, content/tree, content/list_count
+  and content/tree_count can now pass the parameter 'limitation' which controls
+  the permission handling of the list.
+- Added possibility top configure top admin menu thrue menu.ini.
+- Added functionality to sort on path_identification_string.
+  http://ez.no/community/bug_reports/content_fetch_add_sort_by_path_string
+- Added class-type versioning for PDF export and RSS import/export.
+- Removed checking for contentobject_is_published in subTree() in
+  eZContentObjectTreeNode, the use of this attribute is deprecated and should
+  be removed.
+
+Datatype:
+- Added the possibility for datatypes to return information on how they should
+  be displayed based on view.
+  This is used in the admin interface when editing an object.
+- Added the 'filesize' attribute to all alias in ezimage datatype.
+- Added the 'filesize' and 'filepath' attribute to ezmedia datatype.
+
+*Bugfixes:
+- Fixed bug: Workflow multiplexer doesn't store Users without workflow ID's
+  (Merged from stable/3.4 rev. 9172)
+  http://ez.no/community/bug_reports/workflow_multiplexer_doesn_t_store_users_without_workflow_id_s
+- Fixed bug: Deleting user account that is not yet activated caused fatal error
+  when activating the account.
+  (Merged from stable/3.3 rev. 9174, also in stable/3.4 rev. 9175)
+  http://ez.no/community/bug_reports/deleting_user_account_not_activated
+- Fixed bug: New role cancel does not work.
+  http://ez.no/community/bug_reports/new_role_cancel_does_not_work
+- Fixed bug: Apache crashes or suddenly stops on some pages, e.g on
+  content/edit page with
+  a translation chosen or using attribute( show, 2 ) on a node.
+  (Merged from stable/3.4 (3.4.3) rev. 9217)
+  http://ez.no/community/bug_reports/fatal_error_when_using_attribute_show_2_at_node_data_map
+- Fixed bug: The location box was not updated after adding/removing assignments.
+  http://ez.no/community/bug_reports/location_box_does_not_update
+- Fixed bug: New password was not checked for validity when changing a user's
+  password.
+  (Manually merged from stable/3.3 rev. 9192, also in stable/3.4 rev. 9193)
+  http://ez.no/community/bug_reports/password_change_blank_passwords_allowed
+- Fixed bug: ActionAddToBasket crash.
+  http://ez.no/community/bug_reports/actionaddtobasket_crash
+  http://ez.no/community/bug_reports/actionaddtobasket_crash
+- Fixed bug: Contentstructure javascript reports error when MaxDepth is limited and 
+  viewed node depth is greater.
+  http://ez.no/community/bug_reports/contentstructure_javascript
+- Fixed bug: RSS exportlist will not have link if it is not active.
+  (Merged from stable/3.4 rev. 9211)
+  http://www.ez.no/community/bug_reports/rss_part_view_not_found
+- Fixed bug: Previous/Next Links in Gallery are wrong.
+  http://ez.no/community/bug_reports/previous_next_links_in_gallery_are_wrong
+- Fixed template warning with ISBN datatype when no number is entered.
+  (Merged from stable/3.4 rev. 9237)
+- Fixed bug: added validation while creating/editing the RSS Exports, If RSS
+  Export is Active then a valid Access URL is required.
+  (Merged from 3.4 rev. 9236)
+- Added missing operator i18n for RSS Exports.
+- Fixed bug: management is not working when using old admin interface.
+  http://ez.no/community/bug_reports/old_admin_menu_management
+- Fixed problem with versionview not displaying objects in trash.
+  (Merged from stable/3.4 rev. 9270)
+  http://ez.no/community/bug_reports/view_in_trash
+- Fixed bug in matrix datatype. now it will remove all selected columns from
+  ezmatrix datatype after clicking on remove selected button.
+  (Merged from stable/3.4 rev. 9278)
+  http://ez.no/community/bug_reports/matrix_datatype_odd_behavior_in_class_edit_mode
+- Fixed bug:  Cancel button in browse doesn't work in  old_admin.
+  http://ez.no/community/bug_reports/old_admin_cancel_button_in_browse_doesn_t_work
+  (Merged from stable/3.3, rev. 9321, also in stable/3.4 rev. 9322)
+- Fixed bug: Broken datatype
+  http://ez.no/community/bug_reports/broken_datatype
+- Fixed bug:
+  http://ez.no/community/bug_reports/fatal_error_in_ezpackagetype_php
+  http://ez.no/community/bug_reports/look_feel_fatal_error_ezpackagetype_php_line_165
+  http://ez.no/community/bug_reports/setup_look_feel_appearance_dissappeared
+  These three are the same bug. Symptoms: When editing "Look and feel" in
+  admin, you get a "fatal error" in
+  kernel/classes/datatypes/ezpackage/ezpackagetype.php on line 165, or the 
+  "Appearance" thumbnails and radiobuttons disappears from the page. The bug
+  also causes a database corruption. To fix it, edit the "Template look" class
+  and store it without changing anything.
+- Fixed bug of no warning messages shows when xml data are not valid.
+  http://ez.no/community/bug_reports/xml_field_validation_trouble
+- Fixed bug: ezsqldiff.php did not accept empty db user passwords.
+- Fixed bug: Search is not working when only search from visiable nodes.
+  http://ez.no/community/bug_reports/search_doesn_t_work
+- Fixed bug: No customer name when using ezdefault shopaccount.
+  http://ez.no/community/bug_reports/no_customer_name_when_using_ezdefault_shopaccount
+  (Merged from stable/3.4, rev. 9438)
+- Fixed bug of possible fatal error when viewing url object link.
+  http://ez.no/community/bug_reports/3_5beta_fatal_error_ezurlobjectlink_php
+  (Merged from stable/3.4, rev. 9440)
+- Fixed bug of fatal error occures if no node selected when you browse location
+  of importing content objects.
+  http://ez.no/community/bug_reports/3_5beta_fatal_error_at_package_import_browse_mode
+- Fixed bug of updating priority does not work if parent node is not main node.
+  http://ez.no/community/bug_reports/set_order_priority_in_other_location_no_main_location
+  (Merged from stable/3.4, rev. 9505)
+- Fixed bug in ezkeyword datatype which will store duplicated keyword if
+  keyword contains apostrophe (').
+  (Merged from stable/3.4, rev. 9511)
+- Fixed rendering of bullet and numbered lists in PDF.
+- Fixed bug: Conditonal role assignment bug.
+  http://ez.no/community/bug_reports/conditonal_role_assignment_bug
+- Fixed bug of inconsistency between template and fetchalias.ini.
+  http://ez.no/community/bug_reports/inconsistency_between_template_and_fetchalias_ini
+  (Merged from stable/3.4, rev. 9599)
+- Fixed bug when canceling editation of existing PDF export removes it.
+  http://ez.no/community/bug_reports/pdf_crash
+- Fixed incorrect break statement
+  http://ez.no/community/bug_reports/break_outside_of_loop
+- Fixed bug: viewing the object with attibute of  datatype which is not present
+  causes fatal error
+  http://ez.no/community/bug_reports/crash_with_object_when_datatype_is_not_present
+  (Merged from stable/3.4 rev. 9633)
+- Fixed typo in kernel/classes/ezcontentobjectattribute.php
+  http://ez.no/community/bug_reports/3_5_typo_in_ezcontentobjectattribute_serialize
+- Fixed bug with adjustment of datetime:
+  http://ez.no/community/bug_reports/ez_datetime_datatype_malfunction
+- Fixed problem with the decimal separator and compiled templates
+  http://ez.no/community/bug_reports/compiled_template_and_decimalsymbol_problem_parse_error
+  (Merged from stable/3.4, rev. 9674)
+- Fixed bug with non-mandatory user datatype, entered mail but not username
+  http://ez.no/community/bug_reports/ezuser_strange_behavior
+- Fixed wrong function call 'attributes' vs 'attribute' in contentclass
+  package handler.
+  (Merged from stable/3.4 (3.4.5) rev. 9693)
+- Fixed usage of wrong defines in 'set' template operator.
+  (Merged from stable/3.4 (3.4.5) rev. 9696)
+- Fixed bug of function handleList() in ezurl.php create unlimited sql queries.
+  http://ez.no/community/bug_reports/3_5alpha1_url_list_doesn_t_work_with_many_urls
+- Fixed cache bug for content structure menu
+  http://ez.no/community/bug_reports/3_5alpha1_missing_array_keys_for_cache_block_within_content_structure_menu_tpl
+- Fixed bug some template typo errors.
+  http://ez.no/community/bug_reports/template_typo_errors
+  (Manually merged from stable/3.4 (3.4.5) rev. 9722)
+- Fixed bug of duplicated keyword stored.
+  http://ez.no/community/bug_reports/critical_keywords_will_be_duplicated_at_each_publishing_process
+  (Merged from stable/3.4 (3.4.5) rev. 9741)
+- Fixed bug of fatal error occurs if class id or parent node id is not exist
+  when creating new object.
+  http://ez.no/community/bug_reports/kernel_content_action_php_fatal_error_at_wrong_classid
+  (Merged from stable/3.4 (3.4.5) rev. 9752)
+- Fixed bug with cache-block expiration in content tree menu.
+  http://ez.no/community/bug_reports/contentstructure_and_cache_key
+- Fixed bug of potential fatal error may occur in ezcontentcachemanager.php.
+  http://ez.no/community/bug_reports/3_5_deleting_objects_fatal_error_in_kernel_classes_ezcontentcachemanager_php
+  (Merged from stable/3.4 (3.4.5) rev. 9756)
+- Fixed bug of fatal error may occur in ezrole.php.
+  http://ez.no/community/bug_reports/3_5_deleting_objects_fatal_error_in_kernel_classes_ezrole_php
+  (Merged from stable/3.4 (3.4.5) rev. 9759)
+- Fixed bug with triing load of empty string translation file multiple times.
+  (Manualy merged from stable/3.3 rev. 9762)
+  http://ez.no/community/bug_reports/nno_no_translation_is_empty
+- Fixed bug of unserializing ezcontentobjecttreenode get an extra attribute.
+  http://ez.no/community/bug_reports/ezcontentobjecttreenode_unserialize_passes_unneeded_array_key
+  (Merged from stable/3.4 (3.4.5) rev. 9777)
+- Fixed bug of crash when viewing discount rules with deleted products.
+  http://ez.no/community/bug_reports/deleted_product_and_discount_list
+- Fixed bug in eZIniSettingType: removing setting of type array causes removing
+  whole section.
+  (Manually merged from stable/3.3 rev. 9785, also in stable/3.4 rev.9786)
+  http://ez.no/community/bug_reports/deleting_the_meta_data_array_makes_site_unreachable_default_siteaccess_is_undefined
+- Fixed bug of fatal error caused by undeleted workflow processes when 
+  associated workflow event is deleted.
+  http://ez.no/community/bug_reports/fatal_error_in_cronjob_after_editing_workflow
+  (Merged from stable/3.4 (3.4.5) rev. 9789)
+- Fixed bug of cronjob linkcheck not work properly with internal link.
+  [linkCheckSettings] is added to cronjob.ini where you should specify site
+  URLs.
+  http://ez.no/community/bug_reports/cronjob_linkcheck_has_outdated_code_when_checking_relative_urls
+  (Merged from stable/3.4 (3.4.5) rev. 9819)
+- Fixed bug:  PostgreSQL and session list.
+  http://ez.no/community/bug_reports/postgresql_and_session_list
+- Fixed bug:  Class add to group on Postgresql.
+  http://ez.no/community/bug_reports/class_add_to_group
+
+*Library:
+- Added eZWizardBase for creating web based wizards. The class contain a
+  framework for wizards, including storing data during the wizard.
+
+eZDebug:
+- Fixed output of arrays and objects to use PHP function var_export if it is
+  available.
+  (Merged from stable/3.4 (3.4.4) rev. 9337)
+
+eZTemplate:
+- Added scope support to the "set" template function. Scope can be global, root
+  or relative (default).
+  Also added unit tests for this.
+- Added debug functions called debug-timing-point, debug-accumulator and
+  debug-trace which can be used to get detailed debug information for any
+  template.
+
+eZCLI:
+- Made sure all errors, warnings and notices are sent to stderr.
+
+eZDBSchema:
+- Made sure the tables, indexes and fields are sorted after their names.
+- Length field are now stored as integer instead of numeric strings.
+- Fixed bug in PostgreSQL handler when generating SQL for dropping primary
+  index.
+- Fixed bug in MySQL handler when generating SQL for adding indexes.
+- Fixed bug in SQL upgrade file generation, removed indexes are now listed
+  before new indexes.
+- Added support for dumping the data of tables to array and serialized
+  structures. The default code will work for most database implementations.
+- Added support for dumping to SQL format.
+- All SQL output can now be dumped in a diff friendly format which is designed
+  to work well with Subversion.
+- The generated SQL for the primary key in PostgreSQL will not make a key
+  based on the table name.
+- Added check for primary key length in PostgreSQL, the length of the key must
+  not exceed 63 characters.
+- Added lint checker for DB schemas, this will make sure that the schema
+  can be used for all databases supported by eZ publish.
+- Added support for schema transformation, these are transformations that are
+  done to and from the generic schema.
+- Redone the default and null handling for mysql and pgsql schema handlers,
+  the new code is stricter and produces more accurate results.
+- Added support specifying table storage type when dumping a schema to
+  SQL format. The option is called --table-type.
+- Added support for specifying the table charset with --table-charset when
+  dumping a schema to SQL format.
+- Added --compatible-sql option to ezsqldumpschema.php which makes the output
+  of SQL more similar to the ones used by their native dump programs.
+- Added detection of storage type (array or serialized) when reading schema
+  from files.
+- MySQL will now extract the length of index fields and store it in the schema
+  as mysql:length.
+- Changed handling of index fields to check if the entry is either a string
+  or array. If the field contains more information than the name it will be
+  an array.
+- Added --meta-data switch to ezsqldumpschema.php, if used the schema will
+  contain some meta-data specific to a database.
+- Fixed key generation in SQL files for MySQL, now it will have a KEY /
+  UNIQUE KEY / PRIMARY KEY( ... ) entry in the table schema instead
+  of separate ALTER TABLE entries.
+
+
+eZDB:
+- Database implementations can now have aliases, currently mysql points to
+  ezmysql and postgresql to ezpostgresql.

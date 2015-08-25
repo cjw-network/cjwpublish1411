@@ -1,0 +1,50 @@
+{
+    "authors": [
+        {
+            "name": "Sergey Alexeev"
+        },
+        {
+            "name": "Sebastian Bergmann"
+        },
+        {
+            "name": "Jan Borsodi"
+        },
+        {
+            "name": "Raymond Bosman"
+        },
+        {
+            "name": "Frederik Holljen"
+        },
+        {
+            "name": "Kore Nordmann"
+        },
+        {
+            "name": "Derick Rethans"
+        },
+        {
+            "name": "Vadym Savchuk"
+        },
+        {
+            "name": "Tobias Schlitt"
+        },
+        {
+            "name": "Alexandru Stanoi"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "src"
+        ]
+    },
+    "description": "Allows you to log events or audit trails into files or other storage spaces in different formats.",
+    "homepage": "https://github.com/zetacomponents",
+    "license": "Apache-2.0",
+    "name": "zetacomponents/event-log",
+    "type": "library",
+    "require": {
+        "zetacomponents/base": "~1.8"
+    },
+    "require-dev": {
+        "zetacomponents/unit-test": "*"
+    }
+}

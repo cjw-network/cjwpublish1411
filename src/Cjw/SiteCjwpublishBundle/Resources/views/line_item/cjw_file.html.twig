@@ -1,0 +1,7 @@
+{#
+    render cjw_file in line_item view
+#}
+
+<div class="class-{{ content.contentInfo.contentTypeId }} content-view-line_item">
+    {{ ez_render_field( content, 'file', { 'parameters': { 'title': content.contentInfo.name } } ) }}
+</div>

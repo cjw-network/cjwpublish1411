@@ -1,0 +1,18 @@
+{
+    "name": "ezsystems/ngsymfonytools-bundle",
+    "description": "Bundle of the legacy netgen/ngsymfonytools extension",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Bertrand Dunogier",
+            "email": "bd@ez.no"
+        }
+    ],
+    "require": {
+        "netgen/ngsymfonytools": "~1.0"
+    },
+    "autoload": {
+        "psr-0": {"EzSystems\\NgsymfonytoolsBundle": ""}
+    },
+    "target-dir": "EzSystems/NgsymfonytoolsBundle"
+}

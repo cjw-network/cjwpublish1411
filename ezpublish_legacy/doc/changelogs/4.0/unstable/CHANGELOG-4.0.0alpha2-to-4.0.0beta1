@@ -1,0 +1,125 @@
+Changes from 4.0.0alpha2 to 4.0.0beta1
+
+*Kernel:
+- Implemented enhancement #11596: ez4: compat.php cleanup
+- Implemented enhancement #11660: Add mysqli to database selection in setup wizard.
+- Implemented enhancement #11792: ezpgenerateautoloads.php requires php-pear Structures/Graph
+- Implemented enhancement #11718: eZModuleFunctionInfo - remove 'include_file' dependency
+- Implemented enhancement #11809: Optimization of name pattern handling
+- Implemented enhancement #11925: Speed improvements in updateniceurls.php
+- Implemented enhancement #11945: Add bitAnd and bitOr functions to the ezdbinterface.
+- Implemented enhancement #7564: Impossible to specify the PostgreSQL listening port during install
+- Implemented task #11961: Refactor ezpgenerateautoloads.php
+- Implemented enhancement #11820: Activation of extensions should allow for regeneration of autoload arrays.
+
+*Bugs:
+- Fixed bug #11619: ezp4 update scripts not working
+- Fixed bug #11659: Declaration of eZNullDB::lastSerialID() should be compatible with that of eZDBInterface::lastSerialID()
+- Fixed bug #11566: ez4: webdav.php misses autoload
+- Fixed bug #11232: eZ Publish affected by microtime bug
+- Fixed bug #11672: Warnings in objectrelations datatype (strict warnings and undefined index)
+- Fixed bug #11665: Class and attribute names set to "always-available" when importing packages
+  (Merged from stable/3.10 (3.10.1) rev. 20511)
+- Fixed bug #11678: Typo in WebDAV log: "requesed" instead of "requested"
+- Fixed bug #11679: typo "getconentlength" in eZWebDAVServer::outputCollectionContent()
+- Fixed bug #11701: Content uploaded in the media tree with WebDAV gets located under the content tree root node
+- Fixed bug #11503: WebDAV does not work since certain level
+- Fixed bug #9409: wrong doxygen comments in eZPDFExport
+- Fixed bug #10299: When a user is removed, its collaboration notification rules are not removed
+- Fixed bug #11691: Missing files are listed in default autoload/ezp_kernel.php
+- Fixed bug #11616: ezfilepasstroughhandler should be ezfilepassthroughandler
+- Fixed bug #11730: 4.0.0alpha2: fatal error on /index.php/ezwebin_site_admin/section/view/3 (<-3, 1 and 6)
+- Fixed bug #11731: Incompatible function declarations of eZUserAccountKey::remove and eZForgotPassword::remove
+- Fixed bug #11712: Enhanced use of fromString function in ezurl datatype.
+- Fixed bug #11568: eZCli::getOptions should be either a static or instance method
+- Fixed bug #11735: Fatal error: Cannot unset string offsets in lib/ezpdf/classes/class.ezpdftable.php on line 1604
+- Fixed bug #11733: Multiple PHP-strict warnings in ezenum datatype.
+- Fixed bug #11738: typo pdf(tabel, ...) in templates
+- Fixed bug #11740: Warning on PDF export: eZTemplate:eZTemplateOperatorElement: Parameter 'operation' (0) missing
+- Fixed bug #9450: Wevdav - creating objects based on mime type corrupts file download url
+- Fixed bug #11529: Datatype ezobjectrelationlist store contentobject-version in attribute
+  (Merged from stable/3.10 (3.10.1) rev. 20562)
+- Fixed bug: unused parameter in ezobjectrelationlist.tpl.
+  (Merged from stable/3.10 (3.10.1) rev. 20565)
+- Fixed bug #11658: eZURLAliasML relies on md5 function of database implementation, but this function is not
+  defined in eZDBInterface.
+  (Merged from stable/3.10 (3.10.1) rev. 20572)
+- Fixed bug #11747: Warning about unknown sort order on preview.
+  (Merged from stable/3.10 (3.10.1) rev. 20577)
+- Fixed bug #11770: Multiple PHP warnings while editing workflows.
+- Fixed bug #11547: PHP functions behind template fetch functions that are called statically
+- Fixed bug #11552: eZWorkflow::fetchEvents and eZWorkflow::fetchEventCount should be either static or instance methods
+- Fixed bug #11773: Notice: Undefined variable: Module in /home/hovik/dev/trunk/lib/ezutils/classes/ezmodule.php on line 84
+- Fixed bug #11615: Unused QUERY_LIMIT constant in update/common/scripts/3.10/updatemultioption.php.
+- Fixed bug #11661: updatemultioption.php CLI script has wrong description.
+- Fixed bug #11771: PHP warnings using triggers.
+- Fixed bug #11775: wrong path to ezpopupmenu.js in standard template popup_menu.tpl
+- Fixed bug #11776: SQL error with contentclass_serialized_name_list with ezoracle.
+  (Merged from stable/3.9 (3.9.5) rev. 20592)
+- Fixed bug #11765: settings_validation.tpl: malformed XML
+- Fixed bug #11785: Template look class missing info in language matrix
+- Fixed bug #11774: versionview dosn't work if versionread is asigned with limitation
+- Fixed bug #11802: Syntax error in ezusersetting.php.
+- Fixed bug #9124: edit language choice form has wrong ui_context
+- Fixed bug #10473: Unable to use 'column' parameter in $db->arrayQuery
+- Fixed bug #11781: draft - object name are not update
+- Fixed bug #11812: Declaration of eZDiscountSubRule::remove should be compatible with eZPersistentObject warnings
+- Fixed bug #11817: ezuser_setting database table contains row after install which refers to non-existing user
+- Fixed bug #11826: Invalid entries in ezcontentclass_classgroup table after fresh install
+- Fixed bug #11808: Certain multibyte characters might lead to incorrect URL upon redirection
+- Fixed bug #11569: eZExpiryHandler still contains loose functions.
+- Fixed bug #11810: Typo "exectuion" in ezurlaliasfilter doxygen docs
+- Fixed bug #11741: Missing articles after unpublished via cronjobs.
+  (Merged from stable/3.9 (3.9.5) rev. 20634)
+- Fixed bug #11822: Entries for workflow event version 0 in ezwaituntildate_value table when still in editing mode.
+- Fixed bug #11819: Strict warnings after adding wait until date event to workflow.
+- Fixed bug #11705: workflow/processlist may crash if memento data is broken.
+- Fixed bug #11571: eZSys functions should be either static or dynamic.
+- Fixed bug #11657: Warning: No template could be loaded for "content/datatype/view/ezxmltags/separator.tpl"
+- Fixed bug #11651: ezp4 Strict warnings.
+- Fixed bug #11143: language selection in setup wizard doesn't work correctly with Firefox
+- Fixed bug #11570: eZMimeType::findByName and eZMimeType::findByURL should be
+  either static or instance methods
+- Fixed bug #11546: Non-static method ... should not be called issues
+- Fixed bug #11434: Successful message for changing password, although password is to short
+- Fixed bug #11795: eZSiteInstaller contains calls to unexisting class eZLoremIpsum.
+- Fixed bug #11723: wrong link in productsoverview.
+- Fixed bug #11778: Query error after upgrade from 3.8.8 to 3.8.10.
+- Fixed bug #11900: Missing include in eZPackage.
+- Fixed bug #11905: Typo in type-hint in parseDOMTree in eZPackage.
+- Fixed bug #11901: Missing pass-by-reference definition.
+- Fixed bug #11902: Static methods in eZContentClassPackageHandler not declared as static.
+- Fixed bug #11904: Problem with package creation and export of content objects.
+- Fixed bug #11868: BC break: extensions with views with 'functions' => array() do not longer work
+  (Merged from stable/3.9 (3.9.5) rev. 20699)
+- Fixed bug #11882: Inconsistent use of svn:executable svn property
+- Fixed bug #11860: Undefined variable: result in ezcontentfunctioncollection.php
+  on line 389 when as_object = false.
+- Fixed bug #8770: eZINI problems with external applications
+- Fixed bug #11852: Warnings and errors when ezsubtreeremove.php is used
+  with an unexisting node id
+- Fixed bug #11825: Content class groups with invalid creator id after install
+- Fixed bug #11793: Fatal crash in eZContentObjectTreeNode
+- Fixed bug #11911: function pathWithNames cause Fatal error in ezcontentobjecttreenode.php
+- Fixed bug #11751: Call to a member function pathWithNames() on a non-object (notification/settings)
+- Fixed bug #11938: Missing summary attribute on templateusage html table
+- Fixed bug #11630: error wile creating/updating objects with oracle db (in ezpersistentobject::store).
+- Fixed bug #11924: updatetypedrelation.php is not compatible with oracle.
+  (Merged from stable/3.9 (3.9.5) rev. 20733).
+- Fixed bug #8172: mysql/kernel_schema.sql forces TYPE=MyISAM
+- Fixed bug #11912: In non Virtual Host mode url is encoded incorrectly
+- Fixed bug #11850: dynamic content structure menu breaks on nodes with numeric name
+- Fixed bug #11949: eZDebug HTML syntax error (has patch)
+- Fixed bug #6291: changed variable in ezsmtptransport.php to support Helo
+- Fixed bug #11934: Wrong debug message from eZContentFunctions::createAndPublishObject() when parent node does not exist
+- Fixed bug #11650: Functionality present in 3.9 is removed for 3.10: manual url redirects.
+- Fixed bug #11663: updatetipafriendpolicy.php does not work on Windows
+- Fixed bug #11956: Login permissions with empty site access on clean webin install
+- Fixed bug #11909: Incorrect sentences in ezuser.php
+- Fixed bug #11840: Typo "The the" in ezpm.php
+- Fixed bug #11726: eZRSSExport::create() doxygen documentation makes no sense
+- Fixed bug #11960: Cluster: Content cache is not updated on all nodes.
+  (Merged from stable/3.10 (3.10.1) rev. 20781).
+- Fixed bug #11813: ezworkflow_group_link contains data after install, while there are no workflows defined.
+- Fixed bug #11986: eZContentLanguage::SqlFilter() clause does not include drafts in the most prioritised language.
+- Fixed bug #11950: Bug in update/common/scripts/updatexmltext.php script.

@@ -1,0 +1,67 @@
+Changes from 3.6.0beta1 to 3.6.0rc1
+
+*Kernel:
+- Added: Show PHP eAccelerator information in the system information page.
+  (Submitted by: Vittal Aithal)
+- Changed: eZContentBrowse::result will only return a valid integer array,
+  invalid entries are excluded.
+
+Fetch functions:
+- Added parameter with_variations to content/locale_list fetch function.
+  (Merged from stable/3.5 (3.5.3) rev. 11707)
+
+Attributes:
+- Added: 'can_move_from' attribute to eZContentObject and
+  eZContentObjectTreeNode.
+  (Merged from stable/3.5 (3.5.3) rev. 11710)
+
+*Bugfixes:
+- Fixed bug #6528: Can't list or import packages from earlier versions.
+  (Merged from stable/3.5 (3.5.3) rev. 11660)
+- Fixed bug #6580: fetch-content-list: no data fetching with an array of
+  node_ids for 'parent_node_id'.
+  (Merged from stable/3.5 (3.5.3) rev. 11667)
+- Fixed bug #6593: Typo in site.ini
+- Fixed bug: Wrong check for MySQL version in setup wizard causing InnoDB to
+  always be used.
+- Fixed bug #6506: Shopping permissions for a guest user don't work 
+  properly.
+- Fixed bug: Paymentgatewayevent does not find all gateway extensions.
+- Fixed bug #6571: Object relations list crash.
+- Fixed bug: eZSendmailTransport always asumes safe-mode is enabled.
+  (Merged from stable/3.5 (3.5.3) rev. 11695)
+- Added: Fetching a country, locale or language list can now exclude variations.
+  (Merged from stable/3.5 (3.5.3) rev. 11704)
+- Fixed bug #5843: Invalid locale values can be added to content/translations.
+  (Merged from stable/3.4 (3.5.3) rev. 11707)
+- Fixed bug #6605: Toolbar manager always shows empty tool as first on the list.
+  (Merged from stable/3.5 (3.5.3) rev. 11725)
+- Fixed bug #6543: Disabling cache causes template override failure.
+  (Merged from stable/3.5 (3.5.3) rev. 11731)
+- Fixed bug #6435: Recognize eAccelerator (mmCache fork) as valid PHP Accelerator.
+- Fixed bug #6608: Missing koi8r alias in eZCharsetInfo.
+  (Merged from stable/3.5 (3.5.3) rev. 11739)
+- Fixed bug #6614: Wrong URL ID used for ezxmltext datatype export.
+- Fixed bug #6549: eZSYS::splitArgumentIntoElements and/or ImageMagick.
+- Fixed bug: wrong behaviour when search using objectrelation attributes
+- Fixed bug #6604: Transaction error when publishing an object from the trash.
+- Fixed bug #6617: Add location problem.
+- Fixed bug: wrong behaviour when search using objectrelation attributes
+- Fixed bug #6203: Disable translations in Keywords does not act as advertised.
+  (Merged from stable/3.4 (3.4.7) rev. 11793)
+- Fixed bug: Unused keywords are never deleted.
+  (Merged from stable/3.4 (3.4.7) rev. 11793)
+- Fixed bug #6625: Relation list cache not updated.
+  (Merged from stable/3.5 (3.5.3) rev. 11797.)
+
+*Library:
+
+eZI18N:
+- Added: koi8r is now a known charset alias.
+  (Merged from stable/3.5 (3.5.3) rev. 11739)
+- Added: If a charset alias fails it will try to find the alias without any
+  dashes.
+  (Merged from stable/3.5 (3.5.3) rev. 11739)
+
+*Translations:
+- Updated Polish (pol-PL) translation from pubsvn contribution.

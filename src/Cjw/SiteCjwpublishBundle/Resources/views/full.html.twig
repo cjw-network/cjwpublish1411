@@ -1,0 +1,70 @@
+{% extends site_bundle_name ~ '::pagelayout.html.twig' %}
+
+{% block content %}
+    <div class="class-{{ content.contentInfo.contentTypeId }} content-view-full">
+
+        {% if content.fields.title is defined and not ez_is_field_empty( content, 'title' ) %}
+            <h1>{{ ez_field_value( content, 'title' ) }}</h1>
+        {% endif %}
+
+        {% if content.fields.short_description is defined and not ez_is_field_empty( content, 'short_description' ) %}
+            {{ ez_render_field( content, 'short_description' ) }}
+        {% endif %}
+
+        {% if content.fields.image is defined and not ez_is_field_empty( content, 'image' ) %}
+            {{ ez_render_field( content, 'image', {parameters: {alias: 'medium', class: 'imageleft'}} ) }}
+        {% endif %}
+
+        {% if content.fields.description is defined and not ez_is_field_empty( content, 'description' ) %}
+            {{ ez_render_field( content, 'description' ) }}
+        {% endif %}
+
+        {% set show_children = false %}
+        {% if content.fields.show_children is defined %}
+            {% set value = ez_field_value( content, 'show_children' ) %}
+            {% set show_children = value.bool %}
+        {% endif %}
+
+        {# support old cjw_folder page_limit logic #}
+        {% set page_limit = 1 %}
+        {% if content.fields.page_limit is defined %}
+            {% set value = ez_field_value( content, 'page_limit' ) %}
+            {% set page_limit = value.value %}
+            {% set show_children = ( page_limit > 0 ) %}
+        {% endif %}
+
+        {% if show_children %}
+            {% set listLimit = page_limit %}
+            {% set listOffset = 0 %}
+            {% if ezpublish.viewParameters().offset is defined %}
+                {% set listOffset = ezpublish.viewParameters().offset %}
+            {% endif %}
+            {% set listChildren = cjw_fetch_content( [ location.id ], { 'depth': '1',
+                                                                        'limit': listLimit,
+                                                                        'offset': listOffset,
+                                                                        'include': [ 'cjw_folder', 'cjw_article', 'cjw_folder_section', 'cjw_file'  ],
+                                                                        'language': [],
+                                                                        'datamap': false,
+                                                                        'count': true } )[ location.id ] %}
+            {% set listCount = listChildren['count'] %}
+
+            <div class="horiz-ruler"></div>
+            <div class="content-view-children">
+                {% for child in listChildren['children'] %}
+                    {#{{ render( controller( "ez_content:viewLocation", {'location': child, 'viewType': 'line'} ) ) }}#}
+
+                    {{ cjw_render_location( {'location': child, 'viewType': 'line'} )  }}
+
+                    <div class="horiz-ruler"></div>
+                {% endfor %}
+            </div>
+
+            {% if listCount > listLimit %}
+                {% include (site_bundle_name ~ ':parts:navigator.html.twig') with { 'page_uri': ezpublish.requestedUriString(),
+                                                                             'item_count': listCount,
+                                                                             'view_parameters': ezpublish.viewParameters(),
+                                                                             'item_limit': listLimit } %}
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

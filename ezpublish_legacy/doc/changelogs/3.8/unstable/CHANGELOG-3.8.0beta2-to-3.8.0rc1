@@ -1,0 +1,29 @@
+Changes from 3.8.0beta2 to 3.8.0rc1
+
+*Kernel:
+- Added ability to use alternative country datatypes.
+
+*Bugfixes:
+- Fixed bug #8131: Invisible nodes in ezsearch.
+  ( Merged from stable/3.7 ( 3.7.6 ) rev. 15732 )
+- Fixed bug #8138: Errors in ezobjectrelationlist standard template.
+- Fixed bug #7941: Warnings about invalid class identifiers 
+  with default plain install.
+- Fixed bug #8102: {include} parameters don't respect bounds,
+  when tpl compilation is enabled.
+- Fixed bug: TrimSpaces settings removed too many spaces.
+  (also this setting is now on by default)
+- Fixed bug #8147: RenderParagraphInTableCells setting is not working.
+- Fixed bug #7462: The setting LoginPage under the group SiteSettings
+  is used for two totally different things.
+  (Merged from stable/3.7 (3.7.6) rev. 15764)
+- Fixed bug: Double-escaping of the object's name.
+- Fixed bug #8146: Wrong url information in setup.
+- Fixed bug #7873: Wrong name for template ezprize.tpl
+- Fixed bug #8140: Unable to get custom view parameters for content/browse.
+- Fixed bug #8097: view_parameters variable is not set in the user/register.
+  ( Merged from stable/3.6 ( 3.6.8 ) rev. 15800 )
+- Fixed bug #8149: eztoc operator output is not valid XHTML.
+- Fixed bug: the header set in ez soapserver is not sent.
+- Fixed bug: ezsendmailtransport.php copies every message to user "0".
+- Fixed bug #8148: setup wizard crashes on first page load.

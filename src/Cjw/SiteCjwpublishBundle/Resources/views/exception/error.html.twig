@@ -1,0 +1,18 @@
+{% extends site_bundle_name ~ '::pagelayout.html.twig' %}
+
+{% block content %}
+    <div>
+        <h1>Die Seite ist nicht verfügbar.</h1>
+
+        {% if app.environment != 'prod' %}
+            <br/>
+            <p>{{ exception.message }} ({{ exception.code }})</p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascript_footer %}
+    {{ parent() }}
+{% endblock %}
+
+{% block page_ads %}{% endblock %}

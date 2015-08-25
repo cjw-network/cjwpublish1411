@@ -1,0 +1,53 @@
+language: php
+
+# run tests on php 5.4 only and let unit / integration tests deal with php differences
+php:
+  - 5.4
+
+# list of paths/bundle to execute
+env:
+    # run setup wizard to install Demo+Content and then test demo with content
+  - INSTALL="demoContentNonUniqueDB" PROFILE="demo" TEST="content"
+    # test Legacy
+  - INSTALL="demoCleanNonUniqueDB" PROFILE="legacyAdmin" TEST="full"
+
+# test only master (+ Pull requests)
+branches:
+  only:
+    - master
+
+# Get ezpublish5 repo, and use it as the build dir
+before_install:
+  - export BRANCH_BUILD_DIR=$TRAVIS_BUILD_DIR
+  - export TRAVIS_BUILD_DIR="$HOME/build/ezpublish-community"
+  - cd "$HOME/build"
+
+  # Change the branch and/or remote to use a different ezpublish-community branch
+  - git clone --depth 1 --single-branch --branch master https://github.com/ezsystems/ezpublish-community.git
+  - cd ezpublish-community
+
+  # Use this if you depend on another branch for a dependency (only works for the ezsystems remote)
+  # (note that packagist may take time to update the references, leading to errors. Just retrigger the build)
+  #- composer require --no-update dev-MyCustomBranch
+  - ./bin/.travis/prepare_system.sh
+  - ./bin/.travis/prepare_sahi.sh
+
+# setup requirements for running tests
+before_script:
+  - ./bin/.travis/prepare_ezpublish.sh
+
+  # Replace demobundle with the one from the pull-request
+  - rm -rf vendor/ezsystems/demobundle/EzSystems/DemoBundle && mv "$BRANCH_BUILD_DIR" vendor/ezsystems/demobundle/EzSystems/DemoBundle
+  - php bin/behat --profile setupWizard --suite $INSTALL
+
+# execute behat as the script command
+script:
+  - php bin/behat --profile $PROFILE --suite $TEST
+
+# disable mail notifications
+notification:
+  email: false
+
+# reduce depth (history) of git checkout
+git:
+  depth: 30

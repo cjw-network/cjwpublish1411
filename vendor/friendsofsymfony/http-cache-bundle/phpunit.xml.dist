@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="./Tests/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         syntaxCheck="true">
+    <testsuites>
+        <testsuite name="unit">
+            <directory suffix="Test.php">./Tests</directory>
+            <exclude>./Tests/Functional</exclude>
+        </testsuite>
+        <testsuite name="functional">
+            <directory suffix="Test.php">./Tests/Functional</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./</directory>
+            <exclude>
+                <directory>./Resources</directory>
+                <directory>./Tests</directory>
+                <directory>./vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <listeners>
+        <listener class="\Mockery\Adapter\Phpunit\TestListener" />
+    </listeners>
+
+    <php>
+        <server name="KERNEL_DIR" value="./Tests/Functional/Fixtures/app" />
+    </php>
+</phpunit>

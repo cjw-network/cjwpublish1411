@@ -1,0 +1,53 @@
+Changes from 3.10.0alpha1 to 3.10.0beta1
+
+*Kernel:
+- Implemented enhancement #10855: Patch for adding ClearCacheMethod[]=none.
+- Implemented enhancement #11291: Extending the extended attribute filter.
+
+*Design:
+
+*eZTemplate:
+
+*Package system:
+
+*Scripts:
+- Added script to insert data from dba files that belongs to a datatype into the database (rev. 19501).
+
+*Cronjobs:
+- Implemented enhancement #10856: Patch for delayed StaticCache Regeneration ( including cronjob).
+
+*Translations:
+
+*Bugfixes:
+- Fixed bug #11137: patch for ezp search engine for handling japanese, chinese, and korean language.
+  (Merged from stable/3.9 (3.9.3) rev. 19458)
+- Fixed bug #11170: xml-attribute: paragraphs within table cells are lost.
+  (Merged from stable/3.9 (3.9.3) rev. 19473)
+- Fixed bug #11191: Language parameter of nodetree functions
+  (Merged from stable/3.9 (3.9.3) rev. 19487)
+- Fixed bug #11182: Missleading documentation for function updateMainNodeID.
+  ( Merged from stable/3.8(3.8.9) rev. 19492, stable/3.9(3.9.3 rev. 19495 )
+- Fixed bug #11186: Missbehaviour content package import.
+  ( Merged from stable/3.9 rev. 19496, stable/3.8 rev. 19698 )
+- Fixed bug #011193: Undefined variable: nodes in update/common/scripts/updateniceurls.php
+- Fixed bug #11120: Fatal error on clean installation after chosing a NON-plain site package
+  (Merged from stable/3.8(3.8.9) rev. 19509)
+- Fixed bug #8431: Checkbox class attribute looses default state when class is imported from a package
+- Fixed bug #11105: patch for "FROM ezuser WHERE contentobject_id='0'" sql calls.
+- Fixed bug #11172: Typo in description of options for ezgeneratetranslationcache.php.
+- Fixed bug #10835: webdav: section id isn't set properly.
+  ( Merged from stable/3.9 (3.9.3) rev. 19573 )
+- Fixed bug #11201: runcronjobs.php --quiet outputs script names - no longer quiet.
+- Fixed bug #11222: Sql tweaks to reduce sql queries number per page.
+- Fixed bug #11110: class_identifier preloading.
+- Fixed bug #10954: SectionObject and ClassObject Cache.
+- Fixed bug #11216: eZPersistentObject custom_conds is not an array (rev. 19601)
+- Fixed bug #11189: content class: attributes can't be deleted
+- Fixed bug #11098: content class import wizard does not show class name.
+- Fixed bug #11203: eztc.php doesn't compile siteaccess in extension.
+- Fixed bug #11192: no object name if attribute isn't translatable.
+  (Merged from stable/3.9 (3.9.3) rev. 19625)
+- Fixed bug #009775: class_group override doesn't work when using "node_view_gui' (rev. 19646)
+- Fixed bug #011251: Wrong name of a subitem in context menu (GUI issue)
+- Fixed bug #10819: Unable to limit access to a view without functions if access to the module is limited.
+- Fixed bug #11280: updatesearchindex.php and updateniceurls.php are maintenance scripts.

@@ -1,0 +1,80 @@
+Changes from 4.2.0alpha1 to 4.2.0beta1
+
+*Kernel:
+- Implemented enhancement #15308: Add group_by support for extended attribute filters
+- Implemented enhancement #14882: Add triggers to user module
+- Implemented enhancement #13943: eZMySQLiDB::query() should write error number in error message
+- Implemented enhancement #13827: staticcache_cleanup.php cronjob should output more useful info
+- Implemented enhancement #11380: Disallow repeated tipafriend mails on same content to same receiver and use url alias on links
+- Implemented enhancement #15315: mysqli Persistent Connections support when using mysqlnd
+- Implemented enhancement #15130: Add RedirectURIAfterRemove and RedirectIfCancel support to ActionRemove
+- Implemented enhancement #15334: LDAP GetGroupsTree should be able to find groups in multiple tree levels
+- Implemented enhancement #15093: Missing session cleanup script / cronjob for Debian based distroes
+- Implemented enhancement #13044: attribute filter and sort by contentobject/node id support
+- Implemented enhancement #14422: eZPublish Fatal errors should send a 500 HTTP error
+- Implemented enhancement #15284: ezexpiryhandler missing test before saving file
+- Implemented enhancement #14876: Translated and sorted country list for ezcountry
+
+*Design:
+- Implemented enhancement #14654: Admin Interface - include custom navigationpart menu template automatically
+- Implemented enhancement #15440: Add page_head_[style|script].tpl in admin design
+
+*eZTemplate:
+
+*eZLocale:
+
+*Package system:
+
+*Scripts:
+
+*Translations:
+- Implemented enhancement #15420: German phrasebook and readme file
+
+*Bugfixes:
+- Fixed bug #15245: metaData for ezobjectrelation attributes is not always using the right translation
+- Fixed bug #15200: RSS Feed's won't work with Firefox 3.5x
+- Fixed bug #15249: Handle ezc exceptions in setup/info
+- Fixed bug #13828: staticcache_cleanup.php cronjob is inconsistent with ezstaticcache
+- Fixed bug #14893: remote_id is defined as integer and not string in content, node|object fetches
+- Fixed bug #15253: Avoid failure of SQL statement in ezrole.php
+- Fixed bug #14467: Objects are imported with "unknown section"
+- Fixed bug #15254: Cancel button in notification/settings is deprecated, should be removed from templates as well
+- Fixed bug #15037: performance issue due to table lock in ezidentifier datatype
+- Fixed bug #15001: strict warning in eZObjectRelationType::classAttributeContent
+- Fixed bug #15266: cleanup.php script causes PHP warning
+- Fixed bug #15269: Problem with Flash objects in eZ Publish 4.1.3. and Internet Explorer
+- Fixed bug #15280: Avoid warning and bad stylesheet syntax caused in ezdebug.php
+- Fixed bug #15282: A SOAP response can not be created with an empty namespace
+- Fixed bug #13371: eZImageType::fromString() doesn't support alternative image text
+- Fixed bug #14558: eZMySQLiDB::createDatabase() references non-existing method in mysqli extension.
+- Fixed bug #15310: preserveWhiteSpace removes whitespace between some ezxml tags when viewed
+- Fixed bug #15329: begins_with operator doesn't work as expected with strings
+- Fixed bug #15229: Bug in eZContentOperationCollection::registerSearchObject() in eZ Publish 4.1.3
+- Fixed bug #14763: Fetching a non existing node by path results in a warning while fetching by id doesn't
+- Fixed bug #14515: Disabled & Hidden users still get notifications
+- Fixed bug #15353: Fetch doesn't deliver proper result when usign language limitation and parent and child have a different language
+- Fixed bug #13888: Don't fetch wildcard cache from cluster on each page request
+- Fixed bug #14850: cache_ttl=0 and stalecache conflict
+- Fixed bug #14569: Install consistently(?) creates AdditionalLoginFormActionURL error
+- Fixed bug #13497: attribute operator throws a PHP fatal error on a node without parent in a displayable language
+- Fixed bug #15328: Problem in function validateObjectAttributeHTTPInput in class ezemailtype.php
+- Fixed bug #15288: eZContentBrowseRecent executed/updated on shell
+- Fixed bug #15211: php fatal error when fetchalias called without second param
+- Fixed bug #15230: php fatal error in fetch reverse_related_object
+- Fixed bug #15120: ezoracle : Fatal error when defining currencies
+- Fixed bug #15252: Search while using content/browse work not correctly
+- Fixed bug #15062: impossible to delete content on oracle
+- Fixed bug #13308: Copy an object with fatal error
+- Fixed bug #13520: Next / previous links in Forum not working properly
+- Fixed bug #14603: Custom install scripts - DOMDocument->root() - ezinstallscriptpackageinstaller.php
+- Fixed bug #15156: Fatal error when runnning notification cronjob | Node without a parent node
+- Fixed bug #15125: PHP Warning in lib\ezdbschema\classes\ezmysqlschema.php on line 169
+- Fixed bug #15016: replace all direct usage of implodeWithTypeCast() with generateSQLINStatement()
+- Fixed bug #15437: index_image_dfsmysql.php is missing from the distribution
+- Fixed bug #15411: Traces of mangled byte in multiprice test, caused invalid byte sequence when inserting data to PostgreSQL
+- Fixed bug #15445: The result of eZPostgreSQLDB->lastSerialID() is expected to be an int.
+- Fixed bug #15153: Apply changes with custom design
+- Fixed bug #14371: Workflow template repeat broken by security patch
+- Fixed bug #14864: Cast error in eZTemplateAttributeOperator
+- Fixed bug #15155: eZImageType::deleteStoredObjectAttribute doesn't clean original image
+- Fixed bug #15089: eZ Simplified XML input does not handle whitespace in XML attribute definitions

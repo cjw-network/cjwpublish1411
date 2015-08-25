@@ -1,0 +1,1340 @@
+eZ component: Webdav, Design, 1.1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:Author: Tobias Schlitt
+:Revision: $Rev$
+:Date: $Date$
+:Status: Draft
+
+.. contents::
+
+Scope
+^^^^^
+
+The scope of this document is to describe the enhancements for the Webdav
+component version 1.1.
+
+The general goal for this version is to support locking as described in RFC
+2518. To achieve this, the if-header must be parsed and respected by the Webdav
+component. This currently is not the case. The if-header must also be used to
+respect entity tags, which is not an integral part of the locking feature.
+However, the support of entity tags is part of this design, too. 
+
+The following issues are covered in this design:
+
+- Webdav does not provide ETags and does not honor the if-header with them
+  (#12583).
+- Webdav needs to support authentication and authorization to properly support
+  locking (#13344).
+- Lock support (#12286).
+
+For locking, a plugin based approach has been favored while the Webav
+components was initially design. However, it might turn out that the
+realization of lock support through a plugin is not as easy as it seemed to be.
+Therefore this document describes a plugin based approach in the first place,
+but also contains hints about major differences for an integrated approach.
+
+The document is divided into 3 parts. The first part deals with the realization
+of functionality that is exclusively meant to support entity tags. The second
+part describes features that are exclusively used to support locking.  Since
+WebDAV mixes entity tags (originally HTTP/1.1) and locking in some places, the
+third section describes the design for these common concerns.
+
+In several sections of this document so called pseudo code is used, to describe
+the functionality of an algorithm. These listings do not follow any specific
+syntax or semantic rules, but should be intuitively understandable for people
+who know a procedural programming language. Their final implementation in PHP
+will require much more code and more complex structures. Beside that,
+code-reuse will play a role during implementation.
+
+Entity tag support
+^^^^^^^^^^^^^^^^^^
+
+This section describes the support of entity tags in the Webdav component,
+including the usage of the If header with entity tags and the generation and
+sending of the ETag header. The If header can also be used with lock tokens.
+Therefore its general processing is described in the `Common concerns`_
+section.
+
+The following design only refers to the support of entity tags as defined in
+the HTTP/1.1 RFC. This includes the headers mentioned in the RFC overview
+document and the generation and comparison of entity tags.
+
+=====================
+Entity tag generation
+=====================
+
+The generation of an entity tag requires uniqueness for a specific state of a
+resource (the so-called entity). To achieve this, multiple data about the
+resource state must and be combined.
+
+The path of the resource in combination with its last modification time and
+content length should be sufficient. The Lighttpd__ web server makes use of
+this information on a configurable basis, too. In addition it can use the inode
+of the file for entity tag generation. Since inodes are operating system
+dependent and only available for file system based back ends, they will not be
+used in our entity tag generation scheme. An MD5 hash will be used to create
+the tag from a concatination of previosly named data to ensure common length
+and appearance of entity tags.
+
+__ http://www.lighttpd.net/
+
+Since entity tags in WebDAV are also available through the getetag
+live-property, a common way is needed to generate the entity tags for the
+headers and the property. The ezcWebdavSimpleBackend class will therefore
+request the getetag property from the extending back end class and use it's
+value for the ETag header and validation of incoming entity tags.
+
+The current generation of entity tags in ezcWebdavFileBackend will be replaced
+by a mechanism that uses the last modification time and the size of the file.
+This mechanism will be implemented generically in ezcWebdavSimpleBackend to
+allow other extending backends to use it.
+
+===============
+Header handling
+===============
+
+The handling of entity tag related headers must take place in several different
+architecture levels of the Webdav component.
+
+Transport layer
+===============
+
+The transport layer needs to be able to parse the request headers and to
+serialize the response headers. Therefore the ezcWebdavHeaderHandler class
+will be enhanced to do so.
+
+The class must parse the following new request headers to support HTTP/1.1
+entity tag usage:
+
+- If-Match
+- If-None-Match
+
+ezcWebdavHeaderHandler will automatically check if both of these headers are
+set. If this is the case, both headers will be silently discarded. Such a
+combination is undefined per RFC and we will ignore it on the transport level
+already.
+
+Both headers can contain a list of weak/non-weak entity tags or the "*" value,
+to indicate that the resource must simply exists, no matter in which state. To
+represent this in PHP, the parsed headers will be represented either as an
+array of string values or as the boolean value true. The headers will be parsed
+into every request object automatically, if they are set.
+
+.. Note::
+   The section `Common concerns`_ defines the realization of the If header,
+   which is similar to If-Match and If-None-Match. It could be useful to
+   combine their representations in the Webdav infrastructure. A decision on
+   this will be made during realization.
+
+The back end layer must take responsibility for interpreting the parsed headers
+and their values.
+
+In addition ezcWebdavHeaderHandler must take care of serializing the ETag
+header, if this one is present in a response object. Since the ETag header may
+only contain the string value of an entity tag this mechanism is already
+implemented in the current response processing.
+
+Back end layer
+==============
+
+The interpretation of incoming If-Match and If-None-Match headers must be done
+in the back end. The implementation will take place in the
+ezcWebdavSimpleBackend class. With every incoming request, no matter which
+request method is used, the If-Match and If-None-Match headers will be honored
+in the following way (pseudo code): ::
+
+    if ( any precondition for the request fails except for the If-* header )
+    {
+        return <corresponding error response>;
+    }
+    if ( If-* header condition is not fulfilled )
+    {
+        return <error response 412  (Precondition Failed)>;
+    }
+    process <request> as if no If-* header was set;
+
+Since this behavior will be implemented within the ezcWebdavSimpleBackend
+class, it automatically works with all extending back end classes. Back ends
+that do not extend ezcWebdavSimpleBackend will have to take care for these
+headers on their own.
+
+.. Note::
+   It should be documented in the "Writing your own backend" section of the
+   Webdav tutorial how ETags should be handled.
+
+Authentication and Authorization support
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Support for locking does not work without a proper authentication and
+authorization mechanism.
+
+============
+Requirements
+============
+
+General requirements for authentication and authorization are:
+
+- Authenticate the user by username and password or username and password
+  digest.
+- Check if the authenticated user has access to the paths affected by the
+  request. This also includes recursive checks like for COPY, MOVE and PROPFIND
+  requests.
+
+In respect to locking, the following additional requirements must be met:
+
+- Assign a lock token to an authenticated user.
+- Check if given lock tokens belong to the authenticated user.
+
+Both requirements should be implemented independently from each other, to allow
+using Webdav without suppport for locking, but still have authentication /
+authorization support.
+
+======
+Design
+======
+
+The authentication / authorization support (in future: short "auth support")
+will be implemented in the Webdav component itself, not as a plugin. The reason
+for this is, that Webdav without auth support does make very little sense.
+Plugins will have access to the auth mechanisms to perform additional checks
+for custom requests. To fulfill the need of independence between the general
+auth support and lock specific auth support, the additional features will be
+defined by an interface in the lock plugin that must be implemented by the
+configured auth mechanism.
+
+Interfaces
+==========
+
+The following sections describe interfaces that are implemented in the Webdav
+component itself. The class of an object that is to be assigned to
+ezcWebdavServer->$auth must implement at least 1 of the ezcWebdav*Authenticator
+interfaces.
+
+ezcWebdavBasicAuthenticator
+---------------------------
+
+This interface must be implemented by a class that acts as the central
+authentication instance, which supports HTTP Basic authentication style.
+Objects that are assigned to ezcWebdavServer->$auth are strongly recommended to
+implement this interface::
+
+    <?php
+    interface ezcWebdavBasicAuthenticator
+    {
+        authenticateBasic( ezcWebdavBasicAuth $data );
+    }
+    ?>
+
+The authenticate() method will be called to authenticate a user. It receives
+the user name and password, submitted by the client via Basic auth, or empty
+strings, if no auth information was submitted.
+
+ezcWebdavDigestAuthenticator
+----------------------------
+
+In contrast to ezcWebdavBasicAuthenticator, classes which implement this
+interface support HTTP Digest authentication style. Objects that are assigned
+to ezcWebdavServer->$auth are highly recommended to implement this interface::
+
+    <?php
+    interface ezcWebdavDigestAuthenticator extends ezcWebdavBasicAuthenticator
+    {
+        authenticateDigest( ezcWebdavDigestAuth $data );
+    }
+    ?>
+
+The parameter received by authenticateDigest() is a struct containing all
+Digest information received through the request. This includes the plain text
+user name, the realm and the nonce. All 3 are used to calculate the Digest hash
+for authentication. The algorithm used for calculating digest and checksum
+hashes is always indicated as MD5 to the client, which should act accordingly.
+
+ezcWebdavAuthorizer
+-------------------
+
+This interface must be implemented by auth instances which support
+authentication. Authentication is not mandatory to be implemented, but
+recommended. If the object residing in ezcWebdavServer->$auth does not implement
+the authorizer interface, all users will be allowed to read and write to every
+path. This might also happen, if the interface is implemented, but the back end
+does not support authorization.
+
+::
+
+    interface ezcWebdavAuthorizer
+    {
+        const ACCESS_READ  = 1;
+        const ACCESS_WRITE = 2;
+
+        public function authorize( $username, $path, $access = ezcWebdavAuthorizer::ACCESS_READ );
+    }
+
+The authorize() method will be called by the back end for every $path the
+current request tries to access. This might be a single call (e.g. GET requests)
+or multiple ones (e.g. COPY and PROPFIND). The $access parameter determines,
+which permission is requested by the request. Requests like GET and PROPFIND
+require only ACCESS_READ permissions, while e.g. COPY and PUT require
+ACCESS_WRITE permissions on certain paths.
+
+ezcWebdavLockAuthorizer
+-----------------------
+
+This interface will be provided in the lock plugin and must be implemented by
+the central auth instance to support the lock plugin. If this is not the case
+and the lock plugin is activated, an exception will be thrown. ::
+    
+    <?php
+    interface ezcWebdavLockAuthorizer extends ezcWebdavAuthorizer
+    {
+        assignLock( string $user, string $lockToken );
+        ownsLock( string $user, string $lockToken );
+        releaseLock( string $lockToken );
+    }
+    ?>
+
+Whenever a lock token is created by a user, the assignLock() method is called.
+A lockToken can only be assigned to 1 user, so the assignLock() method must
+throw an exception in case a $lockToken is submitted twice. The $timeout value
+defines the Unix timestamp when the $lockToken will expire. After that, the
+authentication mechanism must release the lock and return false from
+ownsLock(). The ownsLock() method checks if the given $user is the owner of the
+$lockToken. In case the $lockToken does not exist (maybe because it is
+expired), this method throws an exception. The releaseLock() method removes the
+$lockToken and the assignment of its user.
+
+A $lockToken might be refreshed, as long as it exists. In case a lock does not
+exist anymore, the refreshLock() method must indicate an exception.
+
+Classes
+=======
+
+No implementations of the interfaces above will officially be shipped with the
+Webdav component. Instead, the ezcWebdavServer->$auth property will be left null
+by default, which will lead to no authentication/authorization at all.
+
+If a user implemented object is assigned to the ezcWebdavServer->$auth property,
+it must at least implement 1 of the ezcWebdav*Authenticator interfaces. It may
+also implement the corresponding other one, but this is not mandatory.
+
+In addition, such an object might implement ezcWebdavAuthorizer. This is highly
+recommended. Back ends which are aware of authorization (like the
+ezcWebdavSimpleBackend) will then perform authorization for the necessary
+operations against the object.
+
+In case the lock plugin is to be used by the server, the object in
+ezcWebdavServer->$auth must implement the ezcWebdavLockAuthorizer interface
+(and therefore the ezcWebdavAuthorizer interface).
+
+Integration
+===========
+
+The auth facilities will be implemented in the Webdav component on the server
+and back end layers. This is necessary, since only the back end knows about the
+path structure and can issue authorization requests for recursive requests. In
+addition, some requests must not simply fail, but must return a Multistatus
+response including the error response (PROPFIND).
+
+The server layer will take responsibility on authenticating the user, while the
+back end takes care about authorization. This way authentication does still work
+with back ends that do not support authorization.
+
+The auth process will work as follows:
+
+1. Parse request (transport layer).
+2. Authenticate user on basis of abstract request data (server layer).
+
+   - In case the authentication fails, cancel request processing and return 401
+     (Unauthorized).
+
+3. Authorize user on basis of abstract request data (back end layer / plugins).
+
+   - In case any of the paths to authorize fails, cancel request processing
+     and return 401 (Unauthorized) or react differently, according to the RFC.
+
+4. Go on with normal request processing (plugins, back end).
+
+The ezcWebdavAuth instance used for the auth process is stored in a read/write
+property in ezcWebdavServer. It defaults to null and can be replaced by an
+arbitrary object implementing ezcWebdavBasicAuthenticator and/or
+ezcWebdavDigestAuthenticator by the user. Logically this should happen before
+the handle() method is called, but theoretically it is possible anytime.
+
+Lock support
+^^^^^^^^^^^^
+
+Locking allows a WebDAV client to gain exclusive access to a resource
+(collection or non-collection) to avoid the "lost update problem". 
+
+The WebDAV RFC distinguishes locks by 2 essential properties: The scope of the
+lock (shared vs. exclusive) and the type of the lock (write vs. read). Only
+write locks are specified by the RFC. Therefore we will only implement write
+locks. If read locking becomes necessary sometimes, this can still be added.
+
+A lock is always bound to a principle (not a client!) and one or more
+resources. The combination of a principle and a resource is defined through a
+unique string, named "lock token".
+
+Using an exclusive lock, a principle ensures that he is the only one to have
+write access to the locked resource(s). With a shared lock it is possible that
+multiple principles have write access to one and the same resource. More
+information on lock scopes is provided in the corresponding RFC overview
+document.
+
+This section describes the realization of lock support through a plugin for the
+Webdav component. This plugin will make use of the, not yet officially
+released, plugin API. The plugin API might still be changed during the
+implementation of the lock plugin, which gives more flexibility here.
+
+The goal of this design is is to build a lock plugin that is as far independent
+from the other Webdav layers as possibly. This especially means, that the
+implementation is independent from the back end. Beside that, the plugin should
+provide the largest possible compatibility to clients. However a plugin that
+hooks into the parsing process cannot provide the same client compatibility
+mechanisms as the base Webdav transport layer. It might be necessary to adjust
+the lock plugin to work with several clients and introduce exceptions from the
+usual workflow for them.
+
+.. note:: For the 1.1 release of the Webdav component we will only support
+          exclusive locks. Shared locks might be supported later.
+
+======
+Design
+======
+
+In following, the main algorithms and functionalities are described that need
+to be implemented for a realization of locking as a plugin. This design does
+not so much contain class and interface specifications, because most classes
+are internal to the lock plugin and will not be released to the control of the
+user. All classes not defined explictly in this document will be marked
+private.
+
+Interaction with other parts of the Webdav component is realized by attaching
+plugin methods to hooks of the plugin architecture or calling public methods of
+other components.
+
+The design description is structured the 3 layers of the Webdav component. Each
+section contains the functionality and changes that affect the specific layer.
+Mechanisms which are central for the plugin or affect multiple layers are
+described in dedicated sections after that.
+
+Transport layer
+===============
+
+On the transport layer the plugin needs to hook into the parseUnknownRequest
+signal for 2 new request methods. In addition 2 new live properties need to be
+parsed, which is realized through the extractUnknwonLiveProperty and
+serializeUnknownLiveProperty hooks.
+
+LOCK / UNLOCK requests
+----------------------
+
+The LOCK request can not be parsed, yet. The ezcWebdavLockRequest class and
+additional content classes already exists (@private) and need to be moved to
+the lock plugin directories. To parse the LOCK request, the parseUnknownRequest
+hook is used. The generated ezcWebdavLockRequest object is submitted into the
+infrastructure flow for further processing. It will be handled on the server
+layer by the lock plugin itself.
+
+The same applies for the UNLOCK method.
+
+For both request methods the corresponding response objects still need to be
+created and need to be serialized by the handleUnknownResponse hook. Repsonse
+objects will be created as needed during implementation, as they are not very
+complex.
+
+Properties
+----------
+
+The following live properties need to be added:
+
+- lockdiscovery
+- supportedlock
+
+For both properties, the property abstraction classes already exist (@private)
+and just need to be moved to the lock plugin directories. The parsing and
+serializing of these properties needs to be implemented in the plugin. The
+hooks extractUnkownLiveProperty and serializeUnknownLiveProperty will be used
+for this purpose. This ensures that the properties can also be stored in the
+back end properly.
+
+.. hint::
+   The plugin needs to use the XML tool class currently active in the server to
+   ensure that potential client specific XML handling is used.
+
+If the lock plugin is switched off after it has been activated and used once,
+the specified properties should still work since they are then simply
+considered to dead properties.
+
+The creation and removal of these properties is handled by the lock plugin on
+the server layer.
+
+Server layer
+============
+
+On the server layer, the hooks receivedRequest and generatedResponse will be
+used to intercept the necessary requests and responses. These are on the one
+hand the LOCK and UNLOCK methods, which are exclusively handled by the lock
+plugin. On the other hand most other methods must be intercepted to check for
+the effect of locks.
+
+During the processing of requests, communication with the backend is necessary.
+This communication will be handled by creating corresponding request objects,
+sending these to the backend and processing the returned response objects. This
+ensures that only minimal adjustments to the back ends themselves is necessary
+and that all imaginable back ends will support locking. On the other side, this
+raises complexity and lowers performance of the lock mechanism itself. Since
+WebDAV is commonly not used by huge masses of users at once, in contrast to
+read only accesses to a website, this performance impact should be negligible.
+
+To avoid race conditions while the lock plugin and the backend interact, the
+lock plugin must get the posibility to lock the backend completly from
+concurring requests. To allow this, a new backend interface will be introduced::
+
+    interface ezcWebdavBackendLock
+    {
+        public function lock();
+        public function unlock();
+    }
+
+The lock plugin will not work with backends which do not implement this
+interface and will issue an exception if this is tried.
+
+The methods must be implemented by the individual back ends and simply need to
+ensure that no other request starts processing as long as the lock is active.
+Locking will be performed by the lock plugin from within the receivedRequest
+hook, before the plugin issues any request to the backend. After all processing
+by the plugin and the backend itself is finished, the unlocking will take place
+in the generatedResponse hook.
+
+The following sections describe all necessary funcitionality to be implemented,
+except the handling of the If header. This is described in the main section
+`Common concerns`_.
+
+LOCK request
+------------
+
+Objects of class ezcWebdavLockRequest must be handled completely by the lock
+plugin. In case such a request is received, the following operations must be
+performed (pseudo code)::
+
+    if ( !authorized( <user>, <path>, WRITE ) )
+    {
+        return <response 401 Unauthorized>;
+    }
+
+    lock back end;
+    
+    generate <lock token>;
+    
+    create propfind request for <request path>;
+    set Depth header of <propfind request> according to <lock request>; // Infinity if no Depth set
+
+    send <propfind request> to back end;
+    
+    if ( <requested resource> does not exist )
+    {
+        if ( If-header was set and no body was present )
+        {
+            // Refresh lock request without existing lock
+            unlock back end;
+            return <response 412 Precondition Failed>; 
+        }
+
+        create <lock-null resource>;
+        assign <lock token> to <lock-null resource>;
+    }
+    else
+    {
+        foreach ( <resource> in <PROPFIND response> )
+        {
+            if ( If header is set )
+            {
+                refresh timeout of <lockdiscovery> property with <lock token>;
+            }
+            else
+            {
+                if ( <resource> is locked exclusively )
+                {
+                    // Needs to include <lockdiscovery> property of requested
+                    // resource without the created lock.
+
+                    return <multistatus response 409 Conflict>;
+                }
+
+                if ( <resource> is locked shared and <request> is exclusive )
+                {
+                    // Needs to include <lockdiscovery> property of requested
+                    // resource without the created lock.
+
+                    return <multistatus response 409 Conflict>;
+                }
+
+                add <lock token> to <lockdiscovery> property;
+                add <user name> to <lockdiscovery> property;
+                set <timeout> accordingly;
+                set <depth> to <depth> of <request>;
+            }
+
+            create <proppatch request> for updated <lockdiscovery> property;
+            add <proppatch request> to <requests to send>;
+        }
+    }
+
+    // If this point is reached, no error has occured, so the lock action can take place.
+    foreach ( <requests to send> as <req> )
+    {
+        send <req> to back end;
+    }
+
+    register <authentication> with <lock token>;
+    
+    unlock back end;
+    
+    return <prop lockdiscovery response for requested resource>;
+
+A class ezcWebdavLockResponse needs to be created, which can represent the
+corresponding responses. Objects of this class will be processed by the
+transport layer hooks of the lock plugin and are therefore private.
+
+UNLOCK request
+--------------
+
+The UNLOCK operations request object carries exactly one lock token that
+indicates the lock to be removed. The UNLOCK operation must release all locks
+that are identified by the token.
+
+.. note::
+   The RFC does not specify, if the request URI must identify all resources
+   affected by the lock, but we will assume that for now. If the request URI
+   does not specify the top most affected lock, we would need to iterate the
+   whole repository to remove the locks.
+
+The following pseudo code describes the operations to be performed by the
+plugin::
+    
+    if ( !authorized( <user>, <path>, WRITE ) )
+    {
+        return <response 401 Unauthorized>;
+    }
+
+    lock back end;
+
+    create propfind request for <request path>;
+    set Depth header to INFINITY;
+    send <propfind request> to back end;
+    
+    foreach ( <resource> in <returned response> )
+    {
+        foreach ( <assigned lock token> on <resource> )
+        {
+            if ( expire( <assigned lock token> ) )
+            {
+                continue;
+            }
+            if ( <assigned lock token> == <lock token> )
+            {
+                remove <lock token> from <lockdiscovery> property;
+                create <proppatch request> for <lockdiscovery> property;
+                add <proppatch request> to <requests to send>;
+            }
+        }
+
+        if ( <resource> is lock null resource> && no more <lock tokens>
+             assigned )
+        {
+            create <delete request> for <resource>;
+            add <delete request> to <requests to send>;
+            remove <proppatch request> from <requests to send>;
+        }
+    }
+
+    foreach ( <requests to send> as <req> )
+    {
+        send <req> to back end;
+    }
+
+    unregister <lock token>;
+    
+    unlock back end;
+    
+    return <corresponding response>;
+
+If the lock token could not be found in any of the resources returned by the
+PROPFIND request we will indicate success to the client. This case might occur,
+if the lock expired right before the client sent the request. However, the lock
+is gone as desired by the client.
+
+PUT request
+-----------
+
+The PUT method requires 2 additional checks in case the If-header check
+succeeded. The necessary actions to take place before the backend processing
+can start are described a follows (pseudo code)::
+
+    // Authentication and authorization already took place
+
+    lock back end;
+    
+    create propfind request for <resource>;
+    set Depth header to 0;
+    send <propfind request> to back end;
+
+    if ( <resource> exists )
+    {
+        expireLocks( <resource> );
+        foreach ( <assigned lock> on <resource> )
+        {
+            if ( <assigned lock> is exclusive and If-header does not mention
+                 <assigned lock> )
+            {
+                return <response 423 Locked>;
+            }
+        }
+        if ( <resource> is a lock null resource )
+        {
+            create <proppatch request> for <resource> to make it a real resource;
+            send <proppatch request> to back end;
+        }
+    }
+    else
+    {
+        expireLocks( <resource> );
+
+        <parent> = get collection <resource>;
+        create propfind request for <parent>;
+        set Depth header to 0;
+
+        send <propfind request> to back end;
+
+        foreach ( <assigned lock> on <parent> )
+        {
+            if ( <assigned lock> is exclusive and If-header does not mention
+                 <assigned lock> )
+            {
+                return <response 423 Locked>;
+            }
+        }
+    }
+
+    remove If header from <request>;
+
+    // Let back end perform <request> ...
+
+    unlock back end;
+
+POST request
+------------
+
+The POST request is not honored by the Webdav components and will therefore not
+be included in lock handling.
+
+PROPPATCH
+---------
+
+The necessary extensions to the PROPPATCH method are described below (pseudo
+code)::
+    
+    lock back end;
+    
+    if ( !authorized( $user, $path, WRITE ) )
+    {
+        return <response 401 Unauthorized>;
+    }
+
+    create propfind request for <resource>;
+    set Depth header to 0;
+    send <propfind request> to back end;
+
+    expireLocks( <resource> );
+
+    if ( <resource> is a lock null resource )
+    {
+        return <response 405 Method Not Allowed>;
+    }
+
+    foreach( <assigned lock> on <resource> )
+    {
+        if ( <assigned lock> is exclusive and If-header does not mention
+             <assigned lock> )
+        {
+            return <response 423 Locked>;
+        }
+    }
+
+    remove If header from <request>;
+    // Let back end perform <request> ...
+
+    unlock back end;
+
+MOVE request
+------------
+
+For the MOVE request 2 different resource trees need to be checked for locks,
+before the request handling can take place. The source tree and the destination
+collection. The source tree must be checked with infinite depth, while the
+destination collection only requires a zero level check. The whole algorithm is
+described below (pseudo code)::
+    
+    // Authentication and authorization already took place
+
+    lock back end;
+    
+    create propfind request for <source resource>;
+    set Depth header to INFINITY;
+    send <propfind request> to back end;
+    
+
+    foreach ( <resource> in <returned response> )
+    {
+        expireLocks( <resources> );
+
+        if ( <resource> is a lock null resource )
+        {
+            return <response 405 Method not allowed>;
+        }
+
+        foreach ( <assigned lock> on <resource> )
+        {
+            if ( <assigned lock> is exclusive and If-header does not mention
+                 <assigned lock> )
+            {
+                return <response 423 Locked>;
+            }
+        }
+    }
+    
+    create propfind request for <destination resource>;
+    set Depth header to 0;
+    send <propfind request> to back end;
+    
+    expireLocks( <destination resource> );
+
+    if ( <destination resource> exists )
+    {
+        foreach ( <assigned lock> on <resource> )
+        {
+            if ( <assigned lock> is exclusive and If-header does not mention
+                 <assigned lock> )
+            {
+                return <response 423 Locked>;
+            }
+        }
+
+        if ( <destination resource> is a lock null resource )
+        {
+            // Will be created by the MOVE processing
+            delete <destination resource>;
+        }
+    }
+    else
+    {
+        <parent> = get collection <destination resource>;
+        create propfind request for <parent>;
+        set Depth header to 0;
+        send <propfind request> to back end;
+
+        foreach ( <assigned lock> on <parent> )
+        {
+            if ( <assigned lock> is exclusive and If-header does not mention
+                 <assigned lock> )
+            {
+                return <response 423 Locked>;
+            }
+        }
+    }
+
+    remove If header from <request>;
+    // Let back end perform <request> ...
+
+    unlock back end;
+
+.. Note::
+   We assume that a lock null resource may deal as the destination for the MOVE
+   method. This is not clarified in the RFC.
+
+COPY request
+------------
+
+While only the destination of a COPY method needs to be checked for normal
+locks, the source must be checked for lock null resources. Those do not support
+the COPY method, so the method must fail, if the tree to copy contains a lock
+null resource. Other locks in the source tree do not affect the COPY method,
+since read locks are not supported by the Webdav component. The algorithm looks
+as follows (pseudo code)::
+    
+    // Authentication and authorization already took place
+    
+    lock back end;
+    
+    create propfind request for <resource>;
+    set Depth header to INFINITY;
+    send <propfind request> to back end;
+    
+    foreach ( <resource> in <returned response> )
+    {
+        if ( <resource> is a lock null resource )
+        {
+            return <response 405 Method not allowed>;
+        }
+    }
+    
+    create propfind request for <destination resource>;
+    set Depth header to 0;
+    send <propfind request> to back end;
+    
+    expireLocks( <destination resource> );
+
+    if ( <destination resource> exists )
+    {
+        foreach ( <assigned lock> on <resource> )
+        {
+            if ( <assigned lock> is exclusive and If-header does not mention
+                 <assigned lock> )
+            {
+                return <response 423 Locked>;
+            }
+        }
+
+        if ( <destination resource> is a lock null resource )
+        {
+            delete <destination resource>;
+        }
+    }
+    else
+    {
+        <parent> = get collection <destination resource>;
+        create propfind request for <parent>;
+        set Depth header to 0;
+        send <propfind request> to back end;
+        
+        expireLocks( <parent> );
+
+        foreach ( <assigned lock> on <parent> )
+        {
+            if ( <assigned lock> is exclusive and If-header does not mention
+                 <assigned lock> )
+            {
+                return <response 423 Locked>;
+            }
+        }
+    }
+
+    remove If header from <request>;
+    // Let back end perform <request> ...
+
+    unlock back end;
+
+.. Note::
+   We assume that a lock null resource may deal as the destination for the COPY
+   method. This is not clarified in the RFC.
+
+DELETE request
+--------------
+
+The DELETE method works on collection and non-collection resources and
+therefore needs to check infinite depth for locks. Lock null resources do not
+support the DELETE action, so the method must fail, if such a resource is to be
+deleted. The following pseudo code shows the whole procedure::
+    
+    // Authentication and authorization already took place
+    
+    lock back end;
+    
+    create propfind request for <resource>;
+    set Depth header to INFINITY;
+    send <propfind request> to back end;
+    
+    foreach ( <resource> in <returned response> )
+    {
+        expireLocks( <resource> );
+
+        foreach ( <assigned lock> on <resource> )
+        {
+            if ( <assigned lock> is exclusive and If-header does not mention
+                 <assigned lock> )
+            {
+                return <response 423 Locked>;
+            }
+        }
+
+        if ( <resource> is a lock null resource )
+        {
+            return <response 405 Method Not Allowed>;
+        }
+    }
+
+    remove If header from <request>;
+    // Let back end perform <request> ...
+
+    unlock back end;
+
+MKCOL request
+-------------
+
+The MKCOL method is similar to the PUT request in terms of locking. The
+following pseudo code shows what needs to be done: ::
+
+    
+    // Authentication and authorization already took place
+
+    lock back end;
+
+    create propfind request for <resource>;
+    set Depth header to 0;
+    send <propfind request> to back end;
+
+    if ( <resource> exists )
+    {
+        expireLocks( <resource> );
+
+        foreach ( <assigned lock> on <resource> )
+        {
+            if ( <assigned lock> is exclusive and If-header does not mention
+                 <assigned lock> )
+            {
+                return <response 423 Locked>;
+            }
+        }
+
+        if ( <resource> is a lock null resource )
+        {
+            delete <resource>;
+        }
+    }
+    else
+    {
+        <parent> = get collection <resource>;
+        create propfind request for <parent>;
+        set Depth header to 0;
+        send <propfind request> to back end;
+        
+        expireLocks( <parent> );
+
+        foreach ( <assigned lock> on <parent> )
+        {
+            if ( <assigned lock> is exclusive and If-header does not mention
+                 <assigned lock> )
+            {
+                return <response 423 Locked>;
+            }
+        }
+    }
+
+    remove If header from <request>;
+    // Let back end perform <request> ...
+
+    unlock back end;
+
+GET / HEAD request
+-------------------
+
+The GET and HEAD methods are not directly affected by locks. Since we store
+lock-null resources as normal resources and only add custom properties to them
+for identification, GET/HEAD requests need to be intercepted. If they are
+performed on a lock null resource, the method must fail. The following checks
+are therefore needed (pseudo code): ::
+
+    lock back end;
+
+    create propfind request for <resource>;
+    set Depth header to 0;
+    send <propfind request> to back end;
+
+    expireLocks( <resource> );
+
+    foreach ( <assigned lock> on <resource> )
+    {
+        if ( <assigned lock> is exclusive and If-header does not mention
+             <assigned lock> )
+        {
+            return <response 423 Locked>;
+        }
+    }
+
+    // Let back end perform request
+
+    unlock back end;
+
+Lock null resources
+===================
+
+Lock null resources are not yet existing resources which have been already been
+locked. The sense behind this is to lock a resource before it is created, to
+ensure that no other principle can interfere with this creation. Lock null
+resources may not appear as complete resources to the accessing clients, so
+that the lock plugin must check under certain circumstances if an affected
+resource is a lock null resource or not.
+
+Lock null resources need to be persistent between requests as long as their
+lock exists. As soon as this lock is removed or expires the lock null resource
+must be removed, too. If the creation process on a lock null resource succeeds
+it must be converted into a real resource.
+
+To allow the lock plugin to distinguish between lock null resources and real
+resources, a new dead property will be introduced in the dedicated name space
+*ezclock*. In this name space the empty property *nullresource* will be used to
+indicate that a resource is a lock null resource.
+
+During a request the lock plugin needs to check responses for lock null
+resources before they are serialized by the transport. Supported methods of
+lock null resources are:
+
+- PUT
+- MKCOL
+- OPTIONS
+- PROPFIND
+- LOCK
+- UNLOCK
+
+All other methods will return 405 (Method Not Allowed). For the PROPFIND
+request, only certain properties are supported by lock null resources. These
+are mainly the lockdiscovery and supportedlock properties, All other live
+properties should be empty.
+
+.. Note::
+   The fact that lock null resource properties are mostly empty is not a MUST
+   condition in the RFC, so we will leave most properties as set by the
+   back end, to allow proper serialization on the transport layer.
+
+Common concerns
+^^^^^^^^^^^^^^^
+
+This section describes the design to realize support for the If-header, which
+is used in WebDAV with combinations of entity tags and lock tokens.
+
+It is not possibly to extract all parts of locking support into the lock
+plugin, since the If-header must be parsed in one go. Since this can also
+contain entity tags, which do belong into the main component, it cannot be
+parsed exclusively in the lock plugin.
+
+===============
+Transport layer
+===============
+
+The transport layer needs to parse the If-header.
+
+.. Note::
+   Since the header can contain entity tags and lock tokens, the parsing needs
+   to take place inside ezcWebdavHeaderHandler itself and cannot be part of the
+   plugin.
+   
+The If header is the most complex header that needed to be parsed so far. All
+other parsed headers either contained a string value or a simply to process
+other scalar value. To encapsulate the If header correctly some new classes
+need to be invented which are described in following::
+
+    abstract class ezcWebdavIfHeaderList implements ArrayAccess
+    {
+        protected ezcWebdavIfHeaderListItems[] $items;
+    }
+
+    class ezcWebdavIfHeaderTaggedList extends ezcWebdavIfHeaderList
+    {
+    }
+
+    class ezcWebdavIfHeaderNoTagList extends ezcWebdavIfHeaderList
+    {
+    }
+
+These classes represent the lists provided in an If-header. Both are accessed
+through the ArrayAccess interface. The keys used to query the object are
+resource paths (not URIs!).
+
+An ezcWebdavIfHeaderList object will return an array of
+ezcWebdavIfHeaderListItem objects on read access through ArrayAccess. This
+array represents the OR concatenation of the items. The item class realizes the
+OR combination and is described further below.
+
+The ezcWebdavIfHeaderTaggedList will return the list items defined for the
+resource path given via ArrayAccess and only those for the given path (an empty
+array of none were defined for this path. In contrast to that,
+ezcWebdavIfHeaderNoTagList will return all list items for *every* resource
+path, since the lists applies to all resources.
+
+This way of abstracting tagged lists and no-tag lists allows a unified usage of
+both classes in deeper layers of the Webdav component (plugin or back end).
+
+::
+
+    class ezcWebdavIfHeaderListItem
+    {
+        public function __construct(
+            array $lockTokens = array(),
+            array $eTags      = array(),
+            bool $negated     = false
+        );
+
+        property-read array $lockTokens;
+        property-read array $eTags;
+        property-read bool  $negated;
+    }
+
+An instance of this class represents a list item, which can combines several
+entity tags ($eTag) and lock tokens ($lockTokens). In addition it can be
+defined to be negated ($negated === true). The combination represented by such
+an object is a logical AND combination. 
+
+Code examples
+=============
+
+Some small code examples to illustrate the above class design will be shown
+here.
+
+::
+
+   COPY /resource1 HTTP/1.1
+   Host: www.foo.bar
+   Destination: http://www.foo.bar/resource2
+   If: <http://www.foo.bar/resource1> (<locktoken:a-write-lock-token>
+   [W/"A weak ETag"]) (["strong ETag"])
+   <http://www.bar.bar/random>(["another strong ETag"])
+
+This example shows a tagged list in the If header, which will be parsed into an
+instance of ezcWebdavIfHeaderTaggedList will be created from it in the
+Transport layer. The access to this object in the back end or the lock plugin
+will look as follows: ::
+
+    $res1items = $ifHeader['/resource1'];
+
+    $randomItems = $ifHeader['/random'];
+
+The $res1items variable will contain an array reflecting the conditions
+specified for http://www.foo.bar/resource1. The $res2items variable will
+contain an empty array since no conditions were defined for this resource.
+While the $randomItems variable should normally not be requested (since the
+resource is not affected) it would contain the corresponding list items for the
+http://www.bar.bar/random resource.
+
+In contrast, the following request would return an instance of
+ezcWebdavIfHeaderNoTagList for the contained If header: ::
+
+   COPY /resource1 HTTP/1.1
+   Host: www.foo.bar
+   Destination: http://www.foo.bar/resource2
+   If: (<locktoken:a-write-lock-token> [W/"A weak ETag"]) (["strong ETag"])
+   (["another strong ETag"])
+
+Taking the same accesses to the corresponding $ifHeader variable as shown above
+will result in all 3 variables containing the same values: All 3 list items
+will be contained, since the If header does not use tagging to specify which
+resources are affected by the conditions.
+
+============
+Server layer
+============
+
+If the lock plugin is active, it needs to hook into every affected request (see
+affected base methods) and check the If header conditions. The check does
+not only affect the checking of lock token conditions, but also the check of
+entity tag validation, because both condition types are combinable. The checks are
+performed via the receivedRequest hook of the plugin API.
+
+The procedure (in pseudo code) is as follows: ::
+
+    lock back end;
+    foreach ( <range of affected resources> as <base resource> )
+    {
+        create propfind request for <base resource>;
+        set request properties to <getetag> and <lockdiscovery>;
+        set depth according to incoming request;
+        send request to back end;
+        foreach ( <resources in response> as <resource> )
+        {
+            if ( <resource> does not conform to If header )
+            {
+                return <precondition failed response>;
+            }
+        }
+    }
+    discard If header;
+    unlock back end;
+
+The If header needs to be discarded after correct validation of all entity
+tag/lock token conditions. This avoids that the back end checks for the entity
+tag conditions a second time.
+
+.. Note::
+   The checking of both (lock token and entity tag) conditions is necessary in
+   this case, although it results in a small part of code-duplication.
+
+.. Warning::
+   The behaviour shown here does not conform to 100% with the WebDAV RFC,
+   which states that the "If header is intended to have similar functionality
+   to the If-Match header defined in section 14.25 of [RFC2068]". If this is
+   taken literally, the lock plugin would need to check if a request would fail
+   without the If header before checking the If header itself. This would
+   result in unmanageable overhead and code duplication.
+
+.. Warning::
+   Actually the back end would have need to be locked completely, in case an If
+   header occurred and was successfully checked by the lock plugin. This complete
+   lock must be held until the corresponding response was created by the
+   back end. Else there is a race condition in the time frame after the lock
+   checking until the back end starts processing. This can lead to extremely
+   strange results in high-load environments.
+
+==============
+Back end layer
+==============
+
+The back end receives the parsed If header as described in the Transport
+layer section through the $headers property of the request object. We cannot
+enforce the honoring of the If header, so back ends do not necessarily honor
+them. However, it should be properly documented that this header exists and is
+must be honored if shipped with a request.
+
+If a back end takes care for the header, it may only use the $eTag and $negated
+properties and must ignore the $lockTokens property. The latter one is used
+exclusively in the lock plugin. In case the lock plugin is active, the back end
+should never receive any If header. The If header will then be processed
+exclusively by the lock plugin.
+
+If the back end pays attention to the If header, it must honor it for every
+request and every resource path that is accessed during execution of the
+request. To include the checking of the If header into request processing the
+following algorithm must be used (pseudo-code): ::
+
+    lock back end;
+    if ( preconditions for request without If header are not fulfilled )
+    {
+        return <corresponding error response>;
+    }
+    foreach ( <affected resources> as <resource> )
+    {
+        if ( If header not fulfilled for <resource> )
+        {
+            return <precondition failed error response>;
+        }
+    }
+    process request;
+    unlock back end;
+    return <corresponding response>;
+
+
+The back end does not need to take care of If headers, if the lock plugin is
+installed. In this case, the lock plugin will take over the complete check for
+the If headers conditions and remove the header from the request object
+afterwards.
+
+==============
+Infrastructure
+==============
+
+The ezcWebdavRequest class does currently not support the removal of headers as
+required by the lock plugin. A method ::
+    
+    public removeHeader( $headerName )
+
+needs therefore to be added. This method also needs to invalidate the headers
+internally in the class, so that a manual revalidation using validateHeaders()
+needs to occur. Since the lock plugin will remove the If header before the
+request object passes ezcWebdavServer, the headers are validated anyways there.
+
+
+..
+   Local Variables:
+   mode: rst
+   fill-column: 79
+   End: 
+   vim: et syn=rst tw=79

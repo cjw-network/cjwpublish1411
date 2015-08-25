@@ -1,0 +1,306 @@
+<START:code-template::current-subtree-limitation>
+    /**
+     * Checks if provided policy array has a limitation on current subtree
+     * @param array $policy
+     * @return bool
+     */
+    protected function hasCurrentSubtreeLimitation( array $policy )
+    {
+        // No Subtree nor Node limitation, so we consider that it is potentially OK to create content under current subtree
+        if ( !isset( $policy['Subtree'] ) && !isset( $policy['Node'] ) )
+        {
+            return true;
+        }
+
+        // First check subtree limitations
+        if ( isset( $policy['Subtree'] ) )
+        {
+            foreach ( $policy['Subtree'] as $subtreeString )
+            {
+                if ( strpos( $this->attribute( 'path_string' ), $subtreeString ) !== false )
+                {
+                    return true;
+                }
+            }
+        }
+
+        // Then check node limitations
+        if ( isset( $policy['Node'] ) )
+        {
+            foreach ( $policy['Node'] as $subtreeString )
+            {
+                if ( strpos( $this->attribute( 'path_string' ), $subtreeString ) !== false )
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+<END:code-template::current-subtree-limitation>
+    /*!
+<START:code-template::static-method>
+     \static
+<END:code-template::static-method>
+     Finds all classes that the current user can create objects from and returns.
+<START:code-template::group-filter>
+     It is also possible to filter the list event more with \a $includeFilter and \a $groupList.
+<END:code-template::group-filter>
+
+<START:code-template::object-creation>
+     \param $asObject If \c true then it return eZContentClass objects, if not it will
+                      be an associative array with \c name and \c id keys.
+<END:code-template::object-creation>
+<START:code-template::group-filter>
+     \param $includeFilter If \c true then it will include only from class groups defined in
+                           \a $groupList, if not it will exclude those groups.
+     \param $groupList An array with class group IDs that should be used in filtering, use
+                       \c false if you do not wish to filter at all.
+     \param $fetchID A unique name for the current fetch, this must be supplied when filtering is
+                     used if you want caching to work.
+<END:code-template::group-filter>
+    */
+    /*START:code-template::static-method*/static /*END:code-template::static-method*/function /*START:code-template::name-create*/canCreateClassList/*END:code-template::name-create*/
+/*START:code-template::name-instantiate*/canInstantiateClassList/*END:code-template::name-instantiate*/
+( /*START:code-template::object-creation*/$asObject = false/*END:code-template::object-creation*/
+/*START:code-template::object-creation&group-filter*/, /*END:code-template::object-creation&group-filter*/
+/*START:code-template::group-filter*/$includeFilter = true, $groupList = false, $fetchID = false/*END:code-template::group-filter*/ )
+    {
+        $ini = eZINI::instance();
+        $groupArray = array();
+/*START:code-template::role-caching*/
+
+        $enableCaching = ( $ini->variable( 'RoleSettings', 'EnableCaching' ) == 'true' );
+        if ( is_array( $groupList ) )
+        {
+            if ( $fetchID == false )
+                $enableCaching = false;
+        }
+
+        if ( $enableCaching )
+        {
+            $http = eZHTTPTool::instance();
+            $handler = eZExpiryHandler::instance();
+            $expiredTimeStamp = 0;
+            if ( $handler->hasTimestamp( 'user-class-cache' ) )
+                $expiredTimeStamp = $handler->timestamp( 'user-class-cache' );
+
+            $classesCachedForUser = $http->sessionVariable( 'ClassesCachedForUser' );
+            $classesCachedTimestamp = $http->sessionVariable( 'ClassesCachedTimestamp' );
+
+            $cacheVar = 'CanInstantiateClassList';
+            if ( is_array( $groupList ) and $fetchID !== false )
+            {
+                $cacheVar = 'CanInstantiateClassListGroup';
+            }
+
+            $user = eZUser::currentUser();
+            $userID = $user->id();
+            if ( ( $classesCachedTimestamp >= $expiredTimeStamp ) && $classesCachedForUser == $userID )
+            {
+                if ( $http->hasSessionVariable( $cacheVar ) )
+                {
+                    if ( $fetchID !== false )
+                    {
+                        // Check if the group contains our ID, if not we need to fetch from DB
+                        $groupArray = $http->sessionVariable( $cacheVar );
+                        if ( isset( $groupArray[$fetchID] ) )
+                        {
+                            return $groupArray[$fetchID];
+                        }
+                    }
+                    else
+                    {
+                        return $http->sessionVariable( $cacheVar );
+                    }
+                }
+            }
+            else
+            {
+                $http->setSessionVariable( 'ClassesCachedForUser' , $userID );
+                $http->setSessionVariable( 'ClassesCachedTimestamp', time() );
+            }
+        }
+
+/*END:code-template::role-caching*/
+        $languageCodeList = eZContentLanguage::fetchLocaleList();
+        $allowedLanguages = array( '*' => array() );
+
+        $user = eZUser::currentUser();
+        $accessResult = $user->hasAccessTo( 'content' , 'create' );
+        $accessWord = $accessResult['accessWord'];
+
+        $classIDArray = array();
+        $classList = array();
+        $fetchAll = false;
+        if ( $accessWord == 'yes' )
+        {
+            $fetchAll = true;
+            $allowedLanguages['*'] = $languageCodeList;
+        }
+        else if ( $accessWord == 'no' )
+        {
+            // Cannot create any objects, return empty list.
+            return $classList;
+        }
+        else
+        {
+            $policies = $accessResult['policies'];
+            foreach ( $policies as $policyKey => $policy )
+            {
+/*START:code-template::class-policy-list*/
+                $classIDArrayPart = '*';
+                if ( isset( $policy['Class'] ) )
+                {
+                    $classIDArrayPart = $policy['Class'];
+                }
+                $languageCodeArrayPart = $languageCodeList;
+                if ( isset( $policy['Language'] ) )
+                {
+                    $languageCodeArrayPart = array_intersect( $policy['Language'], $languageCodeList );
+                }
+
+/*END:code-template::class-policy-list*/
+/*START:code-template::object-policy-list*/
+                $policyArray = $this->classListFromPolicy( $policy, $languageCodeList );
+                if ( empty( $policyArray ) )
+                {
+                    continue;
+                }
+                $classIDArrayPart = $policyArray['classes'];
+                $languageCodeArrayPart = $policyArray['language_codes'];
+/*END:code-template::object-policy-list*/
+                // No class limitation for this policy AND no previous limitation(s)
+                if ( $classIDArrayPart == '*' && empty( $classIDArray ) )
+                {
+                    $fetchAll = true;
+                    $allowedLanguages['*'] = array_unique( array_merge( $allowedLanguages['*'], $languageCodeArrayPart ) );
+                }
+                else if ( is_array( $classIDArrayPart )/*START:code-template::current-subtree-limitation*/ && $this->hasCurrentSubtreeLimitation( $policy )/*END:code-template::current-subtree-limitation*/ )
+                {
+                    $fetchAll = false;
+                    foreach( $classIDArrayPart as $class )
+                    {
+                        if ( isset( $allowedLanguages[$class] ) )
+                        {
+                            $allowedLanguages[$class] = array_unique( array_merge( $allowedLanguages[$class], $languageCodeArrayPart ) );
+                        }
+                        else
+                        {
+                            $allowedLanguages[$class] = $languageCodeArrayPart;
+                        }
+                    }
+                    $classIDArray = array_merge( $classIDArray, array_diff( $classIDArrayPart, $classIDArray ) );
+                }
+            }
+        }
+
+        $db = eZDB::instance();
+
+        $filterTableSQL = '';
+        $filterSQL = '';
+        // Create extra SQL statements for the class group filters.
+        if ( is_array( $groupList ) )
+        {
+            if ( count( $groupList ) == 0 )
+            {
+                return $classList;
+            }
+
+            $filterTableSQL = ', ezcontentclass_classgroup ccg';
+            $filterSQL = ( " AND" .
+                           "      cc.id = ccg.contentclass_id AND" .
+                           "      " );
+            $filterSQL .= $db->generateSQLINStatement( $groupList, 'ccg.group_id', !$includeFilter, true, 'int' );
+        }
+
+        $classNameFilter = eZContentClassName::sqlFilter( 'cc' );
+/*START:code-template::class-sql-creation*/
+        $filterSQL .= " AND      cc.id=" . $classNameFilter['from'] . ".contentclass_id";
+/*END:code-template::class-sql-creation*/
+
+        if ( $fetchAll )
+        {
+            // If $asObject is true we fetch all fields in class
+            $fields = $asObject ? "cc.*, $classNameFilter[nameField]" : "cc.id, $classNameFilter[nameField]";
+/*START:code-template::class-sql-creation*/
+            $rows = $db->arrayQuery( "SELECT DISTINCT $fields " .
+                                     "FROM ezcontentclass cc$filterTableSQL, $classNameFilter[from] " .
+                                     "WHERE cc.version = " . eZContentClass::VERSION_STATUS_DEFINED . " $filterSQL " .
+                                     "ORDER BY $classNameFilter[nameField] ASC" );
+/*END:code-template::class-sql-creation*/
+/*START:code-template::object-sql-creation*/
+            $rows = $db->arrayQuery( "SELECT DISTINCT $fields " .
+                                     "FROM ezcontentclass cc$filterTableSQL, $classNameFilter[from] " .
+                                     "WHERE cc.version = " . eZContentClass::VERSION_STATUS_DEFINED . " $filterSQL AND $classNameFilter[where] " .
+                                     "ORDER BY $classNameFilter[nameField] ASC" );
+/*END:code-template::object-sql-creation*/
+            $classList = eZPersistentObject::handleRows( $rows, 'eZContentClass', $asObject );
+        }
+        else
+        {
+            // If the constrained class list is empty we are not allowed to create any class
+            if ( count( $classIDArray ) == 0 )
+            {
+                return $classList;
+            }
+
+            $classIDCondition = $db->generateSQLINStatement( $classIDArray, 'cc.id' );
+            // If $asObject is true we fetch all fields in class
+            $fields = $asObject ? "cc.*, $classNameFilter[nameField]" : "cc.id, $classNameFilter[nameField]";
+/*START:code-template::class-sql-creation*/
+            $rows = $db->arrayQuery( "SELECT DISTINCT $fields " .
+                                     "FROM ezcontentclass cc$filterTableSQL, $classNameFilter[from] " .
+                                     "WHERE $classIDCondition AND" .
+                                     "      cc.version = " . eZContentClass::VERSION_STATUS_DEFINED . " $filterSQL " .
+                                     "ORDER BY $classNameFilter[nameField] ASC" );
+/*END:code-template::class-sql-creation*/
+/*START:code-template::object-sql-creation*/
+            $rows = $db->arrayQuery( "SELECT DISTINCT $fields " .
+                                     "FROM ezcontentclass cc$filterTableSQL, $classNameFilter[from] " .
+                                     "WHERE $classIDCondition AND" .
+                                     "      cc.version = " . eZContentClass::VERSION_STATUS_DEFINED . " $filterSQL AND $classNameFilter[where] " .
+                                     "ORDER BY $classNameFilter[nameField] ASC" );
+/*END:code-template::object-sql-creation*/
+            $classList = eZPersistentObject::handleRows( $rows, 'eZContentClass', $asObject );
+        }
+
+/*START:code-template::object-creation*/
+        if ( $asObject )
+        {
+            foreach ( $classList as $key => $class )
+            {
+                $id = $class->attribute( 'id' );
+                if ( isset( $allowedLanguages[$id] ) )
+                {
+                    $languageCodes = array_unique( array_merge( $allowedLanguages['*'], $allowedLanguages[$id] ) );
+                }
+                else
+                {
+                    $languageCodes = $allowedLanguages['*'];
+                }
+                $classList[$key]->setCanInstantiateLanguages( $languageCodes );
+            }
+        }
+/*END:code-template::object-creation*/
+
+        eZDebugSetting::writeDebug( 'kernel-content-class', $classList, "class list fetched from db" );
+/*START:code-template::role-caching*/
+        if ( $enableCaching )
+        {
+            if ( $fetchID !== false )
+            {
+                $groupArray[$fetchID] = $classList;
+                $http->setSessionVariable( $cacheVar, $groupArray );
+            }
+            else
+            {
+                $http->setSessionVariable( $cacheVar, $classList );
+            }
+        }
+
+/*END:code-template::role-caching*/
+        return $classList;
+    }

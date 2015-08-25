@@ -1,0 +1,5 @@
+# globale config.yml wird nach den Configs vom SiteBundle geladen und überschreibt so die Settings
+# @see src/Cjw/MultiSiteBundle/cjwpublish/CjwMultiSiteKernel.php registerContainerConfiguration()
+
+imports:
+    - { resource: config.yml }

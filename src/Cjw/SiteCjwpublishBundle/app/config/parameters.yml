@@ -1,0 +1,45 @@
+imports:
+    - { resource: @CjwSiteCjwpublishBundle/Resources/config/parameters.yml }
+
+parameters:
+    secret: 17c3a3b80cb16c3962edefd2b43809ee95f46a14
+    locale_fallback: de
+
+    cjwsite.name.project: cjwpublish
+    cjwsite.name.toplevel: com
+    cjwsite.name.bundle: CjwSiteCjwpublishBundle
+
+    ezpublish_legacy.default.view_default_layout: 'CjwSiteCjwpublishBundle::pagelayout_legacy.html.twig'               # project name needs to be replaced by page builder
+    ezpublish_legacy.default.module_default_layout: 'CjwSiteCjwpublishBundle::pagelayout_legacy.html.twig'             # project name needs to be replaced by page builder
+
+#    database_driver: pdo_mysql
+    database_host: localhost
+    database_port: 3306
+    database_user: cjwpublish
+    database_password: cjwpublish
+#    database_charset: UTF8
+
+# @see cjwpublish/config/config.yml will override this settings
+    database_prefix: 'ez1411_'
+
+    mailer_transport:  smtp
+    mailer_host:       127.0.0.1
+    mailer_user:       ~
+    mailer_password:   ~
+
+    # default error page for Exeptionlistener - can be override by siteaccess - it is a siteaccess aware config
+    cjw_publishtools.default.eventlistener.exception.template: %cjwsite.name.bundle%:exception:error.html.twig
+
+    # Filepath + -name for formbuilder Config, from EZROOT directory
+    cjw_publishtools.default.formbuilder.config_file: src/Cjw/SiteCjwpublishBundle/Resources/config/formbuilder.yml
+
+
+# TODO use separate services.yml
+services:
+
+    # Show exceptions/errors in self defined template
+    cjw_publishtools.eventlistener.exception:
+        class: Cjw\PublishToolsBundle\EventListener\ExceptionListener
+        arguments: [@templating, @kernel, "$eventlistener.exception.template;cjw_publishtools$"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }

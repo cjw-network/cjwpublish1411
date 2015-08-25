@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+           <services>
+               <service id="oneup_flysystem.adapter.local" class="League\Flysystem\Adapter\Local" abstract="true" public="false">
+                   <argument /><!-- Directory -->
+               </service>
+               <service id="oneup_flysystem.adapter.nulladapter" class="League\Flysystem\Adapter\NullAdapter" abstract="true" public="false" />
+               <service id="oneup_flysystem.adapter.zip" class="League\Flysystem\Adapter\Zip" abstract="true" public="false">
+                   <argument /><!-- Location -->
+                   <argument /><!-- Archive -->
+               </service>
+               <service id="oneup_flysystem.adapter.awss3" class="League\Flysystem\Adapter\AwsS3" abstract="true" public="false">
+                   <argument /><!-- Client -->
+                   <argument /><!-- Bucket -->
+                   <argument /><!-- Prefix -->
+               </service>
+               <service id="oneup_flysystem.adapter.dropbox" class="League\Flysystem\Adapter\Dropbox" abstract="true" public="false">
+                   <argument /><!-- Client -->
+                   <argument /><!-- Prefix -->
+               </service>
+               <service id="oneup_flysystem.adapter.rackspace" class="League\Flysystem\Adapter\Rackspace" abstract="true" public="false">
+                   <argument /><!-- Container -->
+               </service>
+               <service id="oneup_flysystem.adapter.webdav" class="League\Flysystem\Adapter\WebDav" abstract="true" public="false">
+                   <argument /><!-- Client -->
+               </service>
+               <service id="oneup_flysystem.adapter.ftp" class="League\Flysystem\Adapter\Ftp" abstract="true" public="false">
+                   <argument /><!-- Options -->
+               </service>
+               <service id="oneup_flysystem.adapter.sftp" class="League\Flysystem\Adapter\Sftp" abstract="true" public="false">
+                   <argument /><!-- Options -->
+               </service>
+           </services>
+
+</container>

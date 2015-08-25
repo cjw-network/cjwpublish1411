@@ -1,0 +1,129 @@
+======
+Design
+======
+
+This is a REST Micro framework (rmf) design to make a very thin object
+orientented layer to handle REST requests properly.
+
+Classes
+=======
+
+Request
+    Represents the HTTP-Request information. Handlers can be registered to
+    process the various chunks of information, which might be contained in the
+    request, like the body, or various headers which might require additional
+    parsing.
+
+Dispatcher
+    The dispatcher controls the application flow and calls the controller based
+    on the information from a router, which again decides on the called
+    controller based on the request information.
+
+Router
+    Returns information about the controller and action, which should be called
+    based on the request information.
+
+Controller
+    There is no controller base class. Each controller action method may return
+    a ViewStruct, which is then passed to the view.
+
+View
+    Visits an optional controller result and displays it. For example can just
+    visit a struct into some JSON output.
+
+You might want to implement additional filter chains on various levels, but
+this can be done by extending the dispatcher. The default layer is kept as thin
+and stupid as possible.
+
+Request
+-------
+
+The Request class can be used like a struct to access various information which
+are associated with HTTP requests, like the method, query parameters or the
+request body. For this purpose handlers can be registered with the request class, which
+process the requested information on-request (lazy). Each handler returns the
+value, which is then provided again by the request class on future requests to
+the same property. The API could look like::
+
+    class Request
+    {
+        public function __construct( array $handlers = array() );
+
+        public function addHandler( $name, RequestPropertyHandler $handler );
+
+        public function __get( $property );
+    }
+
+Dispatcher
+----------
+
+The dispatcher controls the application flow and is configured by the
+``Router`` and the ``View`` implementation. It then dispatches the ``Request``.
+Its API could look like::
+
+    class Dispatcher
+    {
+        public function __construct( Router $router, View $view );
+
+        public function dispatch( Request $request );
+    }
+
+Router
+------
+
+The Router descides which controller should be called based on the information,
+which can be found in the ``Request``. Its API could look like::
+
+    class Router
+    {
+        /**
+         * @return callback
+         */
+        public function getRoutingInformation( Request $request );
+    }
+
+The ``Router`` then returns a callback, which defines the controller, which
+should be called. This callback would usually be a callback like ``array(
+$controllerObject, 'methodName' )``.
+
+Controller
+----------
+
+There is no controller base class.
+
+View
+----
+
+The view receives the ``Request`` and the return value from the controller
+(which might be ``null``). The view will then display this result. Its API
+could look like::
+
+    class View
+    {
+        public function display( Request $request, $result );
+    }
+
+Optimization
+============
+
+Even this "framework" is quite flexible it can easily be optimized for single
+special requests into almost non-existance. A very reduced working example
+could look like::
+
+    $request = new Request\HTTP();
+
+    $controller = new My\Controller();
+    echo json_encode( $contoller->doSomething( $request ) );
+
+This would of course only work for one special request. The ``Request\HTTP``
+may also be replaced by something even thinner -- depending on the controller
+implementation. So this framework can be reduced to a "Rasmus style" framework
+without hassle, since the controllers are entirely independent.
+
+
+..
+   Local Variables:
+   mode: rst
+   fill-column: 79
+   End: 
+   vim: et syn=rst tw=79

@@ -1,0 +1,80 @@
+Changes from 4.1.0alpha1 to 4.1.0alpha2
+
+*Kernel:
+- Implemented enhancement #14204: Implement stale cache handling for eZFSFileHandler
+- Implemented enhancement #14173: Make setup/extensions clear all necessary settings immediately
+- Implemented enhancement #13739: Replace __CLASS__.'::'.__FUNCTION__ with __METHOD__
+- Implemented enhancement #14180: Remove deprecated eZURLTranslator class
+- Implemented enhancement #14183: Deprecate eZFile::getContents()
+- Implemented enhancement #14005: Remove putenv( "TZ=$timezone" ); from index.php
+- Implemented enhancement #14166: Clear the user info cache to make sure the evaluated policies are right
+- Implemented enhancement #14189: Move debug error handler function into the eZDebug class
+- Implemented enhancement #14135: Remove unusable openfts code
+- Implemented enhancement #13994: eZContentObjectTreeNode::hideSubTree() and eZContentObjectTreeNode::unhideSubTree() should not take $node by reference
+- Implemented enhancement #13377: Improve temporary table handling for MySQL
+- Implemented enhancement #14088: Setting the version status to pending should be inside the db transaction used by the publish operation
+- Implemented enhancement #14204: Implement stale cache handling for eZDBFileHandler + mysql
+- Implemented enhancement #12252: Add "Update existing object" option to contentobject package installer
+- Implemented enhancement #14214: Remove ID parameter from eZRSSExport::fetchRSS1_0() and eZRSSExport::fetchRSS2_0()
+- Implemented enhancement #13860: Add align support for paragraphs in ezxml for OE5 (p|custom|header|table|td|th)
+- Implemented enhancement #14251: Do not encode '(' and ')' in URLs
+- Implemented enhancement #13443: Some scripts should be rewritten as class to take advantage of autoloading
+- Implemented enhancement #14262: Optimize use of can_instantiate_class_list in admin templates
+- Implemented enhancement #14273: Deprecate eZModuleManager::availableModules() in favor of the ModuleList[] setting
+- Implemented enhancement #14101: Let eZContentOperationCollection::setVersionStatus() use eZContentObjectVersion status constants for the $status parameter
+- Implemented enhancement #13998: Remove unnecessary code from eZDateTime constructor
+- Implemented enhancement #14145: Possibility to fetch object by remote_id in templates
+- Implemented enhancement #14309: Remove ezxml library
+- Implemented enhancement #14165: eZTemplateDesignResource::handleResource() should not load the cache file again and again
+- Implemented enhancement #14346: Update usage of ereg() in eZSys to preg
+
+*Design:
+
+*eZTemplate:
+
+*eZLocale:
+
+*Package system:
+
+*Scripts:
+
+*Translations:
+
+*Bugfixes:
+- Fixed bug #14085: ezdefaultvathandler raise some PHP5 strict issues
+- Fixed bug #14182: settings/mime.ini starts with <?php /* and ends with */ ?>
+- Fixed bug #14161: eZPDFTable::callImage missing inclusion of 'kernel/common/image.php'
+- Fixed bug #13358: ezsqldumpisbndata.php script issues
+- Fixed bug #14209: Bug in registerAutoloadFunctions
+- Fixed bug #13432: eZApproveType::cleanupAfterRemoving() is arrogant, it behaves as if it's the only event type
+- Fixed bug #13766: RedirectURIAfterPublish session variable is not removed after discarding a draft
+- Fixed bug #3136: DebugRedirection
+- Fixed bug #14218: Object state groups are loaded in all pages
+- Fixed bug #14137: index_treemenu is missing register_shutdown_function( 'session_write_close' ); line
+- Fixed bug #14246: Missing tooltip
+- Fixed bug #14240: eZTemplateCacheFunction::processCached has twice the parameter $subtreeExpiry
+- Fixed bug #12785: Multilingual url aliases
+- Fixed bug #12720: Unable to edit a node
+- Fixed bug #14225: [TreeMenu] AutoopenCurrentNode does not work in browse mode
+- Fixed bug #13529: Pagelayout override doesn't work in content/versionview if siteaccess is not forced in parameters
+- Fixed bug #12325: fetch reverse_related_objects return duplicated objects
+- Fixed bug #13579: Wrong new drafts count in content/history view [with patch]
+- Fixed bug #13385: UserClassID used in kernel/classes/workflowtypes/event/ezapprove/ezapprovetype.php
+- Fixed bug #12424: user not logged out after deletion
+- Fixed bug #14236: Package fails to import Matrix columns
+- Fixed bug #14268: eZPackage doesn't store text content properly when it contains some special chars
+- Fixed bug #14261: Default object availability and Default sorting of children lost when installing content classes as package
+- Fixed bug #12831: /user/edit doesn't use $currentUserID
+- Fixed bug #14128: ezlupdate does not compile
+- Fixed bug #14198: class/view.php contains code to change sorting field & order
+- Fixed bug #14305: eZApprove creates a collaboration participant link with participant_id 0 when only approver groups are chosen
+- Fixed bug #14319: Missing mime type for dmg files.
+- Fixed bug #14330: TYPE should be ENGINE
+- Fixed bug #14063: DB connection error when uploading packages in site selection step of setup wizard
+- Fixed bug #14336: Ampersand in attribute content produces wrong XML
+- Fixed bug #13684: Adding a new new object from the edit view of an ezobjectrelationlisttype attribute can create multiple copies of the new object
+- Fixed bug #14337: Trailing Slash in DocumentRoot makes ezurl, ezdesign, ezroot fail
+- Fixed bug #13897: A user can change priorities of nodes while he's not allowed to
+- Fixed bug #14187: Inconsistent API for addObject()
+- Fixed bug #13268: You can delete bookmarks of other users
+- Fixed bug #14120: eZ Publish OS Commanding executing exploit

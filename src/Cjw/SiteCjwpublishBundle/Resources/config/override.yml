@@ -1,0 +1,39 @@
+# template override: https://doc.ez.no/display/EZP/View+provider+configuration
+
+ezpublish:
+    system:
+        %cjwsite.name.project%_user_group:
+            field_templates:
+               -
+                    template: %cjwsite.name.bundle%::fields.html.twig
+                    # Priority is optional (default is 0). The higher it is, the higher your template gets in the list.
+                    priority: 1
+            location_view:
+                # The view type (full/line are standard, but you can use custom ones)
+                full:
+                    # mind. ein matcher wird benötigt, sonst gibt es einen fehler beim default eintrag
+                    cjw_article:
+                        template: %cjwsite.name.bundle%:full:cjw_article.html.twig
+                        match:
+                            Identifier\ContentType: cjw_article
+
+                    cjw_feedback_form:
+                        controller: CjwPublishToolsBundle:Formular:formCollector
+                        template: %cjwsite.name.bundle%:full:cjw_feedback_form.html.twig
+                        match:
+                            Identifier\ContentType: cjw_feedback_form
+
+                    # default full view template
+                    default:
+                        template: %cjwsite.name.bundle%::full.html.twig
+                        match:
+                line:
+                    # mind. ein matcher wird benötigt, sonst gibt es einen fehler beim default eintrag
+                    dummy:
+                        template: %cjwsite.name.bundle%::line.html.twig
+                        match:
+                            Identifier\ContentType: dummy
+                    # default line view template
+                    default:
+                        template: %cjwsite.name.bundle%::line.html.twig
+                        match:

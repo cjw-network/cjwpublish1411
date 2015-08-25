@@ -1,0 +1,52 @@
+Changes from 4.4.0beta1 to 4.4.0beta2
+
+*Kernel:
+- Implemented enhancement #013440: policy edit dropdown values not retained upon POST actions
+- Implemented enhancement #015629: Make 'value' of 'ezpreferences' table a text
+- Implemented enhancement #016665: ezHTTPTool::sendHTTPRequest() should support sending cookies
+- Implemented enhancement #016723: Make cronjob MaxScriptExecutionTime configurable
+- Implemented enhancement #017024: make ezmodule template operator also consider ModuleList for enabled modules
+- Implemented enhancement #017148: Template cache not generated can lead to database overload with ezdb cluster file handler
+
+*Design:
+
+*eZTemplate:
+
+*eZLocale:
+
+*Package system:
+
+*Scripts:
+
+*Translations:
+
+*Bugfixes:
+- Fixed bug #006380: Workflow cron - Fatal error: Call to a member function on a non-object
+- Fixed bug #010489: Content indexing might never happen in limited environment
+- Fixed bug #011317: appendDebugNodes breaks IE by triggering Quirks mode
+- Fixed bug #013065: Do not expire access cache of each user when a location is added to one user
+- Fixed bug #013516: updateviewcount not getting correct paths
+- Fixed bug #013867: small non-compliances of the mysql db driver with the other drivers
+- Fixed bug #015406: eZ cannot convert images with ImageMagick on PHP 5.3
+- Fixed bug #015898: Cannot translate a user content object
+- Fixed bug #016395: $contentobject.main_node.name is not translated
+- Fixed bug #016503: TC-80: Sending information collection form is broken in admin2
+- Fixed bug #016512: Activation email is sent even if user registration fails
+- Fixed bug #016524: [Tip a Friend] Translation mistake in kernel/content/tipafriend.php
+- Fixed bug #016587: Small typo mistake in updatenodeassignment.php
+- Fixed bug #016664: ezHTTPTool::sendHTTPRequest() fails on port not 80
+  (Add support for setting port in $uri when $port is false)
+- Fixed bug #016688: Content keyword fetch function is not Oracle compatible
+- Fixed bug #016739: Sorting Bug in eZCountryType::fetchTranslatedNames on some systems
+- Fixed bug #016808: Context not refreshed between two successive browsing with admin2
+- Fixed bug #016883: WebDAV doesn't support clustering
+- Fixed bug #016953: &nbsp; breaks RSS/ATOM feeds
+- Fixed bug #016997: Call of non static methods statically from ezgeneraldigest
+- Fixed bug #017093: TC-57 - Multiupload is broken in 4.4Alpha5
+- Fixed bug #017099: ezcache.php: Get confirmation when clearing dangerous directories
+- Fixed bug #017101: Contentclass description and contentclass attribute description/category metadata & serialized data not supported in ezpackage
+- Fixed bug #017133: TC-21 - "Online Users" block is not working when Sessions Handler<>ezpSessionHandlerDB
+- Fixed bug #017155: eZContentObject->version() becomes slow when importing huge amount of content
+- Fixed bug #017165: DB connection charset is not set everywhere connections are created
+- Fixed bug #017166: [objectrelationlist]Wrong language version created when editing object in a different main language
+

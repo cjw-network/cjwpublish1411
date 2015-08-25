@@ -1,0 +1,116 @@
+Changes from 3.2-4 to 3.2-5
+
+*Kernel:
+- Security fix: Added check when editing templates if the file is actually a template.
+- Specifying language in url ( laguage/eng-GB ) will det default language to specified language for all objects fetched.
+- New function in eZDataType called repairContentObjectAttribute() which is
+  called from the updatetranslations.php script. It allows datatypes
+  do repair external tables which have missing attribute data as a result of
+  a previous bug in 3.2 and lower.
+- New function in eZContentObject called fetchListCount() which can be used
+  to fetch the number of objects, conditions are also supported.
+- Added conditions and offset/limit support to eZContentObject::fetchList.
+- Added repairContentObjectAttribute support to eZImage datatype, this should
+  fix the problem with empty images on a 3.3 upgrade.
+- Added support for sending version number to
+  eZContentObjectAttribute::fetchSameClassAttributeIDList
+- Added check if basket item exists before we remove it
+
+
+
+*Bugfixes:
+- Fixed bug with publish date when the first published version of an object were not 1,
+  now the published date is updated if it is found to be 0.
+- Fixed keyword bug when discarding drafts. 
+  http://ez.no/developer/ez_publish_3/bug_reports/keywords_cannot_be_edited__1
+- Fixed mysql server and client version information. 
+  http://ez.no/developer/ez_publish_3/bug_reports/mysqldb_class
+- Fixed showing class in tabletes when using xml and table, th and td elements. 
+  http://ez.no/developer/ez_publish_3/bug_reports/classification_var_is_missing_in_ezxmltags_templates
+- Fixed fetching objects using attribute_filter when fetching objects with multiple translations. 
+  http://ez.no/developer/ez_publish_3/bug_reports/fetching_children_with_attribute_filter_ignores_translations
+- Fixed ezxml literal imput bug when using &amp;, &quot;, etc. 
+  http://ez.no/developer/ez_publish_3/bug_reports/html_no_break_space_in_literal_block_doesn_t_work
+- Fixed PHP 4 reference bug related stuff using eZContentObject::defaultLanguage() 
+  http://ez.no/developer/ez_publish_3/bug_reports/fatal_error_at_content_saving_image_problem
+- Fixed cleaning up classification variable in template in xhtml output handler. 
+  http://ez.no/developer/ez_publish_3/bug_reports/classification_troubles
+- Fixed eZTimeType to return and store relative time. 
+  http://ez.no/developer/ez_publish_3/bug_reports/order_by_time
+- Fixed moving placement of class attributes. Changes done when moving are now store. Minor change of class edit template included.
+  http://ez.no/developer/ez_publish_3/bug_reports/diappearing_field_information_when_editing_a_class
+- Fixed indexing large documents by deviding the text to be indexed into smaller chunks.
+  http://ez.no/developer/ez_publish_3/bug_reports/weird_search_limitations_binary_file
+- Fixed undefined variabled. 
+  http://ez.no/developer/ez_publish_3/bug_reports/undefined_variables_in_class_groupedit_and_workflow_groupedit
+- Fixed language bug using sorty_by on attributes. 
+  http://ez.no/developer/ez_publish_3/bug_reports/sort_by_attribute_translation_duplicates_bug_incl_quickfix
+- Fixed bug in handling of email addresses with text (e.g name), previously the name and email were swapped giving bad To and From mail addresses.
+- Fixed ezdesign operator priority. 
+  http://ez.no/developer/ez_publish_3/bug_reports/extension_problem_with_ezdesign_operator
+- Fixed undefined property bug.
+  http://ez.no/developer/ez_publish_3/bug_reports/undefined_property_contentobject_in_ezcontentobjecttreenode_php
+- Fixed wrong order of forwarding url translator.
+  http://ez.no/developer/ez_publish_3/bug_reports/url_translator_input_fields_in_wrong_order
+- Fixed SMTP parameters.
+  http://ez.no/community/bug_reports/class_ezsmtptransport_extends_ezmailtransport
+- Fixed Login link in design/admin/templates/loginpagelayout.tpl
+  http://ez.no/community/bug_reports/admin_loginpagelayout_tpl_wrong_url
+- Fixed update search script to update user data.
+  http://ez.no/community/bug_reports/updatesearchindex_php_don_t_support_emails
+- Fixed sql query for getting search statistics.
+  http://ez.no/community/bug_reports/search_statistics_and_postgresql
+- Fixed typo in kernel/content/node_edit.php
+  http://ez.no/community/bug_reports/typo_in_kernel_content_node_edit_php
+- Fixed error message in eZTemplateDesignResource.
+  http://ez.no/community/bug_reports/debug_output
+- Fixed checking of input ID to content/download, previously it was
+  used unchecked causing a crash on the page.
+- Fixed bug. When sending arrays to the repeat operator the output was
+  repeated too many times.
+  http://ez.no/community/bug_reports/repeat_operator_for_arrays_repeats_too_much
+- Fixed bug, typo with section_id http://ez.no/community/bug_reports/typos_ezcontentobject_section_instead_of_ezcontentobject_section_id
+- Fixed bug, templateoperator append now may append multiple strings
+  http://ez.no/community/forum/developer/bug_in_template_operator_append
+- Fixed bug, 'a' and 'l' in the format string was not handled correctly by the datetime opperator
+  http://ez.no/community/bug_reports/bug_in_datetime
+- Fixed typo in nor_NO translation, 
+  http://ez.no/community/bug_reports/typo_in_norwegian_translation
+- Fixed bug. Using undefined index: base_dir in some cases
+  http://ez.no/community/bug_reports/undefined_index_base_dir_in_kernel_common_eztemplatedesignresource_php_on_line_367- Fixed bug, Assumed variable ContentActionList allways was an array in contentobject.php
+  http://ez.no/community/bug_reports/error_invalid_argument_supplied_for_foreach_in_ezcontentobject_php
+- Fixed bug, addressing wrong (nonexisting db table) eZContentObject::subTreeCount() when filtering on section
+  http://ez.no/community/bug_reports/typo_in_ezcontentobjecttreenode_php
+- Fixed bug, doing a list_count fetch on a nonexisting node caused crash
+  http://ez.no/community/bug_reports/fatal_error_fetch_list_count_in_tpls
+- Removed event_ezpaynet workflow event from the standard workflow.ini file.
+  http://ez.no/community/bug_reports/workflow_type_not_found_event_ezpaynet
+- Fixed log directory for the webdav server, now it uses the var directory 
+  in eZ publish instead of /tmp.
+  http://ez.no/community/bug_reports/webdav_log_still_is_in_tmp
+  http://ez.no/community/bug_reports/webdav_logging_enabled
+- Made sure codepages are cleared by the clearcache.sh script.
+  http://ez.no/community/bug_reports/cache_translate_and_texttoimage_etc
+
+*Setup:
+- Fixed setup to only check for existing eZ publish tables.
+- Added back the finetuning page, it will display hints for extending eZ publish.
+- Added finetuning check for the ImageTTFText and ImageTTFBBox functions which are
+  need for texttoimage to work properly.
+
+*Library :
+
+eZ Locale:
+- Fixed eZFloat datatype to to handle locale settings correctly.
+- Fixed eZPrice to handle locale settings correctly.
+- Fixed shop->discount to handle locale settings correctly.
+  http://ez.no/community/bug_reports/floats_and_decimal_point_separator
+
+eZ template:
+- Some changes to the compiled templates. Removed the references when accessing attributes which fixed some of the problems with the image system.
+  Use clearcache --clear-tpl after upgrading to be 100% sure they are recreated.
+
+*Translations:
+- Added Finnish locale
+- Updated fre-CA and fre-FR
+- Added Dutch translation and locale (dut-NL).

@@ -1,0 +1,5 @@
+twig:
+    # http://symfony.com/doc/current/cookbook/templating/global_variables.html
+    globals:
+        site_bundle_name: %cjwsite.name.bundle%
+        locationid_treeroot: %cjwsite.default.tree_root_location_id%

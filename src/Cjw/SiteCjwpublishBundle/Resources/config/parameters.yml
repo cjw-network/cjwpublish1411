@@ -1,0 +1,5 @@
+parameters:
+    cjwsite.anonymous_user_id: 10
+    cjwsite.default.anonymous_user_id: 10
+    cjwsite.default.tree_root_location_id: 59
+    cjwsite.default.homepage_location_id: 59

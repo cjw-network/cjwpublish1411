@@ -1,0 +1,86 @@
+<phpunit
+  backupGlobals="false"
+  backupStaticAttributes="false"
+  bootstrap="bootstrap.php"
+  convertErrorsToExceptions="true"
+  convertNoticesToExceptions="true"
+  convertWarningsToExceptions="true"
+  colors="false"
+  >
+  <testsuites>
+    <testsuite name="eZ\Publish\Core\Base">
+      <directory>eZ/Publish/Core/Base/Tests</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\Repository">
+      <directory>eZ/Publish/Core/Repository/Tests</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\FieldType">
+      <directory>eZ/Publish/Core/FieldType/Tests</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\Limitation">
+      <directory>eZ/Publish/Core/Limitation/Tests</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\Persistence">
+      <directory>eZ/Publish/Core/Persistence/Tests</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\Persistence\Cache">
+      <directory>eZ/Publish/Core/Persistence/Cache/Tests</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\Persistence\Legacy">
+      <directory>eZ/Publish/Core/Persistence/Legacy/Tests</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\Persistence\Doctrine">
+      <directory>eZ/Publish/Core/Persistence/Doctrine/Tests</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\Persistence\Solr">
+      <directory>eZ/Publish/Core/Persistence/Solr/Tests</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\IO">
+      <directory>eZ/Publish/Core/IO/Tests</directory>
+    </testsuite>
+    <testsuite name="eZ Publish HMVC test suite">
+      <directory>eZ/Publish/Core/MVC/Symfony</directory>
+      <directory>eZ/Bundle</directory>
+    </testsuite>
+    <testsuite name="eZ Publish legacy test suite">
+        <directory>eZ/Publish/Core/MVC/Legacy</directory>
+    </testsuite>
+    <testsuite name="eZ Publish REST test suite">
+        <directory>eZ/Publish/Core/REST</directory>
+    </testsuite>
+    <testsuite name="eZ Publish SPI test suite">
+        <directory>eZ/Publish/SPI</directory>
+    </testsuite>
+    <testsuite name="eZ Publish SignalSlot test suite">
+        <directory>eZ/Publish/Core/SignalSlot</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\Pagination">
+        <directory>eZ/Publish/Core/Pagination</directory>
+    </testsuite>
+    <testsuite name="eZ\Publish\Core\Helper">
+        <directory>eZ/Publish/Core/Helper</directory>
+    </testsuite>
+  </testsuites>
+  <filter>
+    <whitelist>
+      <directory suffix=".php">eZ</directory>
+      <exclude>
+          <directory>eZ/Publish/*/Tests</directory>
+          <directory>eZ/Publish/*/*/Tests</directory>
+          <directory>eZ/Publish/*/*/*/Tests</directory>
+          <directory>eZ/Publish/*/*/*/*/Tests</directory>
+          <directory>eZ/Bundle/*/Tests</directory>
+          <directory>eZ/Bundle/*/_fixtures</directory>
+          <directory>eZ/Publish/Core/Persistence/Legacy/docs</directory>
+          <directory>doc</directory>
+          <directory>design</directory>
+          <directory>vendor</directory>
+          <directory>eZ/Publish/API/Repository/Examples</directory>
+          <directory>eZ/Publish/API/Repository/Tutorials</directory>
+      </exclude>
+    </whitelist>
+  </filter>
+  <listeners>
+    <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
+  </listeners>
+</phpunit>

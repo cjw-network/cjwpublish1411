@@ -1,0 +1,5 @@
+_assetic:
+    resource: .
+    type: assetic
+_app:
+    resource: /mnt/htdocs/cjwpublish1411/_build/cjwpublish1411/ezpublish/config/routing_dev.yml

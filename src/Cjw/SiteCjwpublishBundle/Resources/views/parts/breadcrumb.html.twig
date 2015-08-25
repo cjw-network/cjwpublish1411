@@ -1,0 +1,34 @@
+<ol class="breadcrumb">
+    {% if location.id is defined or '/edit/' in ezpublish.systemUriString or '/add/' in ezpublish.systemUriString %}
+        {% if location.id is defined %}
+            {% set locationId = location.id %}
+        {% else %}
+            {% set pathArray = ezpublish.systemUriString|split('/') %}
+            {% set locationId = pathArray['3'] %}
+        {% endif %}
+        {% set path = cjw_breadcrumb( locationId, { 'offset': '1',
+                                                    'rootName': 'Home',
+                                                    'separator': '' } ) %}
+        {% for item in path.items %}
+            <li class="breadcrumb-item inline">
+                {% if loop.first == false and path.separator != '' %}
+                    <span class="breadcrumb-sep">{{ path.separator }}</span> 
+                {% endif %}
+                {% if loop.last %}
+                    {{ item.name }}
+                {% endif %}
+                {% if loop.last == false %}
+                    <a href="{{ path( item.location ) }}">{{ ez_content_name( item.location.contentInfo ) }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    {% elseif ezpublish.systemUriString == '/login' %}
+        <li class="breadcrumb-item inline"><a href="/">Home</a></li>
+        <li class="breadcrumb-item inline"><span class="breadcrumb-sep">-></span> User Login</li>
+    {% elseif '/register' in ezpublish.systemUriString %}
+        <li class="breadcrumb-item inline"><a href="/">Home</a></li>
+        <li class="breadcrumb-item inline"><span class="breadcrumb-sep">-></span> User Register</li>
+    {% else %}
+        <li class="breadcrumb-item inline">&nbsp;</li>
+    {% endif %}
+</ol>

@@ -1,0 +1,23 @@
+{#
+    render cjw_file in full view
+#}
+
+{% extends site_bundle_name ~ '::pagelayout.html.twig' %}
+
+{% block content %}
+    <div class="class-{{ content.contentInfo.contentTypeId }} content-view-full">
+
+        {% if content.fields.title is defined and not ez_is_field_empty( content, 'title' ) %}
+            <h1>{{ ez_field_value( content, 'title' ) }}</h1>
+        {% endif %}
+
+        {% if content.fields.short_description is defined and not ez_is_field_empty( content, 'short_description' ) %}
+            {{ ez_render_field( content, 'short_description' ) }}
+        {% endif %}
+
+        {% if content.fields.file is defined and not ez_is_field_empty( content, 'file' ) %}
+            {{ ez_render_field( content, 'file') }}
+        {% endif %}
+
+    </div>
+{% endblock %}

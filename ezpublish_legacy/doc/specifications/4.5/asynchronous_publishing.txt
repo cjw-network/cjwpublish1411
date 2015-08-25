@@ -1,0 +1,170 @@
+=======================
+Asynchronous publishing
+=======================
+
+Synopsis
+========
+The currently reported MySQL LOCK WAIT timeout issues strongly limit the amount of content the kernel can publish
+concurrently.
+
+While the process itself must, and will be improved over time, there is an immediate need for an improvement in order
+to satisfy our audience.
+
+Since the root of this issue is the lack of control over how many contents can be sent for publishing simultaneously,
+the best long term solution is to make these operations controllable by a centralized process. This is what asynchronous
+publishing aims for.
+
+How publishing works
+====================
+
+This call is the unique way to trigger publishing of a content + draft version::
+
+    eZOperationHandler::execute( 'content', 'publish', array( 'object_id' => $objectId, 'version' => $version ) );
+
+Before this is called, the draft has been built with available data (usually submitted, sometimes scripted). When
+publishing from content/edit, in a normal eZ Publish admin, attributes are injected their content from
+kernel/content/edit.php, and the operation is triggered once everything is ready.
+
+This means that the data required to publish content always exist *before* starting the operation.
+
+Components
+==========
+
+Publishing operation queuer
+---------------------------
+
+A new entry in the content/publish operation that sends the content to the publishing queue.
+This is performed after the set-status-pending action, so that the object awaiting publishingg is in PENDING status.
+
+Publishing queue
+----------------
+
+This is the structure that stores queued operations. It is DB based, in a simple table that will let the Publishing
+queue processor know what operations are to be performed.
+
+Publishing queue processor
+--------------------------
+A set of background (CLI) processes that read the publishing queue, and processes the operations.
+
+The processor uses multiple publishing queue processes, up to a configurable maximum concurrency level, configured in
+content.ini::
+
+    [PublishingSettings]
+    # how many parallel publishing operations should be allowed
+    # default: 10
+    PublishingProcessSlots=10
+
+Implementation
+==============
+
+Publishing operation
+--------------------
+
+Add a new method to the publishing operation that returns a specific status and therefore sends the operation to the
+Publishing queue. This method should be the second item, after set-status-pending.
+
+This method will send ezpContentPublishingQueue a request to add the publishing operation to the queue.
+
+Publishing interface
+--------------------
+Since the user won't be left with a loading page after clicking on "Send for publishing", some kind of "wait interface"
+is required to maintain a good user experience.
+
+While the content is being published, a wait animation (image) will be displayed, and regular AJAX queries will be sent
+to the backoffice using ezjscore, requesting the publish operation's status. Once the operation is terminated, new
+UI items will be proposed:
+
+* view the published object
+* go back to the container - not implemented yet
+
+Making the feature optional
+---------------------------
+In order to ensure BC, it must be possible to disable the feature.
+
+This is made possible through an INI setting in content.ini::
+
+    [PublishingSettings]
+    # Enable/Disable the asynchronous publishing feature
+    AsynchronousPublishing=disabled
+
+If disabled, the operation won't be deferred to the daemon at all, and will happen in real time. This also allows
+siteaccess based enabling/disabling of the feature.
+
+Potential problems
+==================
+
+Interactive workflows
+---------------------
+P: Interactive workflows would be affected. Since the operation would be executed asynchronously by another process, and
+   user interaction wouldn't be possible.
+
+S: The publishing queue could, using AJAX, send feedback that allows the process to be resumed (back to
+   content/edit). This will be detected by the daemon based on the operation's return value.
+
+Editor leaving page
+-------------------
+P: If the editor leaves the page, what happens ?
+
+S: Most simple scenario: as the operation has been queued, it will be processed by the publishing queue processor
+   independantly of the user waiting or not. While this might be confusing for the user, it will keep the behaviour
+   consistent.
+
+Scripted publishing
+-------------------
+P: What happens if the publishing operation is used outside the content/edit context ? This is quite common, and we do
+   recommend it. While the publishing operation can still be sent to the pooling processor, how would the interactivity
+   be implemented ?
+
+S: Publishing strategy concept ? Ideally, in order to maintain full backwards compatibility, it should be easy to get
+   maintained on hold while content is being published. This would maintain the same experience as today, and would
+   ensure that the publishing sequence is valid (container before sub-content, etc). This requires the publishing
+   strategy concept to be implemented.
+
+Zombie processes
+----------------
+P: By experience, we know that background processes aren't 100% reliable. Zombie processes might limit the concurrency
+   as dead publishing queue processes might be inactive and preventing new ones from executing.
+
+Embedded publishing
+-------------------
+P: Other interfaces let the users publish content, for instance the embed elements one from ezoe.
+
+S: See how this can be worked around, with a wait animation as proposed for the standard publishing operation.
+
+RedirectURIAfterPublish
+-----------------------
+P: This POST variable can be added to the content/edit form, and it will be used to redirect the user after publishing.
+
+S: This variable must be taken into consideration, and offered as the default behaviour once publishing is done.
+
+Webdav
+------
+P: How can we handle this with webdav ?
+
+S: No "wait" interface. PublishingStrategy => realtime.
+
+Deferred to cron operations
+---------------------------
+P: Are these supported ?
+
+S: Yes. The queue will move the operation forward until it gets deferred, and publishing will be resumed by the crontab.
+   All that remains is handling this status upon return. A process status must be added.
+
+TODO List
+=========
+- handle RedirectURIAfterPublish (automatic redirection ?) - DONE
+- add permission check (can read ? edit ?) to the ezpublishingqueue/status call
+  edit sounds right, as the user has to be able to edit his content in any case.
+  need extra check for language ?
+- handle dead database
+  The DB handler should return a manageable error when the database connection is dead (exception) so that relevant
+  action can be taken
+- handle interactive workflows. Somehow.
+- handle deferred to cron publishing
+  a specific status should be returned. DONE
+- handle queue table cleanup (archiving)
+- add interrupt (SIG 3) handling: stop processing the queue, let current jobs terminate, and cleanup
+- implement daemon flag + mode
+  * add some output handling, either to CLI or using logs, in order to work in daemon mode
+    Output is now logged to var/log/async.log
+  Daemon mode implemented, use the -n flag

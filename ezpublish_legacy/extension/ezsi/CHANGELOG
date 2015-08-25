@@ -1,0 +1,6 @@
+ezsi 1.2
+--------
+
+*Bugfixes:
+
+- Fixed bug #16015: ezsi race condition gives database transaction error

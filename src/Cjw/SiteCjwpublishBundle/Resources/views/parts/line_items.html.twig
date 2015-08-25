@@ -1,0 +1,21 @@
+{#
+    Fetch sub-items of current object and display them using line_item view
+#}
+
+{% set locationId = content.contentInfo.mainLocationId %}
+{% set listLimit = 50 %}
+{% set listOffset = 0 %}
+
+{% set listChildren = cjw_fetch_content( [ locationId ], { 'depth': '1',
+    'limit': listLimit,
+    'offset': listOffset,
+    'include': [ 'cjw_file', 'cjw_link' ],
+    'language': [],
+    'datamap': false,
+    'count': false } ) %}
+
+<div class="content-view-children">
+    {% for child in listChildren[locationId]['children'] %}
+        {{ render( controller( "ez_content:viewLocation", {'locationId': child.contentInfo.mainLocationId, 'viewType': 'line_item'} ) ) }}
+    {% endfor %}
+</div>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<software>
+    <metadata>
+        <name>eZ Tags LS</name>
+        <version>//autogentag//</version>
+        <copyright>Copyright (C) 2010-2014 Netgen d.o.o., eZ Systems AS. All rights reserved.</copyright>
+        <license>//EZP_LICENSE//</license>
+        <info_url>http://projects.ez.no/eztags</info_url>
+    </metadata>
+
+    <dependencies>
+        <uses>
+            <extension name="ezfind" />
+        </uses>
+        <requires>
+            <extension name="ezjscore" />
+        </requires>
+    </dependencies>
+</software>

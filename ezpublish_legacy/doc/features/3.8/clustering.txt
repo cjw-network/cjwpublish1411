@@ -1,0 +1,164 @@
+*Title: Clustering.
+
+*Incentive:
+
+It is now hard to build clusters on eZ Publish due to the problem of
+synchronizing caches, images and binary files between cluster nodes.
+
+*Basics:
+
+The clustering feature makes eZ Publish store images, binary files, and
+all content-related caches to database.
+Templates, compiled templates, override cache and other caches not
+related to content are still stored on filesystem.
+
+*Setup
+
+ 1. Switch to database storage.
+
+Add this to your file.ini.append.php:
+    [ClusteringSettings]
+    FileHandler=ezdb
+    DBBackend=mysql # or pgsql
+    DBHost=db
+    DBPort=3306
+    DBSocket=
+    DBName=cluster
+    DBUser=fred
+    DBPassword=secret
+    DBChunkSize=65535
+
+Changing FileHandler to ezdb will force eZ Publish to use database for
+storing images, binary files and content-related caches.
+
+ 2. Create table(s) in database.
+
+See table creation queries in the same file you edited db settings in
+your ezdb backend source code (i.e.
+kernel/classes/clusterfilehandlers/dbbackends/mysql.php) and run them on
+the database.
+
+ 3. Copy your files stored in var dir into database.
+
+$ bin/php/clusterize.php -s intranet
+
+where 'intranet' is your siteaccess.
+
+ 4. Clear the cache, using the clearcache.sh script.
+
+$ cd <ezp dir>
+$ bin/shell/clearcache.sh --clear-all
+$ bin/shell/clearcache.sh --clear-all --var-subdir=intranet
+
+This is the last time you will use the clearcache.sh script. This is because
+clearcache.sh script will not be able to clear any cache in the database. It
+only works on cache stored on the filesystem. To clear the cache from now on,
+use the clearcache functions in the admin interface, or the
+bin/php/ezcache.php script.
+
+ 5. Compile the templates.
+
+Since all caches now are empty, we should compile the templates again. You
+might skip this step. If you skip this step, the templates will be compiled
+on demand when browsing the site.
+
+$ cd <ezp dir>
+$ /usr/local/php/bin/php bin/php/eztc.php -s intranet
+
+This step should be done for each siteaccess
+
+ 6. Update apache virtualhost configuration.
+
+Since images are no longer stored on disk but in the database, they need
+to be served by PHP. Therefore you will need to apply one more
+RewriteRule. It will point Apache to use specific .php script for
+handling images. That script actually contains only settings to use for
+the clustering database and includes index_image.php.
+
+Below you will find typical contents of this file.
+Suppose you name it index_image-common.php and place under eZ Publish root
+directory:
+
+###############################################
+<?php
+define( 'STORAGE_BACKEND',     'mysql'   );
+define( 'STORAGE_HOST',        'db'      );
+define( 'STORAGE_PORT',        3306      );
+define( 'STORAGE_SOCKET',      ''        );
+define( 'STORAGE_USER',        'fred'    );
+define( 'STORAGE_PASS',        ''        );
+define( 'STORAGE_DB',          'cluster' );
+define( 'STORAGE_CHUNK_SIZE',  65535     );
+
+include_once( 'index_image.php' );
+?>
+###############################################
+
+The code above defines database settings, the same as you specified in
+[ClusteringSettings] group of file.ini (they are duplicated here for
+speed reasons, since parsing .ini files would slow down loading images
+dramatically). Most of them are self-explanatory, the only one worth
+noting is "chunk size" that defines size of chunk by which file data is
+fetched from database.
+
+For this script to serve images, insert the following rule to your
+Apache config file before your rewrite rules:
+
+  RewriteRule ^/var/([^/]+/)?storage/images(-versioned)?/.*  /index_image-common.php [L]
+
+If you want to use different clustering settings in different siteaccesses
+then you should create several such scripts (containing different db settings)
+and create corresponding rewrite rules:
+
+  RewriteRule ^/var/intranet/storage/images(-versioned)?/.*  /index_image-intranet.php [L]
+  RewriteRule ^/var/shop/storage/images(-versioned)?/.*  /index_image-shop.php [L]
+  
+The above rules make Apache call the corresponding script for serving
+images of specific siteaccess. Note that this will only work if the
+siteaccesses have different VarDirs.
+
+ 7. Restart apache.
+ 
+  /path/to/apache/bin/apachectl stop
+  /path/to/apache/bin/apachectl start
+
+*Usage:
+
+You can easily store your files into database and retrieve them back,
+rename and delete them, etc using the cluster file handler API.
+
+There are two built-in handlers: ezfs and ezdb: the first stores
+information on filesystem, while the latter uses database. Besides ezdb
+handler is split into backends, each handling a specific database
+(mysql, pgsql, oracle, etc). You can implement your own handlers and/or
+backends in an extension. See comments in settings/file.ini for more
+details.
+
+Before using a handler, you must instantiate it as following:
+
+    require_once( 'kernel/classes/ezclusterfilehandler.php' );
+    $fileHandler = eZClusterFileHandler::instance();
+
+Example #1: Storing existing file to database
+
+    $fileHandler->fileStore( 'var/storage/files/foo.txt' );
+
+Example #2: Creating file in database and storing given data to it
+
+    $fileHandler->fileStoreContents( 'var/storage/files/foo.txt', $data );
+
+Example #3: Fetching file from database
+
+    // copy file from database to filesystem
+    $fileHandler->fileFetch( 'var/storage/files/foo.txt' );
+
+Example #4: Retrieving file contents from database
+
+    $data = $fileHandler->fileFetchContents( 'var/storage/files/foo.txt' );
+
+Example #5: Deleting file from database
+
+    $fileHandler->fileDelete( 'var/storage/files/foo.txt' );
+
+For more information on handler API see
+kernel/classes/clusterfilehandlers/*.php.

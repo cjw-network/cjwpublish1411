@@ -1,0 +1,6 @@
+<?php/*
+
+[GMapSettings]
+UseSensor=false
+
+*/?>

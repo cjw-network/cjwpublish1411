@@ -1,0 +1,51 @@
+{
+    "name": "zetacomponents/archive",
+    "type": "library",
+    "description": "The component allows you to create, modify, and extract archive files of  various formats.  The currently supported archives formats are Tar (with  the flavours: ustar, v7, pax, and gnu) and Zip.",
+    "homepage": "https://github.com/zetacomponents",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Sergey Alexeev"
+        },
+        {
+            "name": "Sebastian Bergmann"
+        },
+        {
+            "name": "Jan Borsodi"
+        },
+        {
+            "name": "Raymond Bosman"
+        },
+        {
+            "name": "Frederik Holljen"
+        },
+        {
+            "name": "Kore Nordmann"
+        },
+        {
+            "name": "Derick Rethans"
+        },
+        {
+            "name": "Vadym Savchuk"
+        },
+        {
+            "name": "Tobias Schlitt"
+        },
+        {
+            "name": "Alexandru Stanoi"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "src"
+        ]
+    },
+	"minimum-stability": "dev",
+    "require": {
+        "zetacomponents/base": "~1.8"
+    },
+    "require-dev": {
+        "zetacomponents/unit-test": "*"
+    }
+}

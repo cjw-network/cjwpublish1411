@@ -1,0 +1,245 @@
+    function classListFromPolicy( $policy, $allowedLanguageCodes = false )
+    {
+        $canCreateClassIDListPart = array();
+        $hasClassIDLimitation = false;
+        $user = eZUser::currentUser();
+        $userID = $user->attribute( 'contentobject_id' );
+
+/*START:code-template::is-node*/
+        $object = false;
+/*END:code-template::is-node*/
+        if ( isset( $policy['ParentOwner'] ) )
+        {
+/*START:code-template::is-node*/
+            if ( $object === false )
+                $object = $this->attribute( 'object' );
+
+/*END:code-template::is-node*/
+            // if limitation value == 2, anonymous limited to current session.
+            if ( in_array( 2, $policy['ParentOwner'] ) && $user->isAnonymous() )
+            {
+                $createdObjectIDList = eZPreferences::value( 'ObjectCreationIDList' );
+                if ( !$createdObjectIDList ||
+/*START:code-template::is-node*/
+                     !in_array( $object->ID, unserialize( $createdObjectIDList ) ) )
+/*END:code-template::is-node*/
+/*START:code-template::is-object*/
+                     !in_array( $this->ID, unserialize( $createdObjectIDList ) ) )
+/*END:code-template::is-object*/
+                {
+                    return array();
+                }
+            }
+/*START:code-template::is-node*/
+            else if ( $object->attribute( 'owner_id' ) != $userID &&
+/*END:code-template::is-node*/
+/*START:code-template::is-object*/
+            else if ( $this->attribute( 'owner_id' ) != $userID &&
+/*END:code-template::is-object*/
+/*START:code-template::is-node*/
+                      $object->ID != $userID )
+/*END:code-template::is-node*/
+/*START:code-template::is-object*/
+                      $this->ID != $userID )
+/*END:code-template::is-object*/
+            {
+                return array();
+            }
+        }
+
+        if ( isset( $policy['ParentGroup'] ) )
+        {
+/*START:code-template::is-node*/
+            if ( $object === false )
+                $object = $this->attribute( 'object' );
+
+            $access = $object->checkGroupLimitationAccess( $policy['ParentGroup'], $userID );
+/*END:code-template::is-node*/
+/*START:code-template::is-object*/
+            $access = $this->checkGroupLimitationAccess( $policy['ParentGroup'], $userID );
+/*END:code-template::is-object*/
+            if ( $access !== 'allowed' )
+            {
+                return array();
+            }
+        }
+
+        if ( isset( $policy['Class'] ) )
+        {
+            $canCreateClassIDListPart = $policy['Class'];
+            $hasClassIDLimitation = true;
+        }
+
+        if ( isset( $policy['User_Section'] ) )
+        {
+/*START:code-template::is-node*/
+            if ( $object === false )
+                $object = $this->attribute( 'object' );
+
+            if ( !in_array( $object->attribute( 'section_id' ), $policy['User_Section']  ) )
+/*END:code-template::is-node*/
+/*START:code-template::is-object*/
+            if ( !in_array( $this->attribute( 'section_id' ), $policy['User_Section'] ) )
+/*END:code-template::is-object*/
+            {
+                return array();
+            }
+        }
+
+        if ( isset( $policy['User_Subtree'] ) )
+        {
+            $allowed = false;
+/*START:code-template::is-node*/
+            if ( $object === false )
+                $object = $this->attribute( 'object' );
+
+            $assignedNodes = $object->attribute( 'assigned_nodes' );
+/*END:code-template::is-node*/
+/*START:code-template::is-object*/
+            $assignedNodes = $this->attribute( 'assigned_nodes' );
+/*END:code-template::is-object*/
+            foreach ( $assignedNodes as $assignedNode )
+            {
+                $path = $assignedNode->attribute( 'path_string' );
+                foreach ( $policy['User_Subtree'] as $subtreeString )
+                {
+                    if ( strstr( $path, $subtreeString ) )
+                    {
+                        $allowed = true;
+                        break;
+                    }
+                }
+            }
+            if( !$allowed )
+            {
+                return array();
+            }
+        }
+
+        if ( isset( $policy['Section'] ) )
+        {
+/*START:code-template::is-node*/
+            if ( $object === false )
+                $object = $this->attribute( 'object' );
+
+            if ( !in_array( $object->attribute( 'section_id' ), $policy['Section']  ) )
+/*END:code-template::is-node*/
+/*START:code-template::is-object*/
+            if ( !in_array( $this->attribute( 'section_id' ), $policy['Section'] ) )
+/*END:code-template::is-object*/
+            {
+                return array();
+            }
+        }
+
+        if ( isset( $policy['ParentClass'] ) )
+        {
+/*START:code-template::is-node*/
+            if ( $object === false )
+                $object = $this->attribute( 'object' );
+
+            if ( !in_array( $object->attribute( 'contentclass_id' ), $policy['ParentClass']  ) )
+/*END:code-template::is-node*/
+/*START:code-template::is-object*/
+            if ( !in_array( $this->attribute( 'contentclass_id' ), $policy['ParentClass']  ) )
+/*END:code-template::is-object*/
+            {
+                return array();
+            }
+        }
+
+/*START:code-template::is-node*/
+        if ( isset( $policy['ParentDepth'] ) && is_array( $policy['ParentDepth'] ) )
+        {
+            $NodeDepth = $this->attribute( 'depth' );
+            if ( !in_array( '*', $policy['ParentDepth'] ) && !in_array( $NodeDepth, $policy['ParentDepth'] ) )
+            {
+                return array();
+            }
+        }
+
+/*END:code-template::is-node*/
+        if ( isset( $policy['Assigned'] ) )
+        {
+/*START:code-template::is-node*/
+            if ( $object === false )
+                $object = $this->attribute( 'object' );
+
+            if ( $object->attribute( 'owner_id' ) != $userID )
+/*END:code-template::is-node*/
+/*START:code-template::is-object*/
+            if ( $this->attribute( 'owner_id' ) != $userID )
+/*END:code-template::is-object*/
+            {
+                return array();
+            }
+        }
+
+        $allowedNode = false;
+        if ( isset( $policy['Node'] ) )
+        {
+            $allowed = false;
+            foreach( $policy['Node'] as $nodeID )
+            {
+                $mainNodeID = $this->attribute( 'main_node_id' );
+                $node = eZContentObjectTreeNode::fetch( $nodeID, false, false );
+                if ( $mainNodeID == $node['main_node_id'] )
+                {
+                    $allowed = true;
+                    $allowedNode = true;
+                    break;
+                }
+            }
+            if ( !$allowed && !isset( $policy['Subtree'] ) )
+            {
+                return array();
+            }
+        }
+
+        if ( isset( $policy['Subtree'] ) )
+        {
+            $allowed = false;
+/*START:code-template::is-node*/
+            if ( $object === false )
+                $object = $this->attribute( 'object' );
+            $assignedNodes = $object->attribute( 'assigned_nodes' );
+/*END:code-template::is-node*/
+/*START:code-template::is-object*/
+            $assignedNodes = $this->attribute( 'assigned_nodes' );
+/*END:code-template::is-object*/
+            foreach ( $assignedNodes as $assignedNode )
+            {
+                $path = $assignedNode->attribute( 'path_string' );
+                foreach ( $policy['Subtree'] as $subtreeString )
+                {
+                    if ( strstr( $path, $subtreeString ) )
+                    {
+                        $allowed = true;
+                        break;
+                    }
+                }
+            }
+            if ( !$allowed && !$allowedNode )
+            {
+                return array();
+            }
+        }
+
+        if ( isset( $policy['Language'] ) )
+        {
+            if ( $allowedLanguageCodes )
+            {
+                $allowedLanguageCodes = array_intersect( $allowedLanguageCodes, $policy['Language'] );
+            }
+            else
+            {
+                $allowedLanguageCodes = $policy['Language'];
+            }
+        }
+
+        if ( $hasClassIDLimitation )
+        {
+            return array( 'classes' => $canCreateClassIDListPart, 'language_codes' => $allowedLanguageCodes );
+        }
+        return array( 'classes' => '*', 'language_codes' => $allowedLanguageCodes );
+    }

@@ -1,0 +1,57 @@
+Changes from 3.8.0alpha2 to 3.8.0beta1
+
+*Kernel:
+- Enhanced treemenu operator with new parameters and menu values.
+  See doc/features/3.8/enhanced_treemenu.txt for details.
+  ( Patch by Jonny Bergkvist )
+- Improved seed for some md5 hashes.
+  ( Merged from stable/3.7 (3.7.6) rev. 15450 )
+- Changed: Content structure menu in admin will now only show folder, forum
+  and gallery by default. This makes the performance of the menu better for
+  most sites and can be configured independently.
+- Added detection of conflicts in VAT charging rules.
+
+*Bugfixes:
+- Fixed bug #7956: Wishlist is called "basket".
+  ( Merged from stable/3.5 rev. 15133 )
+- Fixed bug #7975: Assigning a role with limitation on section 
+  is not working correctly.
+  ( Merged from stable/3.7 ( 3.7.5 ) rev. 15149 )
+- Fixed fatal error on editing an RSS export.
+- Fixed bug #7980: Installation wizard fails to accept correct hosts 
+  with host-based siteaccess.
+  ( Merged from stable/3.7 ( 3.7.5 ) rev. 15158 )
+- Fixed bug #7993: Links disappear when unserialzing ezxml.
+  ( Merged from stable/3.6 rev. 15179 )
+- Fixed bug #6642: Invalid xml key name in package.xml.
+- Fixed bug #7856: Setup assumes ImageMagick by default, 
+  even if ImageGD is avaiable/installed.
+  ( Merged from stable/3.7 ( 3.7.5 ) rev. 15189 )
+- Fixed bug #7967: Warning in debug output after running file 
+  consistency check.
+  ( Merged from stable/3.7 ( 3.7.5 ) rev. 15207 )
+- Fixed bug #6056: Duplicate entries in collectedinfo output.
+  ( Merged from stable/3.7 ( 3.7.5 ) rev. 15220 )
+- Fixed bug #7927: fatal error when CURL missing.
+- Fixed bug #7349: Version administration - "copy and edit" published results in error
+  ( Merged from stable/3.6 ( 3.6.8 ) rev. 15269 )
+- Fixed bug #8032: Transaction auto-commit does not occur on redirects.
+  ( Merged from stable/3.7 ( 3.7.6 ) rev. 15274 )
+- Fixed bug #8027: Fatal error: ezimagealiashandler.php
+  ( Merged from release/3.5.10 rev. 15280 )
+- Fixed bug #8028: Bug Extra <br /> tag while using linebreaks with paragraph.
+  ( Merged from stable/3.6 ( 3.6.8 ) rev. 15277 )
+- Fixed bug: "advanced redirection after user login" feature does not work
+  if user logs out and then logs in.
+- Fixed bug #8026: Multiple MAX_FILE_SIZE <input> tags.
+  ( Merged from stable/3.6 ( 3.6.8 ) rev. 15351 )
+- Fixed bug #7949: Shop wishlist is broken.
+  ( Merged from stable/3.7 ( 3.7.6 ) rev. 15382 )
+- Fixed bug #8066: Adding new locations craches.
+- Fixed bug #7921: user/setting doesn't set a path.
+  ( Merged from stable/3.7 ( 3.7.6 ) rev. 15443 )
+
+*DataTypes:
+
+eZXMLText:
+- Implementation of the new eZXML input parser. (ported from OE)

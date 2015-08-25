@@ -1,0 +1,136 @@
+Changes from 3.2-1 to 3.2-2
+
+*Kernel:
+- Cache clearing now works with custom var directories. This means that clearing the cache
+  for installed site packages will work.
+- Fixed attribute_base for xml text field.
+- Added missing script for updating the database with attribute based filtering and sorting.
+- Added author_array attribute to eZContentObject class, it was created in 3.1 but was
+  missing from 3.2 and trunk.
+- Made sure literal text is trimmed before being sent to pre tag.
+- Added support for filtering on the normal properties (published, created) as you can with sorting.
+- Added shorten operator to path list.
+- Renamed the parameter class to datatype edit templates to html_class to make sure it
+  doesn't crash with existing parameters. Also made sure full size is used
+  if there is no match.
+- Made sure the left and right max count can be set when including the google navigator.
+- Added support for attribute_filter parameter to list and tree count which was missing.
+- Fixed read/self policy for content object tree nodes, the SQL was missing.
+- Fixed bug in ezurlalias where children of the changed url were not updated.
+- Fixed bug in ezurlalias where the forward id of old url alias where not updated.
+  This happened when an object was renamed more than one time.
+- Fixed search result to show url alias links if this is enabled.
+- Added search node view template which displays the search item. The search result list
+  uses this do display the item. This means that it's possible to override the search item representation.
+- Added the possiblity to add forwarding urls to urltranslator page.
+- Made sure all urls passed to the url alias system does not contain leading and trailing slashes (/).
+- Improved the autolink operator in regards to http links, it will not shorten the display
+  text to make sure it doesn't break the design.
+- Removed the enable_glossary and enable_help parameters to the head template.
+- Fixed the user class to properly cleanup the cache session data when logging in
+  and logging out.
+- Made sure the shopping orders get their own product collections before the checkout is started.
+- Fixed a bug in runcronjobs.php that caused cronjob parts to not be handled anymore.
+- Made sure the correct override cache dir is cleared when new template overrides are created
+  or overrides are removed.
+- Fixed the color for the 'Click to create a custom template'.
+- Added support for reverse translation in eZURLAlias, that way you can translate from a
+  real URL to an alias.
+- Made sure all redirects in index.php is translated to URL aliases if possible.
+- Fixed permission bug for function "password" and "preference" in user module. 
+- Fixed bug with the sort key attributes in ezcontentobjectattribute where pointing to the same variable.
+- Redone the cache page in setup to make it easier to add new cache entries later as well
+  as make it easier for users to use.
+- Added missing access.php include to ezscript.php
+- New field is_wildcard added to ezurlalias, needed for the new wildcard support in url aliases.
+- Added support for wildcards in ezurlalias, wildcards are used internally to support
+  forwarding of old urls even when they are deep inside a tree structure.
+- Added urlalias cache to clearcache and internal cache system.
+- Fixed the updateniceurl.php script to work with the new ezurlalias system.
+- Fixed small typo (missing global $isQuiet) in all update scripts.
+- Added parent_node, depth and navigation_part_identifier to versionview design keys.
+- Added option for clearing the basket before the checkout is started, off by default.
+
+*Notification:
+- Made sure the subtree handlers sets some design keys for template overriding.
+- The default subtree notification email will not report updates to objects
+  different from new objects.
+- Added separate setting for notification email, can be specified, if not AdminEmail is used.
+- Made sure emails are sent with Bcc instead of To header.
+
+*DataType:
+eZURL:
+- Fixed bug with the URL datatype creating empty entries in the URL database
+  the first time an object is created. Also made sure orphant links are removed.
+  http://ez.no/developer/ez_publish_3/bug_reports/url_management_bug_for_link_datatype
+
+eZXML:
+- Made sure the validation only gives an error when there are data available.
+
+*Optimizations:
+
+*Bugfixes:
+- Added the missing include.
+  http://ez.no/developer/ez_publish_3/bug_reports/cant_remove_objects_undefined_class_name_ezurlalias
+- Fixed problem with assignment and custom actions
+  http://ez.no/developer/ez_publish_3/bug_reports/moving_and_removing_assignments_fails
+- Fixed problems with preview and default design
+  http://ez.no/developer/ez_publish_3/bug_reports/preview_doesnt_respect_defaultpreviewdesign_setting
+
+*Files:
+- Made sure ezpublish.cron is included in the release (Was missing in 3.2-1).
+- Fixed problem with stop words in search not being returned.
+  http://ez.no/developer/ez_publish_3/bug_reports/stop_words_are_not_correctly_displayed
+- Added setting for how to handled empty search strings, default is to now allow
+  empty search strings and return 0 matches. If needed this can be enabled.
+  http://ez.no/developer/ez_publish_3/bug_reports/empty_search_causes_slowdown_of_site
+
+*Setup:
+- Added memory limit check
+- Added max execution time check
+
+*WebDAV:
+
+*Templates:
+- Made sure ContentNodeID was set as a hidden variable in the article template for admin.
+
+*Package system:
+
+*Library :
+
+eZ utils:
+- Fixed sending mail to addresses in Cc field using the SMTP protocol.
+- Fixed sending mail to addresses in Bcc field using the SMTP protocol.
+
+eZ template:
+- Fixed the 'shorten' operator to only shorten the text if the text length is longer
+  than the specified maximum length.
+- Fixed bug in cond operator, the iterator was not multiplied with 2 and caused
+  the expression to fail.
+- The 'indent' operator may now have custom indent type which is specified as the
+  fourth parameter.
+
+eZ session:
+- Added setting for controlling cookie timeout value.
+
+eZ locale:
+- Added new translationCode() method which returns the locale code to be
+  used for translation. In most cases this is the same as localeCode()
+  but it can differ. This allows locales to reuse translations.
+
+eZ image:
+- Made sure the ImageDestroy calls are silenced in case they give out warnings which can crash
+  the running PHP process.
+
+eZ db:
+- The postgresql driver now starts a transaction before it locks tables.
+- The postgresql driver now allows for recursive transactions, it does so by keeping track
+  of the number of transactions and only commits when all are done.
+
+*Translations:
+- Updated german translation (ger-DE), thanks to Björn Dieding.
+- Fixed the eng-CA locale, it previously reported eng-GB as it's locale code.
+- Updated portuguese translation to 3.2.
+- Updated spanish and catalan translation.
+
+*Miscellaneous:

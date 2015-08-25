@@ -1,0 +1,91 @@
+Changes to BC and behavior in version 5.2
+=========================================
+
+INI setting changes
+-------------------
+
+
+Change of behavior
+------------------
+
+- Fixed EZP-18195: $result.object is not correctly created
+
+  eZContentObject->assignedNodes( false ):
+  * Does not return columns "id" and "contentobject_id" anymore.
+  * Returns "ezcontentobject.remote_id" under the "object_remote_id" key,
+  "remote_id" key still contains "ezcontentobject_tree.remote_id".
+
+  eZContentObjectTreeNode::subTreeByNodeID() and
+  eZContentObjectTreeNode::subTreeMultiPaths() does not internally use columns
+  "ezcontentobject_tree.contentobject_id" and "ezcontentobject.name" anymore.
+  If you relied on those with extended attribute filtering using an "HAVING"
+  clause, replaces "ezcontentobject_tree.contentobject_id" by
+  "ezcontentobject.id" and add "ezcontentobject.name" to the additional
+  columns to be retrieved if you used it.
+
+  eZContentObjectTreeNode::findMainNodeArray( [...], false ),
+  eZContentObjectTreeNode::fetch( [...], [...], false ) and:
+  eZContentObjectTreeNode::fetchNodesByPathString( [...], [...], false ):
+  eZContentObjectTreeNode::fetchByRemoteID( [...], false );
+  eZContentObjectTreeNode::fetchByPath( [...], false );
+  eZContentObjectTreeNode::fetchByURLPath( [...], false );
+  * Does not return key "contentobject_id" in addition to "id" anymore, use
+  the "id" key instead.
+  * Returns "ezcontentobject.remote_id" under the "object_remote_id" key,
+  "remote_id" key still contains "ezcontentobject_tree.remote_id".
+
+- Fixed EZP-20766: Wrong default value for CLUSTER_HEADER_X_POWERED_BY in index_cluster.php
+
+  The previous default value (true) led to X-Powered-By being set to 1 (true cast to integer).
+  From 5.2, the default value will be set to "eZ Publish".
+
+- menu.ini\[Leftmenu_<menu>]
+
+  Links in left menu are now by default disabled in browse mode.
+  This can now be changed per item using the new Enabled_<link>[<ui_context>] setting.
+
+- Fix EZP-21358: ezjscAjaxContent: Image's exif fields MakerNote and UserComment must be base64 encoded
+
+  ezjscAjaxContent now returns image's exif fields MakerNote and UserComment base64 encoded.
+
+- The eZDFSFileHandlerMySQLiBackend::TABLE_METADATA constant has been removed
+
+  See http://jira.ez.no/browse/EZP-18865
+
+- Cluster: MySQLi handler for DFS now uses a separate table to store cache.
+
+  A maintenance operation is recommended in order to remove cache from the main table. If you'd rather not do this
+  operation, you can revert to the old behaviour by setting the cache table to the old one. This can be done by
+  setting the CLUSTER_METADATA_TABLE_CACHE to ezdfsfile in config.cluster.php.
+
+  More information can be found on the online documentation.
+
+- Globals in scripts is no longer supported (not working via ezpublish:legacy:script)
+
+  PHP Scripts executed via command line no longer supports assuming global variables in them.
+  This was broken earlier in 5.x when we introduced Symfony command ezpublish:legacy:script
+  to be able to execute legacy scripts while still making sure the integration works. This
+  approach can not technically work with globals, so make sure to refactor your extensions
+  in similar way(s) to how we are doing it in the legacy kernel:
+  - https://github.com/ezsystems/ezpublish-legacy/pull/827
+
+
+Removed features
+----------------
+
+
+Removed constants
+-----------------
+
+- eZContentLanguage::MAX_COUNT
+
+  The number of languages supported cannot be hold in a constant anymore, the
+  method eZContentLanguage::maxCount() should be used instead.
+
+
+Removed globals
+---------------
+
+
+Deprecated
+----------

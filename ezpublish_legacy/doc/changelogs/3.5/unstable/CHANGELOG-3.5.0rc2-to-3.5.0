@@ -1,0 +1,45 @@
+Changes from 3.5.0rc2 to 3.5.0
+
+*Kernel:
+- Enabled debug summary report for redirects and added the count for each error
+  type.
+- Fixed a problem in redirection when the redirect url did not start with a
+  slash.
+- Fixed wrong creation of tree node in content/versionview which could lead to
+  undefined member variables.
+- Added a third parameter to eZPreferences::setValue which can be used to
+  define which user should get the preference value. If set to false it will
+  use the current user which is the default behaviour.
+
+Setup:
+- The setup wizard will now create a preference entry for the admin user which
+  sets the 'preview' block in the admin interface to open by default.
+
+*Bugfixes:
+- Fixed problem with class/edit and removal of object attributes
+  http://ez.no/community/bug_reports/storing_a_class_in_ui_will_remove_attributes_of_all_related_objects
+- Fixed bug in workflow triggering system: object approval didn't work.
+- Fixed bug with exporting packages
+  http://ez.no/community/bug_reports/3_5_0rc2_package_file_size_is_0b
+  (Merged from stable/3.5, rev. 10355)
+- Fixed bug: links in xmltext fields are not exported/imported.
+  http://ez.no/community/bug_reports/3_5_package_export_xml_field_links_aren_t_exportet_importet
+- Fixed incorrect display of requirements for package name.
+- Fixed bugs happening when exporting object along with all its versions and then importing that object:
+  * Version status was set only for current version when importing.
+  * Lots of fatal errors were shown when importing because of missing object name in all the exported translations.
+- Fixed inproper work of item_count function with active collaboration items.
+- Fixed problem with & being escaped inside attributes
+  http://ez.no/community/bug_reports/xml_and_broken_link_with
+- Fixed SQL error in PostgreSQL when versionviewing objects in trash.
+  http://ez.no/community/bugs/versionview_in_trash_postgresql
+- Removed warning when redirecting to some views.
+  http://ez.no/community/bugs/warning_when_redirecting
+
+*Library:
+
+eZDebug:
+- The number of times a warning, error, debug or notice occurs is now stored
+  in a global variable.
+
+*Design:

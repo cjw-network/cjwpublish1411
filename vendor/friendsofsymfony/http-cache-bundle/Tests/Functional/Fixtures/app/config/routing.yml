@@ -1,0 +1,37 @@
+tag_list:
+  pattern:  /tag/list
+  defaults: { _controller: FOS\HttpCacheBundle\Tests\Functional\Fixtures\Controller\TagController::listAction }
+  methods:  [GET]
+
+tag_error:
+  pattern:  /tag/error
+  defaults: { _controller: FOS\HttpCacheBundle\Tests\Functional\Fixtures\Controller\TagController::errorAction }
+
+tag_one:
+  pattern:  /tag/{id}
+  defaults: { _controller: FOS\HttpCacheBundle\Tests\Functional\Fixtures\Controller\TagController::itemAction }
+  methods:  [GET,POST]
+
+invalidation_route:
+  pattern: /invalidate/route/{id}
+  defaults: { _controller: FOS\HttpCacheBundle\Tests\Functional\Fixtures\Controller\InvalidationController::itemAction }
+
+invalidation_path:
+  pattern: /invalidate/path
+  defaults: { _controller: FOS\HttpCacheBundle\Tests\Functional\Fixtures\Controller\InvalidationController::otherAction }
+
+invalidation_error:
+  pattern: /invalidate/error
+  defaults: { _controller: FOS\HttpCacheBundle\Tests\Functional\Fixtures\Controller\InvalidationController::errorAction }
+
+test_cached:
+  pattern:  /cached/{id}
+  defaults: { _controller: FOS\HttpCacheBundle\Tests\Functional\Fixtures\Controller\TestController::contentAction }
+  methods:  [GET,PUT]
+
+test_noncached:
+  pattern:  /noncached
+  defaults: { _controller: FOS\HttpCacheBundle\Tests\Functional\Fixtures\Controller\TestController::contentAction }
+
+test_logout:
+  pattern:  /secured_area/logout

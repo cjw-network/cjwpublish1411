@@ -1,0 +1,210 @@
+Changes from 3.5.0alpha1 to 3.5.0beta1
+
+*Kernel:
+- Added permission check for updating priority of sorting.
+- Disabled removing class which has content object used as system/top node.
+- Template function fetch( 'content', 'list|list_count|tree|tree_count', ... ) now accepts new
+  boolean parameter 'ignore_visibility'.
+  This might be useful to fetch/count invisible nodes disregarding the ini setting.
+- Added new method eZContentObjectTreeNode::clearViewCacheForSubtree()
+  that clears view cache for a given subtree.
+- Added default SOAP server support. Added soap.php, which will include specified SOAP extensions.
+- Added function to swap two nodes without changing any other content structure.
+- Added third optional boolean parameter to template operators
+  'mimetype_icon', 'class_icon', 'classgroup_icon' and 'icon'.
+  If it's specified and set to true(), the operators return only the icon URI instead of the whole HTML code.
+- Related object file upload in content/edit will now work even if there is
+  no HTTP file available, in which it will go to content/upload to get the file.
+- Translating of content objects can now be done in the normal edit page instead
+  of the separate content/translate page. The old system is kept but will not
+  be shown with in the new admin interface.
+- Added cache clearing based on ezkeyword attributes, will clear cache for all objects with the same keyword.
+  Configurable in viewcache.ini, see clear_keyword_caches_only.
+
+*Datatype:
+- Added default function canRemovable( $contentClassAttribute ) in ezdatatype.php. This 
+  function is used to check whether or not a datatype can be removed from a class. Function 
+  returns true in default.
+- Added/reimplemented function isClassAttributeRemovable() in datatype ezuser,
+  disallowed deletion of this  datatype if it belongs to the class of login user.
+- Improved handling for lower-case input of ISBN Datatype.
+- Removed parameter $mimeData from eZContentObjectAttribute::insertRegularFile()
+  which were not supposed to be there.
+- Implement regular file support for datatypes eZBinaryFile and eZImage.
+- Fixed a bug in eZImage datatype which caused the published version to
+  use the temporary version of the image instead of the one with correct
+  node path.
+
+*ContentUpload:
+- Added support for passing an existing node to handleUpload() and
+  handleLocalFile(), in which it will reuse the object the node points to.
+- Implemented the missing findRegularFileAttribute() function.
+
+*eZWebDAVContentServer:
+- Made sure correct status message is returned for all operations.
+- Implemented permission checking for all operations.
+- Integrated with the new eZContentUpload system for centralized
+  detection and creation of objects.
+
+Scripts:
+- New script bin/php/ezcontentcache.php which can be used to clear the
+  viewcache for a given node or subtree.
+
+Payment:
+- removed PayPal from kernel, from now it is available only in extension.
+
+*Bugfixes:
+- Fixed bug: wrong redirection after changing preferences.
+  (Merged from stable/3.3 rev. 8450, also in stable/3.4 rev. 8451)
+  http://ez.no/community/bug_reports/wrong_redirection_after_changing_preferences
+- Fixed bug: Roles, limit on section.
+  (Merged from stable 3.4 rev. 8423)
+  http://ez.no/community/bug_reports/roles_limit_on_section
+- Fixed bug: Class edit - wrong redirect.
+  http://ez.no/community/bug_reports/class_edit_wrong_redirect
+- Fixed bug: /class/view - wrong class group.
+  http://ez.no/community/bug_reports/3_5alpha1_class_view_wrong_class_group
+- Fixed bug: Toolbar management - view not found.
+  http://ez.no/community/bug_reports/toolbar_management_faliure
+- Fixed bug: Users were able to add existing objects of non-allowed classes to the
+  object relation list datatype.
+  (Merged from stable/3.3 rev. 8462, also in stable/3.4 rev. 8463)
+  http://ez.no/community/bug_reports/object_relation_list_allowed_classes_should_be_redone
+- Fixed bug: Fatal Error with non-existing properties in attribute_gui_view
+  with template optimization turned on.
+  http://ez.no/community/bug_reports/3_5alpha1_fatal_error_if_an_attribute_don_t_exists
+- Fixed bug: Wrong check for "content/edit" privilege in user/setting.
+  (Merged from stable/3.3 rev. 8468, also in stable/3.4 rev. 8469)
+  http://ez.no/community/bug_reports/user_settings_and_no_access_canedit
+- Fixed bug: package export not working with datatype ezenum
+  (Merged from stable/3.4 rev.8467)
+  http://ez.no/community/bug_reports/package_export_not_working_with_datatype_ezenum
+- Fixed bug: wrong declared property name
+  http://ez.no/community/bug_reports/undefined_member_variable_in_eztemplatecachefunction_php
+- Fixed bug: fatal error when storing an attribute of the ezpackage datatype.
+  (Merged from stable/3.4 rev. 8481)
+  http://ez.no/community/bug_reports/fatal_error_in_ezpackagetype_php
+- Fixed call-time pass-by-reference issue in ezpaymentgatewaytype.php
+  http://ez.no/community/bug_reports/warning_when_creating_new_workflow
+- Fixed bug: Bug template charset mismatch
+  (Merged from stable/3.4 rev. 8491)
+  http://ez.no/community/bug_reports/template_charset_mismatch
+- Fixed bug with tmp_notification_rule_s for PostgreSQL not being cleaned up
+  in the setup wizard.
+  (Merged from stable/3.4 (3.4.3) rev. 8497)
+- Fixed bug: popupmenu fails on objects with quotes in their names.
+- Fixed bug: Package export produces broken tars.
+  http://ez.no/community/bug_reports/package_export_broken_tars_eztararchivehandler_php
+- Fixed bug: Administrator user got "Access denied" in content/versionview.
+  (Merged from stable/3.4 rev. 8597)
+  http://ez.no/community/bug_reports/3_5alpha1_undefined_attribute_can_versionread_cannot_get
+- Fixed bug: cancel button did not work when editing a PDF export.
+  http://ez.no/community/bug_reports/cancel_button_in_pdf_export
+- Fixed bug: index.php didn't set LastAccessesURI session variable when viewing node #2.
+  (Merged from stable/3.3 rev. 8611, also in stable/3.4 rev. 8612)
+- Fixed bug: PDF Undefined variables
+  (Merged from stable/3.4 rev. 8651)
+  http://ez.no/community/bug_reports/pdf_undefined_variables
+- Fixed bug: No title and description in RSS 1 exports
+  (Merged from stable/3.4 rev. 8668)
+  http://ez.no/community/bug_reports/rss_1_0_export_items_only_contain_url
+- Fixed bug of imported folders from addons get wrong priority number.
+- Fixed bug: RSS caches where not cleared after the definition was updated
+  (Merged from stable/3.4 rev. 8678)
+  http://ez.no/community/bug_reports/rss_cache_not_cleared_when_rss_feed_definition_is_changed
+- Fixed bug of multiple breaks in xmltext can't be shown in preview mode or after publishing.
+  (Merged from stable/3.4 rev. 8688)
+- Fixed bug: disappearing images due to broken XML
+  http://ez.no/community/bug_reports/3_5alpha1_images_disappear_after_editing
+  http://ez.no/community/bug_reports/problem_with_image
+- Fixed bug: Page navigation does not work in forum
+  (Merged from stable/3.4 rev. 8714)
+  http://ez.no/community/bug_reports/page_navigation_does_not_work_in_forum
+- Fixed bug: Need template for toolbar/line/node_list.tpl
+  (Merged from stable/3.4 rev. 8725)
+  http://ez.no/community/bug_reports/need_template_for_toolbar_line_node_list_tpl
+- Fixed bug for Workflow, After clicking on "New Wrokflow Group" and then cancel it do not create new wrok flow group now.
+  http://ez.no/community/bug_reports/cancel_in_create_new_workflow_group_does_not_work
+- Fixed bug for shop/discountgroup, after clicking New Discount Group and then Cancel button it does not create new discount group now.
+  http://ez.no/community/bug_reports/cancel_in_create_new_discount_group_shop_does_not_work  
+- Removed some commented code.
+- Fixed bug: Finding single related object for datatype object relation shows checkboxes.
+  (Merged from stable/3.4 rev. 8857)
+  http://ez.no/community/bug_reports/browsing_for_a_related_object_shows_checkboxes
+- Fixed bug: Sort order ASC/Desc is swapped in admin view template.
+  http://ez.no/community/bug_reports/3_5alpha1_sort_order_ascending_and_descending_is_swapped
+- Fixed bug: Cancel when creating new discount rule does not work.
+  (Merged from stable/3.4 rev. 8870)
+  http://ez.no/community/bug_reports/cancel_in_new_discount_rule_does_not_work
+- Fixed bug: unable to remove nodeassignment of a node with children.
+  (Merged from stable/3.4 rev. 8876)
+- Fixed bug: Missing serialization implementation for datatype ezkeyword.
+  (Merged from stable/3.4 rev. 8939)
+  http://ez.no/community/bug_reports/datatype_ezkeyword_no_serialization_supported.
+- Fixed bug: when trying to remove several locations when viewing a node 
+  always only the first location is removed.
+- Fixed bug: Basket details shows for empty basket if template compile is enabled.
+  (Merged from stable/3.4 rev. 8970)
+  http://ez.no/community/bug_reports/basket_details_showing_when_it_s_empty
+- Fixed bug: cancel in "New workflow" went back to list of groups.
+  http://ez.no/community/bug_reports/cancel_in_new_workflow_goes_back_to_list_of_groups
+- Fixed bug: user should not be able to relate an object to itself.
+  (Merged from stable/3.3 rev. 8987, also in stable/3.4 rev. 8989)
+  http://ez.no/community/bug_reports/you_can_relate_an_object_to_itself
+- Fixed bug: user should not be able to create a class with with empty name,identifier, etc.
+  http://ez.no/community/bug_reports/you_can_create_a_class_with_empty_name_identifier_etc
+  (Merged from stable/3.4 rev.9043)
+- Fixed bug: Fixed SQL error that happened when removing classes along with removing class group.
+  (Merged from stable/3.3 rev. 9059, also in stable/3.4 rev. 9061)
+- Fixed bug: Limitation list and fetchtree.
+  http://ez.no/community/bug_reports/limitation_list_and_fetchtree
+- Fixed bug in template, option and multioption datatype works properly for shop.
+  http://ez.no/community/bug_reports/option_value
+- Fixed bug in /url/list: after changing the number of URLs displayed on the page (10/20/30)
+  user was redirected to a wrong page (usually /content/view/something/).
+  http://ez.no/community/bug_reports/10_25_50_selector_in_url_list_is_broken
+
+*Library:
+
+eZDebug:
+- Added ability to debug by subnet.
+
+eZFile:
+- Tar-handler can store paths longer than 99 characters.
+
+eZDB:
+- Added new method relationMatchRegexp() to eZDBInterface,
+  this can be implemented by DB drivers to provide information
+  about which tables, triggers etc. belongs to eZ publish.
+
+eZDBSchema:
+- Added support for schema handlers in extensions.
+
+eZTemplate:
+- New setting ShowMethodDebug in site.ini under TemplateSettings which when enabled
+  will show debug information about function and operator calls.
+- Added debug information for template processing (not compiled mode) which is shown
+  before and the processed template with uri and filename. Only shown when debug
+  is enabled.
+- Improved error handling for function and operators, the file placement will now
+  be included on more of the errors and warnings. (Only for processed mode)
+- Added template operator 'flag_icon' to get the correct path of flag icon.
+- Added bool as a valid input for gt, lt, ge and le operators.
+
+eZWebDAV:
+- The URL that is passed to the various operations is now first handled to processURL()
+  which can be reimplemented to clean it it up if required.
+- The result from getCollectionContent() can now be a non-array type, in which
+  case it is used as a DAV status code.
+- The result of the output buffer is now added to WebDAV log, for instance PHP errors
+  and other output.
+- Reworked internal storage of uploaded file to a temporary file,
+  the file will now reuse the original filename and store in a random
+  subdirectory.
+  Storage of file is now done with a simple copy() function.
+
+eZModule:
+- Added support for user-defined parameters and anchor to all redirect methods().
+- Added possibility to change the name and view of the currently running module.
+- Added new redirect method which redirects to the current module and view with
+  all its parameters.

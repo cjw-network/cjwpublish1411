@@ -1,0 +1,182 @@
+Changes from 3.2-3 to 3.2-4
+
+*Kernel:
+- Fixed wrong include line in ezwordtoimageoperator.php
+- Added content_info structure to module result when the view is not cached, previously this was only available
+  when the view was cached and restored.
+- Fixed subTreeCount() function in eZContentObjectTreeNode to allow the use of class identifiers in the
+  ClassFilterArray just as the subTree() function does.
+- Fixed the empty entry for AdditionalSiteDesignList in site.ini.
+- Added check if node_id is numeric when fetching content objects.
+- Made sure the attribute_base variable is used for all edit datatype templates.
+- Added support for moved urls without doing redirects in the URL alias system.
+- Fixed PHP warning in ezpm.php.
+- Added check when published content has warning ( validation log ), content can't be published before user has seen the warning.
+- Improved the translated URLs (URL alias), it will not contain leading or trailing underscores,
+  special characters are translated into underscore instead of being removed and empty translations
+  will use a default value from the client. (e.g node_45 from content tree nodes)
+- When you add a new location to an object it will be automatically set to main if no other
+  locations is already set as main
+- Replaced several " with ' in kernel/content/module.php
+- Fixed the content/translations list to show the internal name of the languages instead of the local name.
+- Fixed bug of LDAP user could login with null password if anoymous access is allowed in server.
+- Changed the minimum required version check in Setup Wizard to 4.2.3 (was 4.1.0).
+- Made sure the embed view template for objects don't show a link if there is no main node.
+- Added edit button for all object relation list (datatype) items.
+- New template operator 'simpletags' which can do simple replacement of tags listed in template.ini.
+- Fixed the content view to only accept node IDs higher or equal to 2, if lower 2 is used.
+- The clearcache.sh will now also clear the var directories for all siteaccess.
+- Changed behaviour when deleting nodes fra tree. Objects placed in the tree as secondary location are now NOT deleted. Please see
+  this bug report for more information : http://ez.no/developer/ez_publish_3/bug_reports/critical_deleting_a_node_not_the_main_causes_unwanted_removal_of_object
+- Fixed bug of unable to save unregisted link in xml textfield.
+- Changed the caching of eZPreferences in session to use an array for all variables, this makes it
+  easier to cleanup up. The preferences are now cleared on login/logout.
+- Changed the caching of user information and user groups in sessions, the new method uses arrays
+  and is easier to cleanup.
+- Added support for multiple tag lists for the simpletags template operator.
+- Added sortKeyType and sortKey functions to eZSelection datatype. http://ez.no/developer/ez_publish_3/bug_reports/datatype_ezselection_missing_default_methods_sortkey_sortkeytype
+- Fixed bug in hostmatching in eZHTTPTool::redirectURL, it did not find host names without . in them, e.g. localhost.
+- Fixed bug in updatesearchindex.php which would only reindex objects
+  that the anonymous user could read.
+- Made sure users are logged out whenever their user is disabled, this check is done each time the user is fetched trough the session.
+- Fixed workflow editing to redirect back to the workflowlist instead of the grouplist on discard and store.
+- Fixed the namespace check for the eZXMLText datatype when reading the
+  is_block variable, now it can be both in the namespace xmltagns and
+  xmltagns:ContentView. This ensures that it can be set both in the
+  object.tpl and embed.tpl templates.
+
+*Bugfixes:
+- Fixed copy object bug. Current version was not set, multiple version copy did not set object name and redirect did not contain version number.
+- Fixed bug, added check missing check if current preference is set
+  http://ez.no/developer/ez_publish_3/bug_reports/ezpreferences_only_one_variable_can_be_stored_in_the_database_for_each_user
+- Fixed bug, http://ez.no/developer/ez_publish_3/bug_reports/please_fix_setupdatatype_wizard_text_for_next_32_version
+- Fixed extract name/email function bug : http://ez.no/developer/ez_publish_3/bug_reports/class_ezmail_method_extractemail
+- Fixed missing } in design/standard/templates/content/datatype/view/ezmedia.tpl : http://ez.no/developer/ez_publish_3/bug_reports/media_datatype_realvideo_typo_wrong_layout
+- Fixed cleandata.sql bug, http://ez.no/developer/ez_publish_3/bug_reports/cleandatasql_is_not_clean
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/bookmarks_template_typos
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/admin_view_full_gui_removeaction_renders_empty_redirectpage
+- Fixed cleanup of objects in relation list, now all versions are cleaned up. (Also in 3.3 Rev: 4315)
+  http://ez.no/developer/ez_publish_3/bug_reports/cleanup_of_object_relation_list_objects
+- Fixed cleanup of object data when removing drafts. (Also in 3.3 Rev: 4315)
+  http://ez.no/developer/ez_publish_3/bug_reports/improper_deletion_of_drafts
+- Fix cleanup of the attributes of an object when removing it from trash (purge). (Also in 3.3 Rev: 4315)
+  http://ez.no/developer/ez_publish_3/bug_reports/cleanup_error_in_contentobject_class
+  http://ez.no/developer/ez_publish_3/bug_reports/ezcontentobject_purge_issue_for_objects_with_extra_information_users_binary_files_etc
+- Fixed the edit template for all datatypes in regards to the $attribute_base variable, this makes all
+  datatypes usable in the object relation list datatype. (Also in 3.3 Rev: 4315)
+  http://ez.no/developer/ez_publish_3/bug_reports/eztemplate_object_relation_list_does_not_recognize_ezboolean_values
+- Fixed the forwarding of custom actions to the objects in the object relation list.
+  This makes it possible to perform actions such as removing images, adding entries to
+  all entries of an object relation list, it even allows nesting relation lists. (Also in 3.3 Rev: 4315)
+- Added extension support for notification event handlers.
+  http://ez.no/developer/ez_publish_3/bug_reports/custom_notification_handler_in_extension_wont_work
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/typos_in_designstandardcontentbrowsetpl
+- Sending objects to trash no longer removes the node assignments (location) of the current version.
+  http://ez.no/developer/ez_publish_3/bug_reports/restore_from_trash_returns_error
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/kernelcontentversionviewphp_missing_node_pseudo_path_attribute
+- Fixed fetch( content, tree_count ... operator bug, http://ez.no/developer/ez_publish_3/bug_reports/missing_depth_operator_in_function_definition
+- Fixed cleanup bug in workflows http://ez.no/developer/ez_publish_3/bug_reports/deleted_workflow_shows_up_in_triggers
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/contentini_defaultversionhistorylimit_2_provokes_kernel_crash
+- Fixed path bug while editing top nodes : http://ez.no/developer/ez_publish_3/bug_reports/editing_root_node_fails_path_error
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/template_ezurl_shows_php_warning
+- Fixed the adding of new object attributes to add attributes for all translations.
+  http://ez.no/developer/ez_publish_3/bug_reports/translated_attributes_are_not_added_when_class_is_extended
+- Fixed update attribute filter script bug : http://ez.no/developer/ez_publish_3/bug_reports/incorrect_searched_field_in_script_updateattributefilterphp
+- Fixed missing parameter bug in kernel/classes/datatypes/ezxmltext/handlers/output/ezxhtmlxmloutput.php:443 ,
+  http://ez.no/developer/ez_publish_3/bug_reports/renderxhtmltag_in_ol_or_ul
+- Fixed bug in kernel/role/edit.php. Made sure policy variable is checked before usage :
+  http://ez.no/developer/ez_publish_3/bug_reports/php_error_in_admin_role_edition
+- Fixed ImageGD bug during setup : http://ez.no/developer/ez_publish_3/bug_reports/setup_wizard_fails_to_write_rules_to_imageiniappendphp_when_using_gd
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/typo_in_custom_tag_removes_all_content_in_xml_text_field
+- Fixed missing argument 1 for ezuser() in kernel\classes\datatypes\ezuser\ezuser.php bug 
+  http://www.ez.no/developer/ez_publish_3/bug_reports/ezuserloginhandler_php_warning
+- Fixed bug eZContentObjectTreeNode::findMainNodeArray when $objectIDArray is empty
+  http://www.ez.no/developer/ez_publish_3/bug_reports/related_objects_error_2
+- Fixed problem with related object datatype and lost POST data. (Fix taken from 3.3)
+  http://ez.no/developer/ez_publish_3/bug_reports/admin_interface_objectrelationattributes_wipe_out_other_attribute_settings
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/others_can_see_my_wishlist_
+- Fixed bug with long object names generating invalid SQL : http://www.ez.no/developer/ez_publish_3/bug_reports/too_long_textline_attribute_doesnt_give_an_error_message
+- Fixed eZContentBrowseRecent count SQL.
+- Fixed missing workflow_event_pos in ezcontentobject_version table definition, plain package postgresql:
+  http://www.ez.no/developer/ez_publish_3/bug_reports/sql_error_with_postgresql_database
+- Fixed fetching object list with several classes in class filter : http://www.ez.no/developer/ez_publish_3/bug_reports/kernelbug_fetching_class_lists
+- Fixed related objects to only include objects that have status 'published'
+  http://ez.no/developer/ez_publish_3/bug_reports/related_objects_are_shown_even_if_they_are_archived
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/ezkeyword_deleting_object_node_does_not_remove_keyword_reference
+- Fixed http://ez.no/developer/ez_publish_3/bug_reports/bugs_in_templates
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/flaws_in_the_file_docinstall
+  Refered to online installation guide and PDF version.
+- Fixed the autolink operator to better handle detection and management of urls.
+  http://ez.no/developer/ez_publish_3/bug_reports/autolink_operator_messes_with_linked_urls_
+- Fixed some of the minor suggestions/corrections by Dariusz Zbikowski : http://ez.no/developer/ez_publish_3/bug_reports/bugs_in_kernel
+- Fixed file permissions when writing settings/override/*
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/attribute_filter_doesnt_work_when_sorting_on_an_attribute
+- The multiplexer event type will now forward all workflow parameters to ensure maximum compatability with other
+  workflow event types. The event has also gotten more sanity checking of objects and classes.
+  http://ez.no/developer/ez_publish_3/bug_reports/multiplexer_and_approval_workflow_long_bug_report_to_illustrate_the_steps_and_errors
+- Fixed collaboration bug when trying to access deleted objects. http://ez.no/developer/ez_publish_3/bug_reports/collaboration_approved_items_cause_crash_when_viewing
+- Fixed bug with caching of role information in session. Session cache is now properly cleaned up.
+- Changed the ezauthor datatype to use the users name not login for default author.
+  http://ez.no/developer/ez_publish_3/bug_reports/datatype_ezauthor_discloses_login_information
+- Fixed ezbinaryfile, ezimage and ezmedia datatype to return the original filename (instead of local filename) as title.
+  http://ez.no/developer/ez_publish_3/bug_reports/datatype_ezbinaryfile_returns_cryptic_filenames_as_default_content_object_titles
+- Fixed several bugs reported in bugreport : http://ez.no/developer/ez_publish_3/bug_reports/kernel_errors
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/search_sorting_error_typo_in_ezsearchenginephp
+- Fixed Apache 2 problem when redirecting to url with two or more / at end of url.
+- Fixed urlalias to create correct regexp code for wildcard cache file, previous regexps could match in the middle of the url.
+- Fixed bug when editing objects using workflows in apache 2. http://ez.no/developer/ez_publish_3/bug_reports/empty_page_after_editing_if_you_have_a_workflow_on_apache_2
+- Fixed pressing store button multiple times when editing classes. Will no longer cause strange behaviour in objects.
+- Fixed unset and missing parameter in eZDBInterface::lastSerialID implementations. http://ez.no/developer/ez_publish_3/bug_reports/ezkeyword_lastserialid
+- Fixed bookmark links in admin menu template. http://ez.no/developer/ez_publish_3/bug_reports/typo_in_designadmintemplatespartsmediamenutpl
+- Fixed max recent browse items fetch from ini file. http://ez.no/developer/ez_publish_3/bug_reports/class_ezcontentbrowserecentphp_bug
+- Fixed module handler for append unordered parameters to redirect uri bug. http://ez.no/developer/ez_publish_3/bug_reports/modulehandler_utility_fails_to_append_unordered_parameters_to_redirecturis
+- Fixed hard coded page limit doing search in php code. http://ez.no/developer/ez_publish_3/bug_reports/advancedsearchphp_uses_hardwired_pagination_parameter
+- Fixed editing policy with subtree limitation. http://ez.no/developer/ez_publish_3/bug_reports/policy_editing_error_with_subtree_limitation
+- Fixed cache bug when adding bookmarks in admin interface. http://ez.no/developer/ez_publish_3/bug_reports/bookmarks_cacheblock_dont_expires
+- Fixed timeout for editing class drafts from other user. This will prevent users beeing permanently unable to edit classes.
+  http://ez.no/developer/ez_publish_3/bug_reports/admins_cant_edit_classes
+- Fixed updating section id when moving unpublished objects. http://ez.no/developer/ez_publish_3/bug_reports/section_malfunction
+- Fixed bug http://www.ez.no/developer/ez_publish_3/bug_reports/datatype_function_metadata_isnt_part_of_the_datatype_api
+- Fixed bug in policy edit/creation, if node limitations were added the other limitation values would be removed,
+  this no longer happpens.
+- Fixed bug in listing of subtree when the attribute filter and attribute sort were used and the attribute filter
+  was an empty array.
+- Fixed security bug in content module for several views, they now have a separate function access instead
+  of reusing the 'edit' access.
+- Fixed security bug in policy checking for content objects, it was possible to get create access
+  anywhere on the site all depeneding on the role setup. Now creation checking is properly implemented.
+- Fixed security bug in which it was possible to add forbidden locations to an object you could edit.
+- Fixed security bug in which any object could be created using the related object functionality for
+  an existing object edit.
+- Fixed bug http://ez.no/developer/ez_publish_3/bug_reports/ezcontentobject_php_typo_line_133
+- Fixed problem with approve workflow event which displayed non-published users. Also users that are
+  disabled are no longer shown.
+  http://ez.no/developer/ez_publish_3/bug_reports/bogus_users_in_gallery_package
+- Made sure empty body mementos are skipped
+  http://ez.no/developer/ez_publish_3/bug_reports/missing_error_handling_in_workflow_cronjob
+- Fixed: Missing initialization of eZHTTPTool in content/edit when version
+  history limit is on and no archived versions are available for removal.
+- Fixed typo of session variable ExcessVersionHistoryLimit, previously
+  ExcessVesionHistoryLimit was used.
+
+*Setup:
+- Added check for specific unstable PHP versions.
+
+*Library :
+
+eZ template:
+- Added line/column information to the error messages from the template parser.
+
+eZ file:
+- The recursive directory maker will no longer stop on directories named 0.
+
+eZ ObjectRelationList:
+- Added support for controlling the object relation list using a separate template file, the template
+  file is called ezcontentobjectrelationlist_controls.tpl and is included form the ezcontentobjectrelationlist.tpl
+  template file. This allows for overriding this template per class. (Also in 3.3 Rev: 4315)
+
+eZ db:
+- The MySQL and PostgreSQL handler will now provide proper SQL limits even if the limit is not specified
+  but the offset has.
+
+*Translations:

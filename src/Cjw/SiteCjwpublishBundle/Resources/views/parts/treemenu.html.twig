@@ -1,0 +1,73 @@
+
+    {% if location.id is defined %}
+        {% set locationId = location.id %}
+    {% else %}
+        {% set locationId = locationid_treeroot %}
+    {% endif %}
+
+    {% set treemenu = cjw_treemenu( locationId, {
+                                                  'depth': '2',
+                                                  'offset': '1',
+                                                  'include': [ 'cjw_article', 'cjw_folder', 'cjw_feedback_form' ],
+                                                  'sortby': { 'LocationPriority': 'ASC' },
+                                                  'datamap': false } ) %}
+
+<!-- Fixed navbar -->
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">CJW Network</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+        {% set expanded = false %}
+        {% for item in treemenu %}
+            {% if item.node is defined%}    {# dirty section hack #}
+
+                {% set cssClassSelected = '' %}
+                {% if item.selected or locationId == item.node.id %}
+                    {% set cssClassSelected = ' active' %}
+                {% endif %}
+
+
+                {% if item.level >= 1 and item.children > 0 %}
+                    {% set expanded = true %}
+                    {#<ul class="treemenu-level-{{ item.level }}{{ cssClassSelected }}">#}
+                <li>
+                    <a class="treemenu-level-{{ item.level }}{{ cssClassSelected }}" href="{{ path( 'ez_urlalias', {'locationId': item.node.contentInfo.mainLocationId} ) }}">
+                        {% if item.level >= 2 %}
+                            <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                        {% endif %} {{ ez_content_name( item.node.contentInfo ) }} {#{{ item.node.contentInfo.name }#}
+                    </a>
+                    <ul class="nav nav-pills nav-stacked">
+                {% else %}
+                    <li class="treemenu-level-{{ item.level }}{{ cssClassSelected }}">
+                        {#<div class="treemenu-spacer treemenu-level-{{ item.level }}{{ cssClassSelected }}">#}
+                        <a class="treemenu-level-{{ item.level }}{{ cssClassSelected }}" href="{{ path( 'ez_urlalias', {'locationId': item.node.contentInfo.mainLocationId} ) }}">
+                            {% if item.level >= 2 %}
+                                <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                            {% endif %} {{ ez_content_name( item.node.contentInfo ) }} {#{{ item.node.contentInfo.name }#}
+                        </a>
+                        {#</div>#}
+                        </li>
+                {% endif %}
+                {% if item.level >= 2 and item.last == 1  %}
+                    {% set expanded = false %}
+                    </ul>
+                        </li>
+                {% endif %}
+
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+

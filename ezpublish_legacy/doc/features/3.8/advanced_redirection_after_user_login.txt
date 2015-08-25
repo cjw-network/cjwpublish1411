@@ -1,0 +1,68 @@
+*Title: Advanced redirection after user/login.
+
+*Incentive:
+
+Currently, the redirect after login is set to the site root (or 
+hardcoded from the login template). This is not very useful for sites 
+with advanced permissions where some users can access parts of the site 
+and others can access only other parts of the site. What we need is a 
+system that allows the administrators to set up where users are 
+redirected after login.
+
+*Documentation:
+
+Redirection URI can now be specified either per-user or per-group.
+
+All you need is to add an attribute of type 'Text line' to class 'User'
+and/or 'User group' and specify identifier of this attribute in an ini setting.
+The attribute will then be used to tell where to redirect the user after login.
+
+*New settings:
+
+Two new INI settings have been added to site.ini:
+
+[UserSettings]
+LoginRedirectionUriAttribute[user]=<attribute_identifier>
+LoginRedirectionUriAttribute[group]=<attribute_identifier>
+
+The first one specifies which attribute of class 'User' contains
+redirection URI for the user.
+
+The second one specifies which attribute of class 'User group' contains
+redirection URI for members the group.
+
+*Examples:
+
+To specify a "home page" for user Fred, you should perform the following steps:
+1. Add a 'Text line' attribute to class 'User', name it 'Redirection URI'.
+   The new attribute gets identifier 'redirection_uri'.
+2. Edit your site.ini.append:
+   [UserSettings]
+   LoginRedirectionUriAttribute[user]=redirection_uri
+3. Edit user Fred, put "/media" (or any other URI) to the 'Redirection URI' field.
+
+That's it.
+Since now, user Fred will be always redirected to the Media folder after login.
+
+You can specify redirection URI for group "Guest accounts" in a similar way:
+1. Add a 'Text line' attribute to class 'User group', name it 'Home page'.
+   The new attribute gets identifier 'home_page'.
+2. Edit your site.ini.append:
+   [UserSettings]
+   LoginRedirectionUriAttribute[group]=home_page
+3. Edit group "Guest accounts", put "/news" (or any other URI) to the 'Home page' field.
+
+*Implementation details:
+
+If a user is member of several groups (= is a child of several
+'User group' nodes), "main" group (= main parent node) is
+preferred.
+
+It is not mandatory for the classes to be 'User' or 'User group'.
+The first class should just contain an attribute of type 'User account'.
+The second class is just a class that is able to have children.
+
+If the redirection URI has already been specified (e.g. via 'LastAccessesURI' session variable),
+the advanced redirection feature gets disabled.
+That means that if a user starts browser and goes to our.site.com/news,
+he/she will _not_ be redirected to his/her "home page".

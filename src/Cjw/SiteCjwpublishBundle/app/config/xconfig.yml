@@ -1,0 +1,10 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+
+assetic:
+    bundles:        [ %cjwsite.name.bundle% ]
+
+# Swift Mailer
+swiftmailer:
+    transport:            sendmail

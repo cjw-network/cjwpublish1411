@@ -1,0 +1,70 @@
+Changes from 3.9.0rc1 to 3.9.0rc2
+
+*Library:
+- Added library function for reading extension information.
+  eZExtension::extensionInfo()
+
+*Kernel:
+- Implemented enhancement #9194: Improvements to ini editor.
+
+*Bugfixes:
+- Fixed bug #9416: User selfedit no longer works
+  (Merged from stable/3.8 (3.8.7) rev. 17517)
+- Fixed bug #9483: Typo error in ts.
+- Fixed bug #9456: updatelicense.sh uses a PHP short open tag.
+- Fixed bug #9468: Filter attribute_identifier in related_objects is not
+  working in 3.9.0rc1
+- Fixed bug #9458: Cannot break/continue 1 level in eZpublish (not ezdhtml)
+  (Merged from stable/3.8 (3.8.7) rev. 17525)
+- Fixed bug #9514: Typo error 3.9rc1.
+- Fixed bug #9508: Minor typo errors in 3.9rc1.
+- Fixed bug #9452: Tip a friend - Email not send error message.
+- Fixed bug #9394: Only variables should be passed by reference
+  in eZSearchEngine
+  (Merged from stable/3.8 (3.8.7) rev. 17540)
+- Fixed bug #9243: "Compare versions" and "Reverse related for subtree"
+  functionalities don't works correctly.
+  (Merged from stable/3.8 (3.8.7) rev. 17544)
+- Fixed bug #9092: Policy limitations cannot recieve values from extension.  
+  (Merged from stable/3.8 (3.8.7) rev. 17548)
+- Fixed bug #9300: Memory issue with the updatecontentobjectname.php script 
+  due to caching.
+- Fixed bug #8844: don't show language selection page when only one language
+  available
+  (Merged from stable/3.8 (3.8.7) rev. 17555)
+- Fixed bug #8809: eZContentObjectTreeNode::assignSectionToSubTree does
+  not clear $eZContentObjectContentObjectCache.
+- Fixed bug #9544: ezinfo/about link in the footer does not contain siteaccess
+- Fixed bug #8785: Permission problems on Node 1
+- Fixed bug #9518: Extensions not enabled in 3.9rc1 upgrade scripts.
+- Fixed bug #9254: eZ publish crashes because of missing database index on ezsearch_return_count.
+- Fixed bug #9594: copy-disabled icon is not correct
+- Fixed bug #9596: content/history published field does misses label for Copy translation
+- Fixed bug #9573: ezinfo/about has no admin design.
+- Fixed bug #9273: Compare versions functionality is buggy
+  (Merged from stable/3.8 (3.8.7) rev. 17573)
+- Fixed bug #9374: exporting object content with media file doesn't work
+  ( Merged from stable/3.6 rev. 17578, stable/3.7 rev. 17579, stable/3.8 rev. 17580 )
+- Fixed bug #9605: Undefined class name ezshippingmanager.
+- Fixed bug #9614: Undefined offset 0 in ezcontentoperationcollection.php
+  (Merged from stable/3.8 (3.8.7) rev. 17584)
+- Fixed bug #9123: When having Interface locales like "ger" or "ita".
+- Fixed bug #9434: Wrong ui_context for user/activate.
+- Fixed bug #9257: Path is not set in user/success.
+- Fixed bug #9532: Auto-numbered headers generate wrong links.
+- Fixed bug #9635: Change text of link to content/history in popup-menu
+- Fixed bug #9638: "Remove selected" button not disabled when no relations 
+  can be removed
+- Fixed bug #9611: Paging in Resultset with Subtree limitation doesn't work.
+- Fixed bug #9644: Setup wizard behaviour when only one package is available
+- Fixed bug #9642: Brazilian flag has wrong filename
+- Fixed bug #9747: Update templates for ezinfo/about for all designs
+- Fixed bug #9727: default cronjobs are not optimal.
+- Fixed bug #9743: Path is not set in kernel/content/versionview.php
+- Fixed bug #9529: Shop - missing content in demo product.
+  (Merged from stable/3.8 (3.8.7) rev. 17696)
+- Fixed bug #9467: ezwebin installation script is unable 
+  to accesss setup wizard varibles when using kickstart.ini.
+- Fixed bug #9537: The image field in the "Site settings" edit interface 
+  is not confined to the page width.
+- Fixed bug #9639: eZ publish generates same cache block simultaneously.

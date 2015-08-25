@@ -1,0 +1,156 @@
+Changes from 3.5.0rc1 to 3.5.0rc2
+
+*Kernel:
+- New class eZRedirectManager which takes care of figuring the current redirect
+  URI to use for a given module.
+- Improved storage of the LastAccessesURI session variable to only happen when
+  a view UI context is used.
+- Fixed fetching collaboration list with offset.
+  Merged from stable/3.3 rev. 10112, stable/3.4 rev. 10113.
+- Made sure newly created packages have the package information set.
+  (Merged from stable/3.4 (3.4.5) rev. 10296)
+
+*Bugfixes:
+- Fixed bug with calendar not showing when not logged in (caused by double "AND" in calendar-method's SQL)
+- Fixed bug with non-static parameters to the i18n operator with use of the
+  template compiler.
+  http://ez.no/community/bug_reports/3_5_i18n_operator_doesn_t_take_variables_as_input_anymore
+- Fixed missing error checking of non-existing nodes when fetching subtrees.
+  http://ez.no/community/bug_reports/3_5_fatal_error_ezcontentobjecttreenode_php
+- Fixed missing error checking of non-existing nodes when fetching subtree counts.
+- Added a work around for a bug in IE.
+  (Merged from stable/3.4, rev. 10012)
+  http://ez.no/community/bug_reports/pdf_on_the_fly_issue_with_ie_wrong_header
+- Fixed bug: Calendar toolbar and PostgreSQL.
+  http://ez.no/community/bug_reports/calendar_toolbar_and_postgresql
+- Fixed bug: Wrong redirection after clearing view-cache from popupmenu.
+  http://ez.no/community/bug_reports/delete_view_cache_problem
+- Fixed bug: Move in detailed children list doesn't work.
+  http://ez.no/community/bug_reports/move_in_detailed_children_list_doesn_t_work
+- Fixed bug: Wrong redirection after content/draft.
+  http://ez.no/community/bug_reports/wrong_redirecting_in_admin_area
+- Fixed bug: Time attribute can't be left empty.
+  http://ez.no/community/bug_reports/time_attribute_can_t_be_left_empty
+- Fixed bug of toolbar templates search use id in html input element.
+  http://ez.no/community/bug_reports/invalid_xhtml_with_two_search_box
+- Fixed bug with generating package names with non-standard-latin characters.
+  http://ez.no/community/bug_reports/3_5_package_create_no_utf_8_package_name
+- Fixed bug related to a typo in comments:
+  http://ez.no/community/bug_reports/dbschema_and_end_comment
+- Fixed call-time pass-by-reference warning.
+  http://ez.no/community/bug_reports/call_time_pass_by_reference_in_ezsmtptransport_php
+  (Merged from stable/3.3, rev. 10052)
+- Added some more clean-up code for when users are deleted.
+  Part of: http://ez.no/community/bug_reports/3_5_deleting_objects_dirty_tables_after_deleting_process
+- Fixed unincluded file required for ezCache
+  http://ez.no/community/bug_reports/fatal_error_when_clearing_cache_from_shell
+- Fixed parsing of .tr files in DOS/Mac format.
+  http://ez.no/community/bug_reports/3_5_ezcodemapper_lowercase_not_working
+- Fixed PDF generation bug, from stable/3.4 rev. 10099.
+  http://ez.no/community/bug_reports/fatal_error_in_pdf_generation
+- Fixed bug of no search index generated for datatype 'datetime'.
+- Fixed bug:  Role editing forgets limitations in step 3.
+  http://ez.no/community/bug_reports/role_editing_forgets_limitations_in_step_3
+- Fixed bug: "target" object parameter was sometimes unset in ezxhtmlxmloutput.php.
+  (Merged from stable/3.3, rev. 10115, also in stable/3.4, rev. 10116)
+  http://ez.no/community/bug_reports/xhtml_output_and_attribute_target
+- Fixed bug: runcronjobs.php didn't report database connection error.
+- Fixed bug: ezurl-operator fails on anchors (#) when TemplateCompile=enabled
+  http://ez.no/community/bug_reports/ezurl_operator_fails_on_anchors_when_templatecompile_enabled
+  (Merged from stable/3.4 rev 10125).
+- Fixed bug: Call to undefined function: missingvariable()
+  (Manual merge from stable/3.4 rev. 10144)
+  http://ez.no/community/bug_reports/call_to_undefined_function_missingvariable
+- Fixed some PHP warnings in the template system's sequence function
+- Fixed bug: Empty class list when creating new template override.
+  http://ez.no/community/bug_reports/3_5_rc1_template_overriding_gui_seems_broken
+- Added extra check to see if there are any keywords at all when cleaning them up
+  http://ez.no/community/bug_reports/3_5_removing_nodes_objects_manually_fatal_errors
+  (Merged from stable/3.3, rev. 10150)
+- Added checks to object removals for cases where the object already was deleted
+  http://ez.no/community/bug_reports/3_5_removing_nodes_objects_manually_fatal_errors
+  (Merged from stable/3.3, rev. 10153)
+- Fixed bug in content structure menu related to disappearing of item icon when no content is present
+  http://ez.no/community/bug_reports/treemenu_top_folder_icon_disappears_when_no_content_is_present
+- Fixed bug with setting template namespaces and toolboxes
+  http://ez.no/community/bug_reports/toolbar_function_ignores_namespaces_in_template_variable_management
+- Fixed bug with ezstring and max-length validation
+  http://ez.no/community/bug_reports/3_5_max_text_input_restriction_don_t_work_with_utf_8
+- Fixed bug with unchecked nodeID
+  http://ez.no/community/bug_reports/node_not_set_and_fatal_error
+- Fixed bug with indexing of attributes and translations
+  http://ez.no/community/bug_reports/search_doubled_indexed_words_in_ezsearch_object_word_link
+- Fixed bug: When importing a 3.3 content class package, two classes are created instead of one.
+  (Merged from stable/3.4 rev. 10255)
+  http://ez.no/community/bug_reports/import_package_with_one_content_class_results_in_two_content_classes
+- Fixed a PHP warning in packagehandlers/contentclass/ezcontentclasspackagehandler.php.
+  (Merged from stable/3.4 rev. 10255)
+- Fixed bug with missing class_identifier override key.
+  http://ez.no/community/bug_reports/class_identifier_and_override_problems
+  (Merged from stable/3.4 (3.4.5) rev. 10258).
+- Added missing class and section override keys for the
+  content_version_view_gui template function.
+  (Merged from stable/3.4 (3.4.5) rev. 10258).
+- Fixed bug Workflow results are ignored in content/edit.php.
+  http://ez.no/community/bug_reports/workflow_results_are_ignored_in_content_edit_php
+  (Manually merged from stable/3.4 rev. 10261).
+- Changed workflow mechanism so that the before and after connection types can
+  be specified in the workflow.ini.
+- Fixed bug in archive handler in doWrite() method, the length parameter was
+  not checked for false and would in some cases not write any data at all.
+  (Manually merged from stable/3.4 (3.4.5) rev. 10273)
+- Removed setting path in content/versionview, merged from stable/3.3 rev. 10284, stable/3.4 rev. 10286.
+  http://ez.no/community/bug_reports/crash_when_using_versionview
+- Fixed bug: unable to view media files.
+  http://ez.no/community/bug_reports/media_files_can_t_be_viewed_flash_quicktime_etc
+- Fixed bug: Fatal errors after importing a class with the same identifier as one of the exising classes has.
+  http://ez.no/community/bug_reports/package_import_problem_with_same_class_identifiers
+- Added check to class/edit for it to ensure that two different classes cannot have equal identifiers.
+- Fixed bug: Day name is not translated with operator l10n(datetime).
+  http://ez.no/community/bug_reports/operator_l10n_day_name_translation_and_datetime
+- Fixed fatal error in subtree() when viewing a newly created node which doesn't
+  have sorting rule for its subitems.
+- Fixed bug: Incorrectly handled fetchalias.ini file which resulted in wrong function parameters' values were
+  set when using fetch aliases.
+- Fixed bug: PostgreSQL - empty ezobjectrelation.
+  http://ez.no/community/bug_reports/postgresql_empty_ezobjectrelation
+- Fixed bug: Can't remove selected objects from trash.
+  http://ez.no/community/bug_reports/can_t_remove_selected_objects_from_trash
+- eZIdentifier datatype now correctly sets the sort_key_string value
+  (Merged from stable/3.3 rev. 10311)
+- Fixed bug in displaying the memory limit when no limit was actually set.
+  http://ez.no/community/bug_reports/incorrect_display_of_memory_limit
+- Fixed a bug in the installer to check correctly for a memory limit setting of
+  -1 and no available memory limit at all.
+
+*Library:
+
+eZURI:
+- Added originalURIString() method which returns the original URI with user parameters.
+
+eZTemplate:
+- Fixed bug in template compiler when assigning the results of an expression to
+  a PHP variable and the expression resulted in an object proxy (e..g section
+  iterator)
+- Fixed problem with template optimizer which would create initialization code
+  placed inside conditional code that may never be run.
+
+eZDB:
+- Added method which can check if a given character set matches the one used in
+  the database. Currently implemented for MySQL when 4.1.1 or higher is used.
+
+eZFileHandler:
+- Made sure copy() and move() methods check if source and destination points
+  to the same file, if so it just returns true.
+  (Merged from stable/3.4 (3.4.5) rev. 10293)
+
+eZTarArchiveHandler:
+- Made sure directories have the ending slash when storing in tar file.
+  (Merged from stable/3.4 (3.4.5) rev. 10293)
+- Made sure tar files are padded to 20 blocks (of 512 bytes) containing
+  zero filled blocks.
+  (Merged from stable/3.4 (3.4.5) rev. 10293)
+
+*Design:
+- Removed admin.css from pagelayout.tpl and redirect.tpl in standard design.
+  Merged from stable/3.3 rev. 10194, stable/3.4 rev. 10195.

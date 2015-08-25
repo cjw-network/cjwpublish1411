@@ -1,0 +1,53 @@
+framework:
+    translator: { fallback: en }
+    secret: secret
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: %kernel.debug%
+    templating:
+        engines: ['php']
+    default_locale: en
+    session: ~
+    test: ~
+    trusted_hosts: ~
+
+oneup_flysystem:
+    cache:
+        mycache:
+            memory: ~
+
+    adapters:
+        myadapter:
+            sftp:
+                host: myhost.com
+
+    filesystems:
+        myfilesystem:
+            adapter: myadapter
+            cache:   mycache
+            mount:   prefix
+
+        myfilesystem2:
+            adapter: myadapter
+            cache:   mycache
+
+        myfilesystem3:
+            adapter: myadapter
+            cache:   mycache
+
+services:
+    local_plugin:
+        class: Oneup\FlysystemBundle\Tests\Model\Plugin
+        tags:
+            - { name: oneup_flysystem.plugin, filesystem: myfilesystem }
+
+    global_plugin:
+        class: Oneup\FlysystemBundle\Tests\Model\Plugin
+        tags:
+            - { name: oneup_flysystem.plugin }
+
+    multiple_plugin:
+        class: Oneup\FlysystemBundle\Tests\Model\Plugin
+        tags:
+            - { name: oneup_flysystem.plugin, filesystem: myfilesystem  }
+            - { name: oneup_flysystem.plugin, filesystem: myfilesystem2 }

@@ -1,0 +1,59 @@
+Changes from 3.9.0beta1 to 3.9.0rc1
+
+*Kernel:
+- shop: added support of custom handlers to calculate additional priceinformation
+        to the basket.
+- History: version- and diff-view have been merged into a new view, /content/history
+           The new view is accessible via the accustomary "Manage versions"-button
+           in the edit view, the treemenu- and the classmenu-popup.
+
+*INI settings:
+- Added site.ini:[SiteSettings].AdditionalLoginFormActionURL
+  Used to specify additional url for user/login form action.
+- Changed default value of ApplyButton setting in content.ini ClassSettings 
+  group from disabled to enabled.
+*Design:
+
+*Bugfixes:
+- Fixed bug: Instant connection close after sending wrong HTTP header.
+- Fixed bug #009250: It's possible to add an object more than once to a node.
+- Fixed bug 009314: Using xml block attribute and providing incorrect input
+  may lead to fatal error in some cases.
+  (Merged from stable/3.8 (3.8.7) rev. 17353)
+- Fixed bug #009325: Wrong values in placement boxes while moving class 
+  attributes in class attributes edit.
+- Fixed bug #009320: findNode(): copy-paste code (remoteID ignored)
+- Fixed bug #009317: fatal error at importing package
+  (Merged from stable/3.8 (3.8.7) rev. 17382)
+- Fixed bug #009265: Fatal Error in kernel/classes/ezcontentobjectattribute.php
+  (Merged from stable/3.8 (3.8.7) rev. 17403)
+- Fixed bug #009349: Editing class with missing datatype will cause fatal error.
+- Fixed bug #009061: Datatype Object relation in class user
+  (Merged from stable/3.8 (3.8.7) rev. 17405)
+- Fixed bug #009030: eZMail::sender causes warnings
+  (Merged from stable/3.8 (3.8.7) rev. 17413)
+- Fixed bug #009098: si operator ignores decimals parameter
+  when prefix is "none"
+  (Merged from stable/3.8 (3.8.7) rev. 17420)
+- Fixed bug #008863: Empty let or default block will cause warnings
+  (Merged from stable/3.8 (3.8.7) rev. 17431)
+- Fixed bug #009380: Call to undefined function: setname().
+- Fixed bug #009339: Importing class package will break class multilanguage feature.
+- Fixed bug #009299: change the name of an attribute in template_look class.
+- Fixed bug #009382: Quicktime template override contains invalid size.
+- Fixed bug #007783: Wrong Message when using PHP 5x and ezp 3.6
+- Fixed bug #009291: eZContentUpload misses includes.
+- Fixed bug #009258: Path is not set in user/activate
+  (Merged from stable/3.8 (3.8.7) rev. 17460).
+- Fixed bug #009266: Binary files not deleted
+  (Merged from stable/3.8 (3.8.7)) rev. 17464).
+- Fixed bug #009386: Content truncated in simplified xml input.
+- Fixed bug #009418: "Translate from"-box in edit interface is rendered 
+  incorrectly
+
+*Library:
+
+eZUtils:
+
+- Added: functions eZSys::serverProtocol() and eZSys::isSSLNow()
+- Fixed: extension_path function to determine server protocol correctly.

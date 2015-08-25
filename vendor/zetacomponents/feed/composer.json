@@ -1,0 +1,51 @@
+{
+    "authors": [
+        {
+            "name": "Sergey Alexeev"
+        },
+        {
+            "name": "Sebastian Bergmann"
+        },
+        {
+            "name": "Jan Borsodi"
+        },
+        {
+            "name": "Raymond Bosman"
+        },
+        {
+            "name": "Frederik Holljen"
+        },
+        {
+            "name": "Kore Nordmann"
+        },
+        {
+            "name": "Derick Rethans"
+        },
+        {
+            "name": "Vadym Savchuk"
+        },
+        {
+            "name": "Tobias Schlitt"
+        },
+        {
+            "name": "Alexandru Stanoi"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "src"
+        ]
+    },
+    "description": "This component handles parsing and creating RSS1, RSS2 and ATOM feeds, with support for different feed modules (dc, content, creativeCommons, geo, iTunes).",
+    "homepage": "https://github.com/zetacomponents",
+    "license": "Apache-2.0",
+    "name": "zetacomponents/feed",
+    "type": "library",
+    "minimum-stability": "dev",
+        "require": {
+            "zetacomponents/base": "~1.8"
+        },
+        "require-dev": {
+            "zetacomponents/unit-test": "*"
+        }
+}

@@ -1,0 +1,21 @@
+imports:
+    - { resource: @CjwSiteCjwpublishBundle/Resources/config/site.yml }      # bundle name needs to be replaced by page builder
+    - { resource: @CjwSiteCjwpublishBundle/Resources/config/override.yml }  # bundle name needs to be replaced by page builder
+    - { resource: @CjwSiteCjwpublishBundle/Resources/config/image.yml }     # bundle name needs to be replaced by page builder
+
+# https://doc.ez.no/display/EZP/Siteaccess+Matching
+ezpublish:
+    repositories:
+        main: { engine: legacy, connection: ezp_connection }
+#        main: ~
+
+    http_cache:
+        purge_type: local
+
+stash:
+    caches:
+        default:
+            drivers:
+                - FileSystem
+            inMemory: true
+            registerDoctrineAdapter: false

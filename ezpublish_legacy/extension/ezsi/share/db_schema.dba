@@ -1,0 +1,81 @@
+<?php
+// This array contains the database schema
+$schema = array (
+  'ezsi_files' => 
+  array (
+    'name' => 'ezsi_files',
+    'fields' => 
+    array (
+      'blockkeys' => 
+      array (
+        'type' => 'text',
+        'not_null' => '1',
+        'default' => false,
+      ),
+      'filepath' => 
+      array (
+        'type' => 'text',
+        'not_null' => '1',
+        'default' => false,
+      ),
+      'mtime' => 
+      array (
+        'length' => 11,
+        'type' => 'int',
+        'not_null' => '1',
+        'default' => 0,
+      ),
+      'namehash' => 
+      array (
+        'length' => 32,
+        'type' => 'char',
+        'not_null' => '1',
+        'default' => '',
+      ),
+      'siteaccess' => 
+      array (
+        'length' => 100,
+        'type' => 'varchar',
+        'not_null' => '1',
+        'default' => '',
+      ),
+      'ttl' => 
+      array (
+        'length' => 10,
+        'type' => 'int',
+        'not_null' => '1',
+        'default' => 0,
+      ),
+      'urlalias' => 
+      array (
+        'type' => 'text',
+        'not_null' => '1',
+        'default' => false,
+      ),
+    ),
+    'indexes' => 
+    array (
+      'PRIMARY' => 
+      array (
+        'type' => 'primary',
+        'fields' => 
+        array (
+          0 => 'namehash',
+        ),
+      ),
+    ),
+  ),
+  '_info' => 
+  array (
+    'format' => 'generic',
+  ),
+);
+// This array contains the database data
+$data = array (
+  '_info' => 
+  array (
+    'format' => 'generic',
+  ),
+);
+
+?>

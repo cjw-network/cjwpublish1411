@@ -1,0 +1,181 @@
+Changes from 3.4.0 to 3.4.1
+
+*Kernel:
+- Made sure the extension in a siteaccess is activated for eZ publish scripts (eZScript).
+  (merged from stable/3.3 rev. 6842)
+- Updated updatetranslations.php script to skip objects without versions
+  and create missing object attributes.
+- Made sure the eZContentObject::contentObjectListRelatingThis function uses
+  the eZContentObject::reverseRelatedObjectList function.
+- eZContentObject::reverseRelatedObjectList now only lists relations from published
+  versions and not drafts.
+- The PHP time limit is now set in the template compiler and the last step of
+  the setup wizard to ensure we have enough time to finish our code.
+
+*Design:
+- Added ini settings for controlling which classes are allowed to be shown
+  in top and left menues.
+
+*Bugfixes:
+- Fixed assign limited on subtree bug. 
+  http://ez.no/community/bug_reports/role_assignment_with_limitation_not_working
+- Fixed bug in contentobject, can_create_class_list.
+- Fixed information collector for email datatype.
+- Fixed missing class attribute in li tag in eZXML datatype.
+- Fixed bug in template path.tpl in design base. Only 'url_alias' was showing. 
+- Fixed bug related to missing attributes "rowCount" and "columnCount" of 
+  eZMatrix.
+  http://ez.no/community/bug_reports/missed_attributes_in_ezmatrix
+- Fixed bug with non-required ContentObjectID for adding notifications (Merged from 3.5, rev. 6573)
+  http://ez.no/index.php/community/bug_reports/adding_a_notification_shouldnt_need_a_content_object_id
+- Fixed bug of unrecognized subtree arrays in fetchalias.ini (merged from 3.3 rev. 6755).
+  http://ez.no/community/bug_reports/array_data_in_fetchalias_ini_don_t_get_treated_as_arrays_content_search
+- eZSoap now parses value returned by a function in the more
+  standard compliant manner. Partial fix for
+  http://ez.no/community/bug_reports/soap_response_null_object.
+  Merged from 3.3 rev. 6759.
+- Fixed bug with unused EmailSender ini setting in eZSMTPTransport (merged from 3.3 rev. 6765).
+  http://ez.no/community/bug_reports/email_sender
+- Fixed all the places where limitations returned by eZUser::hasAccessTo()
+  were treated as objects to handle limitations as hashes  
+  (since hasAccessTo() now returnes hashes instead of objects).
+  By the way the following bug fixed:
+  http://ez.no/community/bug_reports/not_able_to_fetch_keyword_list
+- Fixed bug with nodes counted instead of objects in
+  eZContentClass::objectCount().
+  http://ez.no/community/bug_reports/object_count_counts_nodes_instead_of_objects
+  http://ez.no/community/bug_reports/object_count_in_class_list_view_does_not_count_related_objects
+- Fixed bugs in fetching keywords and keywords count (merged from 3.3 rev. 6778):
+  o All object attribute versions were fetched instead of the current one;
+  o Fetching from non-published objects was posssible.
+- Fixed typo in /kernel/package/install.php which caused package contents
+  not to be shown when importing.
+  http://ez.no/community/bug_reports/typo_in_kernel_package_install_php
+- Fixed typos resulting in inclusion of non-existent file.
+  http://ez.no/community/bug_reports/typo_in_kernel_setup_ezsetuptypes_php_included_file_miss_spelled
+- Fixed inability of storing GMT midnight in eztime (merged from 3.3 rev. 6791).
+  http://ez.no/community/bug_reports/eztime_data_type_can_t_store_midnight
+- Fixed incorrect sorting of time fields (merged from 3.3 rev. 6794).
+  http://ez.no/community/bug_reports/incorrect_sorting_of_time_fields
+- Fixed bug: files having names containing spaces could not be downloaded with some browsers
+  (manually merged from 3.3 rev. 6797).
+  http://ez.no/community/bug_reports/can_t_download_if_spaces_in_binary_file_names
+- Fixed typo in eZContentObject::checkAccess (merged from 3.3 rev. 6808).
+  http://ez.no/community/bug_reports/typo_in_ezcontentobject_php
+- Fixed missing attribute_parameters in attribute in 
+  design/standard/templates/content/datatype/view/ezxmltags/object.tpl.
+- Workaround for bug in object relation list datatype: when user adds
+  objects using content/browse and then reloads page in browser then        
+  previously selected objects are added again. We now just prevent objects
+  from being added to the list more than once doing appropriate check.
+  Merged from 3.3 rev. 6813.
+  http://ez.no/community/bug_reports/objectrelationlist_repeats_adding_relatedobjects_when_page_reloads
+- Removed eztime from the list of simple types because its data_int field
+  cannot be treated as sort key anymore (merged from 3.3 rev. 6818).
+- Fixed bug in ezurl when relating to root "/", merged from stable/3.3 6839.
+- Fixed unneeded eZDateTimeType dependencies on eZObjectRelationListType
+  http://ez.no/community/bug_reports/undefined_class_name_ezobjectrelationlisttype
+- Removed unneded include_once() (merged from 3.3 rev. 6823).
+  http://ez.no/community/bug_reports/selfrelated_include_once_in_lib_ezlocale_classes_ezdatetime_php
+- Fixed typo in user/activate.tpl (merged from 3.3 rev. 6828)
+  http://ez.no/community/bug_reports/user_activate_template_typo
+- Fixed bug in SQL fetching user list for subtree notification handler
+  resulting in very large query execution times.
+  Manually merged from 3.3 rev. 6836. 
+- Fixed inability of PostgreSQL-based installation using the setup wizard.
+  http://ez.no/community/bug_reports/database_connection_fails_with_installation_wizard
+- Fixed bug in indent template operator, only the first line was indented.
+- Fixed bug with excess space between link and punctuation.
+  http://ez.no/community/bug_reports/excess_space_between_link_and_punctuation
+- Fixed bug  of node_url missing in design/standard/templates/node/view/line.tpl
+  http://ez.no/community/bug_reports/node_url_missing_in_design_standard_templates_node_view_line_tpl
+- Fixed bug with missing includes in ezcontentobjecttreenode class.
+  http://ez.no/community/bug_reports/error_when_deleting_subtree_in_3_4
+- Fixed bug: users in Editors group were able to create new admin users.
+  http://ez.no/community/bug_reports/users_in_edit_group_can_create_new_admin_users
+- Fixed bug with missing user/selfedit and user/password policies in forum package.
+- Fixed bug: names for .ini.append* files were sometimes incorrectly
+  chosen when saving from admin interface.
+  http://ez.no/community/bug_reports/admin_interface_writes_override_ini_append_rather_than_override_ini_append_php
+- Fixed bug in kernel/sql/postgresql/sequence.sql.
+  Merged from stable/3.3 rev. 6873.
+  http://ez.no/community/bug_reports/postgres_setval
+- Modified the upgrade scripts to reflect recent changes in cleandata.sql
+  fixing the following bug:
+  http://ez.no/community/bug_reports/users_in_edit_group_can_create_new_admin_users
+- Fixed bug: sometimes user couldn't see any result when he/she pressed
+  "Check files" button in "Setup->System upgrade".
+  Besides, if a file mentioned in filelist.md5 is missing it is now also
+  added to the list of files that need checking, along with modified files.
+  http://ez.no/community/bug_reports/check_files_gives_no_feedback
+- Fixed bug: inability to create new notification under
+  "Peronal->Notification settings" when using PostgreSQL.
+  http://ez.no/community/bug_reports/node_notification
+- Fixed (partially) bug: content object(s) export sometimes fails.
+- Fixed bug with incorrect object count when view a class.
+- Fixed bug in dbupdate-3.3-5-to-3.3-6.sql for postgresql.
+  Merged from stable/3.3 rev. 6890.
+  http://ez.no/community/bug_reports/problem_with_sql_update_file_dbupdate_3_3_5_to_3_3_6_sql
+- Fixed bug in  eZContentClassClassGroup::fetchClassListByGroups on postgresql.
+  http://ez.no/community/bug_reports/error_in_postgresql_with_ezcontentclassclassgroup_fetchclasslistbygroups
+- Fixed bug in sessionmanagement in admin. Showed negative session date and idletime values if clock on server was
+  changed backwards
+  http://ez.no/community/bug_reports/session_admin_date_issues_users_idle_in_the_future
+- Fixed bug on  lib/eztemplate/classes/eztemplatenodetool.php file for the functions isInternalCodePiece() 
+  and isVariableElement().
+  http://ez.no/community/bug_reports/php_warning_lib_eztemplate_classes_eztemplatenodetool_php
+- Fixed bug in eZContentObject which set incorect status for objects when do unserializing it.
+  http://ez.no/community/bug_reports/imported_content_objects_cannot_be_related_assigned_to_other_objects
+- Fixed bug with missing NodeID and ObjectID when displaying media folders.
+  Merged from stable/3.3 rev.6926
+  http://ez.no/community/bug_reports/media_folder_doesn_t_show_node_id_and_object_id
+- Fixed bug in lib/eztemplate/classes/eztemplatetoolbarfunction.php
+  http://ez.no/community/bug_reports/on_the_right_side_of_the_my_notification_text_there_is_a_small_vertical_line
+- Fixed bug related to wrong working thumbnail folders without frendly URLs.
+  Merged from stable/3.3 rev.6931
+  http://ez.no/community/bug_reports/folder_thumnbnail_tpl_doesn_t_work_without_friendly_url_s
+- Fixed bug with not using an entered MySQL socket during setup.
+  http://ez.no/community/bug_reports/setup_wizard_mysql_socket_field_is_omitted
+  Merged from stable/3.3 rev. 6950.
+- Fixed bug in settings/setup.ini
+  http://ez.no/community/bug_reports/kernel_50_error_and_no_plain_or_plain_admin_folders
+- Fixed bug related to wrong working thumbnail folders without frendly URLs.
+  Merged from stable/3.3 rev.6931
+  http://ez.no/community/bug_reports/folder_thumnbnail_tpl_doesn_t_work_without_friendly_url_s
+- Fixed bug with not using an entered MySQL socket during setup.
+  http://ez.no/community/bug_reports/setup_wizard_mysql_socket_field_is_omitted
+  Merged from stable/3.3 rev. 6950.
+- Fixed bug in ezorder.php with incorrect rounding in product item price.
+- Fixed bug causing that the siteaccess names could not be written in capitals
+  http://ez.no/community/bug_reports/changing_the_siteaccess_name_causes_a_module_not_found_error
+  Merged from stable/3.3 rev. 6970.
+- Fixed bug in  stable/3.4/design/standard/templates/setup/session.tpl and stable/3.4/kernel/setup/session.php
+  http://ez.no/community/bug_reports/session_typo
+- Fixed bugs: semicolons are not escaped in arrays specified in fetchalias.ini
+  (merged from stable/3.3 rev. 6979).
+  Additional fix for:
+  http://ez.no/community/bug_reports/array_data_in_fetchalias_ini_don_t_get_treated_as_arrays_content_search
+- Fixed bug of users always being moved to trash after removal.
+  http://ez.no/community/bug_reports/deleting_user_s_role
+- Removed vardumps from cronjobs/unpublish.php.
+  Merged from stable/3.3 rev. 6990. 
+  http://ez.no/community/bug_reports/unpublish_event_displays_debug_info
+- Fixed bug unabling to send draft for publishing after denial.
+  http://ez.no/community/bug_reports/problems_with_denied_objects_in_approval_and_drafts
+- Fixed bug ( merged from trunk 6999 )
+  http://ez.no/community/bug_reports/ini_settings_editing_causes_change_of_the_current_layout
+- Fixed bug with extract operator when input value was a variable and when both
+  input and parameters are static values.
+  http://ez.no/community/bug_reports/extract_doesn_t_work_properly
+- Fixed bug in stable/3.4/design/base/override/templates/full/flash.tpl and
+  stable/3.4/design/base/override/templates/embed/flash.tpl
+  http://ez.no/community/bug_reports/can_t_display_multiple_flash_obects_on_a_single_page
+- Fixed bug with class filter in treemenu operator.
+  http://ez.no/community/bug_reports/menu_management_contact_us_missing_from_some_menu_types
+- Fixed so that displaying images with center alignment now works properly.   
+  Merged from stable/3.4 rev. 7079.   
+  http://ez.no/community/bug_reports/ez_no_image_display_overlap_on_new_browsers
+
+*Database:
+- Added index on table ezcontentobject_version for fields
+  contentobject_id and version

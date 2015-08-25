@@ -1,0 +1,18 @@
+
+
+parameters:
+
+    # ezpublish.config.resolver.dynamic.class: eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\ConfigResolver
+    #ezpublish.config.resolver.dynamic.class: Cjw\MultiSiteBundle\DependencyInjection\Configuration\CjwConfigResolver
+
+    #
+    # /vendor/ezsystems/ezpublish-kernel/eZ/Bundle/EzPublishCoreBundle/Resources/config/fieldtypes.yml
+    ## ezpublish.fieldType.ezxmltext.converter.html5.class: eZ\Bundle\EzPublishCoreBundle\FieldType\XmlText\Converter\Html5
+    ## fixing root_dir for fieldtypes.ezxml.custom_xsl value
+    ## app/../vendor => app/../../../../vendor bcause we move the kernel (app) into SiteBundle
+    ezpublish.fieldType.ezxmltext.converter.html5.class: Cjw\MultiSiteBundle\FieldType\XmlText\Converter\Html5
+
+    webroot_dir: %kernel.root_dir%/../../../../web
+
+    # /vendor/ezsystems/ezpublish-kernel/eZ/Bundle/EzPublishCoreBundle/Resources/config/fieldtypes.yml
+    ezpublish.fieldType.ezxmltext.converter.html5.resources: %kernel.root_dir%/../../../../vendor/ezsystems/ezpublish-kernel/eZ/Publish/Core/FieldType/XmlText/Input/Resources/stylesheets/eZXml2Html5.xsl

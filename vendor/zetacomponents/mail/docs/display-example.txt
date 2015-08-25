@@ -1,0 +1,18 @@
+Mail Parsing and Displaying Example
+===================================
+
+This script demonstrates how to display parsed email messages. It takes one
+argument on the command line. This argument is a file containing one mail file
+which is then read and parsed in line 9 to 11. Line 12 starts the display
+process.
+
+.. include:: display-example/display-example.php
+   :literal:
+
+
+..
+   Local Variables:
+   mode: rst
+   fill-column: 79
+   End:
+   vim: et syn=rst tw=79

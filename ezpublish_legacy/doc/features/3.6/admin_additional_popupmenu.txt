@@ -1,0 +1,68 @@
+*Title: Automatic loading of additional popupmenu items
+
+*Documentation:
+To load additional popup menu items used in the eZ Publish
+administration interface you can use the following settings in
+admininterface.ini:
+
+[AdditionalMenuSettings]
+ContextMenuTemplateArray[]=node/oocontextmenu.tpl
+SubitemsContextMenuTemplateArray[]=node/oosubitemscontextmenu.tpl
+
+The setting ContextMenuTemplateArray and SubitemsContextMenuTemplateArray
+is used to load templates for the actual HTML defenition of the menu items.
+Examples follows.
+
+oocontextmenu.tpl:
+    <hr/>
+    <a id="menu-export-ooo" href="#" onmouseover="ezpopmenu_mouseOver( 'ContextMenu' )"
+       onclick="ezpopmenu_submitForm( 'menu-form-export-ooo' ); return false;">{"Export OpenOffice.org"|i18n("design/admin/popupmenu")}</a>
+
+{* Export to OOo document *}
+<form id="menu-form-export-ooo" method="post" action={"/oo/export/"|ezurl}>
+  <input type="hidden" name="NodeID" value="%nodeID%" />
+  <input type="hidden" name="ObjectID" value="%objectID%" />
+  <input type="hidden" name="CurrentURL" value="%currentURL%" />
+</form>
+
+oosubitemscontextmenu.tpl:
+    <hr/>
+    <a id="menu-export-ooo" href="#" onmouseover="ezpopmenu_mouseOver( 'SubitemsContextMenu' )"
+       onclick="ezpopmenu_submitForm( 'menu-form-export-ooo' ); return false;">{"Export OpenOffice.org"|i18n("design/admin/popupmenu")}</a>
+
+In addition:
+SubMenuTemplateArray[] you can specify submenus to your menu-elements:
+
+*Example:
+
+admininterface.ini:
+ContextMenuTemplateArray[]=createhereitem.tpl
+SubitemsContextMenuTemplateArray[]=subitemscreatehereitem.tpl
+SubMenuTemplateArray[]=createheresubmenu.tpl
+
+createheresubmenu.tpl:
+  {* Create here submenu *}
+  <script language="JavaScript1.2" type="text/javascript">
+  menuArray['CreateHere'] = new Array();
+  menuArray['CreateHere']['depth'] = 1; // this is a first level submenu of ContextMenu
+  </script>
+
+  <div class="popupmenu" id="CreateHere">
+    {section var=class loop=fetch(class, latest_list, hash())}
+       <a id="menu-create-here-{$class.identifier}" href="#" onmouseover="ezpopmenu_mouseOver( 'CreateHere' )" onclick="ezpopupmenu_setSubstituteValue('%classID%', {$class.id}); ezpopmenu_submitForm( 'menu-form-create-here' ); return false;">{$class.name|wash(javascript)}</a>
+    {/section}
+  </div>
+
+  <form id="menu-form-create-here" method="post" action={"/content/action"|ezurl}>
+    <input type="hidden" name="NodeID" value="%nodeID%" />
+    <input type="hidden" name="ClassID" value="%classID%" />
+    <input type="hidden" name="NewButton" value="x" />
+  </form>
+
+createhereitem.tpl
+	<hr />
+    <a id="menu-createhere" class="more" href="#" onmouseover="ezpopmenu_showSubLevel( event,  'CreateHere', 'menu-createhere' ); return false;">{"Create here"|i18n("design/admin/popupmenu")}</a>
+
+subitemscreatehereitem.tpl
+	<hr />
+    <a id="child-menu-createhere" class="more" href="#" onmouseover="ezpopmenu_showSubLevel( event,  'CreateHere', 'menu-createhere' ); return false;">{"Create here"|i18n("design/admin/popupmenu")}</a>

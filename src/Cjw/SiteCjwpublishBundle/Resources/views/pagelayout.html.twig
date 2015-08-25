@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>CJW Network</title>
+        {% set pathWebPref = '/bundles/' ~ site_bundle_name|lower|replace({'bundle':''}) %}
+
+        {% block favicons %}
+            <link rel="icon" href="{{pathWebPref}}/images/favicon.ico">
+        {% endblock %}
+
+        {% block stylesheets %}
+            <link rel="stylesheet" type="text/css" href="{{pathWebPref}}/css/bootstrap.css" charset="utf-8" />
+            <link rel="stylesheet" type="text/css" href="{{pathWebPref}}/css/bootstrap-theme.css" charset="utf-8" />
+            <link rel="stylesheet" type="text/css" href="{{pathWebPref}}/css/theme.css" charset="utf-8" />
+        {% endblock %}
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+    </head>
+
+    <body>
+    {{ include( site_bundle_name ~ ':parts:treemenu.html.twig' ) }}
+
+
+        <div class="container">
+            {{ include( site_bundle_name ~ ':parts:breadcrumb.html.twig' ) }}
+
+
+            <div id="content-main">
+                {% block content %}{% endblock %}
+            </div>
+
+        </div>
+
+            <footer class="footer">
+                <div class="container">
+                    <p class="text-muted">Place footer content here.</p>
+                </div>
+            </footer>
+
+        {% block javascripts %}
+            <script src="{{pathWebPref}}/js/jquery-1.11.3.min.js" async="async"></script>
+            <script src="{{pathWebPref}}/js/bootstrap.min.js" async="async"></script>
+        {% endblock %}
+    </body>
+</html>
+{#{dump(content)}#}
+{#{dump(location)}#}
+{#{ezpublish.translationSiteAccess( lang )}#}
+{#{dump(_context|keys)}#}
+{#{dump(ezpublish.siteaccess)}#}
+{#{dump(ezpublish.availableLanguages)}#}

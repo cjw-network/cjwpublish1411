@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<software>
+    <metadata>
+        <name>eZ Comments Bundle</name>
+        <version>//autogentag//</version>
+        <copyright>Copyright (C) 1999 - 2014 eZ Systems</copyright>
+        <license>GNU General Public License</license>
+        <info_url>http://github.com/ezsystems/comments-bundle</info_url>
+    </metadata>
+
+    <dependencies>
+        <requires>
+            <extension name="ngsymfonytools" />
+        </requires>
+    </dependencies>
+
+</software>

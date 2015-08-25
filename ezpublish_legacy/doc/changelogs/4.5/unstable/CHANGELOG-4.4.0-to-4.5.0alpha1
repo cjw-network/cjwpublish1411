@@ -1,0 +1,34 @@
+Changes from 4.4.0 to 4.5.0alpha1
+
+*Kernel:
+
+*Design:
+
+*eZTemplate:
+
+*eZLocale:
+
+*Package system:
+
+*Scripts:
+
+*Translations:
+
+*Bugfixes:
+- Fixed bug #014846: Template function 'attribute_view_gui' with view=plain param doesn't work properly
+- Fixed bug #015128: Losing input when assigning Object state in edit form
+- Fixed bug #015376: ezmultiupload doesn't handle upload_max_filesize and post_max_size limitations
+- Fixed bug #015793: eZDFS: Image files and aliases are not removed when a objectversion is deleted
+- Fixed bug #016312: Problem creating folders with eZDFS
+- Fixed bug #017164: ezstring datatype pass validation if space is entered
+- Fixed bug #017355: admin2: js error prevents context menu in children items table to pop up
+- Fixed bug #017632: Wrong language used for URL alias with a non-default language node
+- Fixed bug #017616: security policy node/subtree limitation bug
+- Fixed bug #017684: eZDFSFileHandler::purge with a directory doesn't purge local files
+- Fixed bug #017685: RSS GUID is not persistent
+- Fixed bug #017686: ezdatetime "use seconds" is not supported in admin2 templates
+- Fixed bug #017822: A useless update query is executed on ezcontentobject_tree during publishing
+- Fixed bug #017761: ezcache.php --purge does not purge template-blocks
+- Fixed bug #017703: Fatal error when deleting main node having ezfind enabled
+- Fixed bug #017820: Change priorities don't clear the cache (patch by Damien Pobel)
+- Fixed bug #017840: Interrupted operations won't restart where they stopped

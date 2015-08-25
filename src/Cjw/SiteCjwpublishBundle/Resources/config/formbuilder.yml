@@ -1,0 +1,53 @@
+global_config:
+    parameters:
+        button_config:
+            save_button:
+                label: cjw_publishtools.formbuilder.default.button.save
+            cancel_button:
+                redirect:
+                label: cjw_publishtools.formbuilder.default.button.cancel
+
+    handler:
+        infocollector:
+            handler_class: addToInfoCollectorHandler
+        sendmail:
+            handler_class: sendEmailHandler
+            logging: true
+            debug: true
+            template: '::email.html.twig'
+            email_sender: test@test.com                 # ToDo: or map to field 'fields.email'
+            email_receiver: 'test@test.de'    # ToDo: or map to field 'fields.email'
+            email_subject: '[CJW Publish Feedback Form] my subject'             # ToDo, field mapping or static (intl) ?
+            email_bcc: []
+            email_type:                                 # ToDo: text / html (text+html)
+        success:                                        # ToDo
+            handler_class: successHandler
+            template: :form:success.html.twig
+
+formbuilder_config:
+    parameters:
+    handler:
+    types:
+#        feedback_form:
+#            parameters:
+#            handler:
+
+formcollector_config:
+    parameters:
+        button_config:
+            save_button:
+                label:  cjw_publishtools.formbuilder.default.button.send
+            cancel_button: false
+    types:
+        cjw_feedback_form:
+            handler:
+                infocollector:
+#                sendmail:
+#                    email_sender: @email
+#                    email_subject: @subject
+                success:
+                    template: :form:success.html.twig
+
+button_label_config:
+    cancel_button_label: cjw_publishtools.formbuilder.default.button.cancel
+    save_button_label: cjw_publishtools.formbuilder.default.button.save

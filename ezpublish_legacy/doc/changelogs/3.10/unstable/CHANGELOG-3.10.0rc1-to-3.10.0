@@ -1,0 +1,71 @@
+Changes from 3.10.0rc1 to 3.10.0
+
+*Kernel:
+
+*Design:
+
+*eZTemplate:
+
+*Package system:
+
+*Scripts:
+
+*Cronjobs:
+
+*Translations:
+
+*Bugfixes:
+- Fixed bug #11399: fetch operator creates invalid sql with negative offset.
+  (Merged from stable/3.9 (3.9.4) rev.19877)
+- Fixed bug #11224: removeSubtrees: hardcoded user class identifier.
+- Fixed bug #11238: ezinfo/copyright out of date.
+- Fixed bug #11336: typo in eZContentObject API documentation.
+- Fixed bug #8019: Translations in extension ignored if language does not exist in main share/translations.
+- Fixed bug #11313: eZContentClassAttribute constructor does not check if $row['serialized_name_list'] is set.
+- Fixed bug #11319: Collaboration summary view of standard design has wrong page navigation.
+- Fixed bug #11239: error when viewing a product item.
+- Fixed bug #11457: dba files in datatypes does not support extensions.
+- Fixed bug #11253: Log in a user with method loginCurrent doesn't update global user cache.
+- Fixed bug #11454: PaymentCallbackChecker can't handle multiple currencies per siteaccess.
+- Fixed bug #11286: Paypal - checkAmount failed - floating point number comparrison is unsafe.
+- Fixed bug #11402: PHP Warning displayed when creating new workflow of 
+  payment gateway type and no payment gateway exist.
+- Fixed bug #9237: Upgrade script for 3.8 deletes published objects in cases of db inconsistency.
+- Fixed bug #11050: Upload related content in OnlineEditor doesn't work.
+- Fixed bug #11440: index_treemenu.php missing in distro.
+- Fixed bug #11287: German Translation, email send if new user registrate.
+- Fixed bug #11469: Selecting Eng, Ger and Nor languages during setup wizard ends in corrupted installation.
+- Fixed bug #10989: Unused drop-down list in the "Object relations" datatype edit interface.
+- Fixed bug #10792: node_id on objectrelations are not updated on trash / restore.
+- Fixed bug #11363: php warning in ezuser.php.
+- Fixed bug #11257: call to exit( 1 ) after $script->shutdown( 1 ).
+- Fixed bug #11391: reference notices in infocollector/collectionlist/<ID> view.
+- Fixed bug #11333: $classID not defined in customObjectAttributeHTTPAction().
+  (Merged from stable/3.9 (3.9.4) rev. 19984)
+- Fixed bug #11433: Min password length for changing password is fix.
+- Fixed bug #10729: Inconsistency - Translation Button Lost from Admin Content Structure.
+- Fixed bug #11480: A bug in updateniceurls.php prevents upgrading
+  from 3.9.3 to 3.10.0rc1 successfully.
+- Fixed bug #11332: group policy causes sql errors.
+- Fixed bug #11358: /content/action module override post variables when merging with session LastPostVars.
+- Fixed bug #11113: Typo in eZMediaType::serializeContentObjectAttribute
+- Fixed bug #11090: eztimetype uses constants defined for ezdatetype
+- Fixed bug #11092: eZUser::fromString uses undefined variables
+- Fixed bug #11071: Wrong usage of chmod in eZPackage
+- Fixed bug #10893: No translation caches generated when ts-list option is omitted
+- Fixed bug #11089: Wrong API documentation for eZContentObjectPackageInstaller::packageType
+- Fixed bug #10917: ezimage.tpl may leave <a> tag unclosed, breaks XHTML
+- Fixed bug #10356: Possible bug in placementKey() in eztemplateblockfunction.php
+- Fixed bug #010471: images not shown after installation (path to ImageMagick is not handled properly under windows)
+- Fixed bug #011230: 3.10alpha - sequence is broken.
+- Fixed bug #011488: eZContentObjectVersion::name calls eZContentObject::name with wrong arguments
+- Fixed bug #011492: Error in the template compile code using extract and extract_left
+- Fixed bug #11510: [SearchSettings]->ExtensionDirectories setting missing from site.ini
+- Fixed bug #11312: Anchor in ezxml headers.
+- Fixed bug #11525: small bug in ezstaticcache.
+- Fixed bug #011504: webdav support in cluster mode.
+- Fixed bug #011361: Hidden blogposts available through tag.
+- Fixed bug #011530: Inconsistent use of ISBN (and relatives like ISBN-10 and ISBN-13).
+- Fixed bug #011371: read title of hidden blogpost.
+- Fixed bug #10546: [patch included] ezroot() and ezurl() mishandle first parameter, with TemplateCompile enabled.
+- Fixed bug #11303: Webdav does not use SiteLanguageList properly.

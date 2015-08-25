@@ -1,0 +1,131 @@
+Changes from 4.2.0 to 4.3.0alpha1
+
+*Kernel:
+- Implemented enhancement #15490: LDAP login handler improvements
+- Implemented enhancement #11988: Add debug to email feature
+- Implemented enhancement #11244: Fetch function for shop orders
+- Implemented enhancement #15630: Avoid fatal error when fetching nodes from inconsistent databases
+- Implemented enhancement #15631: Improve the debug message in eZImageAliasHandler::initializeFromFile()
+- Implemented enhancement #11997: Add time measurement to runcronjobs.php
+- Implemented enhancement #15643: Warnings about non existing cache files should be Debug
+- Implemented enhancement #15644: eZURLAliasFilter should take benefit of the autoload system
+- Implemented enhancement #13730: file_exists optimization - cache the location of design base directories
+- Implemented enhancement #15672: Use ini setting for menu items in admin
+- Implemented enhancement #15670: Hide webshop tab by default
+- Implemented enhancement #15671: Hide Design tab by default
+- Implemented enhancement #15364: Cache-blocks expiration by class
+- Implemented enhancement #15701: Add ATOM support for exporting RSS feeds
+- Implemented enhancement #15707: Simplify creating new RSS feed from a node
+- Implemented enhancement #15716: RSS Export description should be optional
+- Implemented enhancement #15739: Better image / media / file support in RSS export (<enclosure> and <description>)
+- Implemented enhancement #15812: Improve debug output of template foreach function
+- Implemented enhancement #15641: BCC - sending problem with the notification mail
+- Implemented enhancement #12490: let session clean up in admin interface work without grinding db to a halt
+- Implemented enhancement #14858: Make errors more newbie friendly, like "the debug output is present below"
+- Implemented enhancement #15968: Replace smtp class with ezcMailSmtpTransport
+- Implemented enhancement #3005: Increase performance eZTreeMenuOperator
+- Implemented enhancement #16012: Clean up bread crumb (view path) usage in class module
+- Implemented enhancement #1785: ezpreferences redirect isn't working if no referer is given
+- Implemented enhancement #15511: Use getenv() instead of $_ENV for better PHP 5.3 compatibility
+- Implemented enhancement #16043: Browse from default location on Add Object in ezobjectrelation like ezobjectrelationlist does
+- Implemented enhancement #16049: Add support for adding relations more easily on ezobjectrelationlist in browse mode
+- Implemented enhancement #11716: Allow "objectrelationlist" datatype inheriting by using non static syntax for non static methods
+- Implemented enhancement #16027: Class editor always set focus on class name insted of new created attribute
+- Implemented enhancement #11183: class edit: attribute numbers could be a multiple of 10
+- Implemented enhancement #14745: deprecate eZCacheClearContentTreeMenu in favour of eZCache::ClearContentTreeMenu
+- Implemented enhancement #16051: Class edit: Allow moving attributes up/down withouth page refresh
+- Implemented enhancement #12860: A noninvasive (non-hack) way of extending the cache clear list
+- Implemented enhancement #1895: Add description field for class & class attributes
+- Implemented enhancement #16056: Add class attribute category field for data map grouping
+- Implemented enhancement #16057: Add data_text_i18n to class attributes for translatable class attribute data use
+- Implemented enhancement #16059: DEPRECATED CSSFileList|JavaScriptList in favour of [Frontend|Backend][CSSFileList|JavaScriptList] settings
+- Implemented enhancement #16062: Add setting to control content structure menu persistence to be able to disable it
+- Implemented enhancement #16066: Create a configurable dashboard for the eZ Publish backend and frontend
+- Implemented enhancement #15339: Add view_parameters support in user/edit
+- Implemented enhancement #15693: Possibility to specify required permissions on admin menu items and tab links
+- Implemented enhancement #16067: Provide list of module objects to role/createpolizy1.tpl for ajax use
+- Implemented enhancement #16071: Backend search result with context menu (line view) (patch)
+- Implemented enhancement #14998: Split popupmenu/popup_menu.tpl into smaller templates
+- Implemented enhancement #15741: Optimize templates to not call count and fetch without checking count value first
+- Implemented enhancement #16133: Putting the logic of content objects modifications in a handler when content class get modified
+- Implemented enhancement #16124: eZContentObjectTreeNode::createPermissionCheckingSQL() should define an index in temporary table
+
+*Design:
+- Implemented enhancement #15714: Add a link to object history from node view
+- Implemented enhancement #15974: Add link on Node/SubTree policy limtations in role/view
+
+*eZTemplate:
+- Added user display styles to hide/show user limited items in a view cached environnement
+
+*eZLocale:
+
+*Package system:
+
+*Scripts:
+
+*Translations:
+
+*Bugfixes:
+- Fixed bug #15454: Make eZSession::getUserSessionHash() to return default hash instead of empty string
+- Fixed bug #15467: ezenum datatype always resets the multiple choice settings when the class is edited
+- Fixed bug #14939: odd workflow behaviour when redirects
+- Fixed bug #15478: Node assignment is not removed when removing node from child list
+- Fixed bug #14389: In ezldapuser.php, LDAPLoginAttribute and LDAPGroupNameAttribute ini variables with upper case caracters unread
+- Fixed bug #15485: Deleted LDAP user nodes are not recreated
+- Fixed bug #14927: simplify operator has a different behaviour depending on TemplateCompile settings
+- Fixed bug #15530: Existing ezp users are not synced with ldap users
+- Fixed bug #15532: Bug with eZHTTPTool::getDataByURL and output buffering
+- Fixed bug #14456: ezselection.tpl produces invalid XHTML
+- Fixed bug #15584: Correct serializeContentObjectAttribute in ezdatetimetype.php file
+- Fixed bug #15231: Bad links in /content/versionview/
+- Fixed bug #15601: Template error: No such attribute for array(2): additional_info
+- Fixed bug #15624: LDAP login handler creates node assignments with wrong versions
+- Fixed bug #13394: allow google news to index ezpublish web site (static cache compatible)
+- Fixed bug #15646: Ugly display when use the "create here" function
+- Fixed bug #15678: Template compiler causes warning if node has not URI map
+- Fixed bug #14616: classattributeidentifiers cache doesn't work (at all) with clustering + ezdb
+- Fixed bug #15724: Custom remove action does not work in ezauthortype when using different base name
+- Fixed bug #15725: ez2fs - user cache don't work
+- Fixed bug #15639: remote_id of a node is changed at various places
+- Fixed bug #14865: ezcache.php --purge disregards --expiry
+- Fixed bug #15848: Syntax error in ezdebug.php
+- Fixed bug #15740: Current imagemanager can`t execute image aliases that have different image handler`s filters.
+- Fixed bug #15045: Fix for updateviewcount.php when using PathPrefix
+- Fixed bug #15142: Related object counted even if it is moved to trash
+- Fixed bug #15862: Register user can create duplicate entry
+- Fixed bug #10687: Empty trash always fails on huge number of objects
+- Fixed bug #14354: Strict standards: Declaration of eZOrderItem::remove() should be compatible with that of eZPersistentObject::remove()
+- Fixed bug #14983: Files are still available when object is moved to trash
+- Fixed bug #14983: Files are still available when object is moved to trash (second fix)
+- Fixed bug #14331: user/register - RegistrationEmail to Admin without EmailSender
+- Fixed bug #15911: Still inconsistent use of the name "eZ Publish"
+- Fixed bug #15733: ezcontentobjecttrashnode generate an sql error
+- Fixed bug #15921: In-memory cache for eZContentClass is not cleared on expireCache()
+- Fixed bug #13503: Labels tags don't have for attribute
+- Fixed bug #15852: PHP Warning: str_repeat() warning with negative count parameter
+- Fixed bug #15744: Permission Error in eZContentClass::instantiate
+- Fixed bug #12719: setting RenderParagraphInTableCells doesn't work for th
+- Fixed bug #15983: Allowing kernel override in config.php may cause a Fatal Error
+- Fixed bug #15991: When registering with an empty password, validation error displays "The passwords do not match."
+- Fixed bug #12890: (Caching-)File problems when using sysmlinks in an installation
+- Fixed bug #16002: Redirect after a login on SSO system (with an SSO Handler extension) is done with a meta redirect
+- Fixed bug #15572: User registration validation error text is incomplete (when password length < minpasswordlength)
+- Fixed bug #16009: SSO handlers can lead to an infinite loop on user/logout
+- Fixed bug #16011: invalid html using attribute(show)
+- Fixed bug #16038: "Notice: Undefined index: strict[-end]" in cli
+- Fixed bug #8991: JavaScript window.onload event often gets confiscated by one single function
+- Fixed bug #16037 Undefined variable: contentVersion in kernel\classes\ezworkflowprocess.php on line 521
+- Fixed bug #15979: ActiveExtensions Array order in site.ini changes on autoload generation
+- Fixed bug #16085: Only variable references should be returned by reference in \lib\ezutils\classes\ezsys.php on line 739
+- Fixed bug #16088: Make contenttreemenu and content/treemenu use system url if url is empty
+- Fixed bug #11532: it is not possible to use " in title of site without corupting html
+- Fixed bug #16089: All redirects to node 2 (content root node) end up on Dashboard page
+- Fixed bug #15970: Characters appended to node view urls are used in view cache tree structure
+- Fixed bug #15418: France is listed twice in content.ini/[CountrySettings]/Countries
+- Fixed bug #15070: Wrong error code if database is unavailable
+- Fixed bug #014940: eZLocale::countryList(..) and eZLocale::languageList() return array with not unique items
+- Fixed bug #16022: Bad parameter order for some imagemagick version
+- Fixed bug #16105: Duplicate code in eZObjectRelationListType::validateObjectAttributeHTTPInput()
+- Fixed bug #16093: "Your Drafts" information
+- Fixed bug #16094: "Your pending Items"
+- Fixed bug #16126: availableClassesJsArray wrongly defined as static causing create here menu on sub items to fail

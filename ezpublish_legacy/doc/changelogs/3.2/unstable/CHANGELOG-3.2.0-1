@@ -1,0 +1,269 @@
+Changes from 3.1-1 to 3.2.0-1
+
+*Kernel:
+- Added support for turning off cache-block caching. When disabling template compiling cache-block caching will also be disabled.
+- Fixed proper escaping of matrix cell content.
+- Renamed ScaleLargerThenOriginal to ScaleLargerThanOriginal.
+- Added support for using class identifiers in class filter fetching
+- Improved admin design. Added media tab and optional bookmarks and history list in menu.
+- Added user preferences functions
+- Added manual URL alias interface
+- Rewritten URL alias handling, quicker and more flexible
+- Added object moved functionality when accessing a re-named object by url alias. Sends correct HTTP 301 header.
+- Added sorting to search results. It now supports the same as the content fetch function.
+- Added navigation part identifier as override key for content view
+- Added new design to admin
+- Added setting for optional attribute translation, you can now select which attributes can be translated
+- Added simple HTTP POST form to e-mail processing
+- Added output washing to XML edit fields.
+- Fixed object memory cache coherence after storing object and attributes
+- Fixed bug in dealyed publishing workflow when re-publishing an object
+- Added missing include to ezworkflowtype.php
+- Added new datatype eZSelection, which is made as a replacement for enum. It's faster and simpler to work with.
+- Fixed fallback to default siteaccess when requested access does not exist
+- Optimized object view when XML field contains multiple related objects.
+- Optimized override cache format, now uses switch instead of nested if statements
+- Optimized object edit of XML fields containing multiple embeded related objects.
+- Optimized object rendering of XML fields containing multiple links.
+- Optimized object edit when XML field contains links. It was one db query pr link, now it's optimized to one db query pr XML field.
+- Added support for attribute level filtering. You can now filter the result depending on the attribute value.
+- Added support for attribute level sorting. You can now sort on the values of any attribute, whose datatype supports it.
+- Added sort key support for ezstring, ezdatetime and ezdate datatypes.
+- Added display of class attribute id in class edit, for usage in attribute sorting.
+- Added support for binary file indexing. The contents of binary files are extracted and indexed in the search engine.
+  This allows searching inside different files. The parsing is plugin based so you can create plugins for any format quickly.
+- Added PDF and word binaryfile indexing plugin
+- Added support for subtree template override with the url_alias key in override.ini
+- Fixed correct indexing of chinese/japanese multibyte characters in search engine
+- By adding a specific postvariable it is now possible to avoid having the class edit try load in data
+  for the attributes, this is required when a datatype redirects to another page and then back again.
+- Added template fetch functions class/list and class/attribute_list.
+- Added classFilter support for eZContentClass::fetchList which will only include classes of a given
+  ID or identifier.
+- Added function to create a temporary contentobject attribute from a contentclass attribute.
+- Added a preStoreClassAttribute function to eZDataType which is called before the class attribute is stored.
+- Added module object to eZContentClassAttribute::customHTTPAction which is stored in the contentclass
+  attribute object and can be read from datatypes by using eZContentClassAttribute::currentModule.
+- Moved functions for input validation, fixup and fetching from attribute_edit.php and into
+  eZContentObject. This allows for easy reuse.
+- Added function hasValidationError and setHasValidationError in eZContentObjectAttribute which
+  can be used to suppress a validation error entry even if an error occured.
+- Added convenience function classContent() to eZContentObjectAttribute which returns the content
+  of the contentclass attribute.
+- Added function handleCustomObjectHTTPActions to eZDataType which can be used by datatypes
+  to handle action checking themselves and forward requests to subobjects.
+- Added input and validation parameters to the validateInput function which can be read
+  using inputParameters() and validationParameters() in eZContentObjectAttribute.
+- Added function fetchActionValue to eZDataType which tries to extract values from action names.
+- Added new datatype eZObjectRelationList which will replace eZObjectRelation and also supports
+  inline editing.
+- Added new datatype eZMatrix.
+- Modified advanced search to support search of integer attribute values, range search.
+- Boolean datatype can be searchable.
+- Added 'select all' function for site which has multiple checkboxes.
+- Added empty trash, empty draft function.
+- Added version management function. By editing content.ini, it is possible to define maximum versions can be kept for a particular
+  class. If existing version numbers equals to the defined maximum versions, oldest archived version will be removed automatically 
+  when a new version is created 
+- Added version remove function.
+- Added url management function. All links can be edited and will be checked by cronjob. Dead link will be moved to invalid list. 
+  A link has a list of all objects ( verions ) which use this link.
+- Added settings for DefaultPreviewDesign in coontent.ini.
+- Added function to define customized image size by editing image.ini. Extended image sizes from small, medium, large, reference
+  and original to no-limits.
+- Fixed bug of unable to convert tiff, gif image. 
+- Improved general cronjob text output.
+- Improved workflow cronjob text output to include the number of process,
+  the number handled and all current statuses on processes.
+- Added support for collaboration notification event, this is event is created
+  for all collaboration items which supports notification.
+- Added support for a collaboration notification handler which takes care of
+  configuring notifications for collaboration and handling events.
+- Changed the behaviour of approval denying and removed the Defer/Pushback button. Now denying
+  changes the object version as a draft and stops the workflow process.
+- Fixed workflow status id to name function, now all status ids are converted.
+- Improved google and simple navigator to allow url suffix data (eg. ?Search=)
+- Improved search templates to use google navigator.
+- PHP function to template operator mapping can now be controlled by template.ini, this means
+  that it's possible to add new php functions as template operators without programming.
+  Added urlencode to default list.
+- Added fetch function for search.
+- Changed the content normal and advanced search to allow the use of the new fetch search.
+  The default behaviour searches using PHP code like before but the new mode can be turned on.
+  The new fetch function can also be used in other template code.
+- Moved search result list with navigator into a separate template, there's now a normal
+  search result template and an 'edit' search result template.
+- Added support for specifying result items per page for advanced search.
+- Made sitemap template more useful
+- Added support for search for objects which are published between two dates, the dates are
+  specfyied using timestamps.
+- Added posibilty to limit filter results of advanced search thru general search filter. Filter works for classes and subtree.
+- Added new versionview and node view viewmode called plain which is used for plain read-only views
+  on objects. It's currently being used in the collaboration approval system.
+- Added plain override templates for most of the admin default classes.
+- Added support for redirecting to a specific url after a content object is published, the
+  uri is specified in the template as a HTTP POST variable.
+- Added support for determing the how notification collections are made for collaboration items
+  that supports notification. It currently supports one collection per item and one per
+  participation role (approver, author etc.).
+- Added support for specialized notifications for approvals, one notification is sent to approver
+  and another to the author.
+- Added version and relase numbers to database, that way it's possible to now
+  the state of a database for future upgrades.
+- Added custom attribute support for object and custom tag.
+- Added new database indexes on search table and on object tree table.
+- Optimized text translation system, it will now only fetch requested contexts instead of all.
+  The optimization reduced both time taken and memory used.
+- Added support for letting extensions override translations in the kernel translation files.
+- Improved the i18n template operator to work with extensions. This means that the x18n
+  operator is deprecated.
+- Added support for having translation files in a specific charset. These translations
+  are used when the internal charset is the same as the translation charset thus
+  removing the need for charset translation.
+- Improved the template parser for ezlupdate, it will now allow more whitespaces between elements.
+- Added support for creating/updating multiple translations for ezlupdate.
+- Added detection for non-strings in i18n translations in ezlupdate.
+- The autoload path for templates are now defined in site.ini as an array instead of
+  a semi-colon separated list. The new setting is called AutoloadPathList.
+  The old setting is kept for compatability and will be read but is considered deprecated.
+- Added support for having template autoload files in extension by
+  using the ExtensionAutoloadPath setting in site.ini.
+- Fixed wrong link in changepassword e-mail.
+- Removed unused parameter 'headers' from eZMail::extraHeaders() and updated description
+- Added ContentType setting in MailSettings in site.ini. If set, this will set the content type
+  of all mail sent from eZ publish. Default is text/plain.
+- Added error.ini, which controls the behaviour of eZ publish errors.
+  Each error code can be set to display an error page, redirect to a url,
+  rerun a module or embed a module in the error page.
+  The error codes can also be mapped to HTTP error codes.
+- Updated templates for error codes to make it easier to understand what is wrong.
+- Made eZRangeOption datatype on by default.
+- Added previous/next function for section list.
+- Added login support using textfile which saved user account information.
+- Added login support using LDAP server.
+- Added empty class edit templates for datatypes which don't have them already.
+  This was done to get rid of the warnings.
+- Removed some old debug messages from datatypes.
+- Fixed variable name typo in ezextension class.
+- Created new class eZScript which takes care of starting, initializing and shutting down
+  common things in scripts.
+- Added pending list in personal
+- Add content cache expiry variable in template which makes it possible to set cache limit or disable
+  cache depending on template file.
+- Added feedback message for forgot password if user use an invalid key to confirm.
+- Fixed bug for content preview which can't show children.
+- Fixed bug of unable to edit object although user has permission to create and edit this object using subtree policy.
+- Added new module package which will handle listing, viewing and uploading of eZ publish packages.
+- Added PHP accelerator information to the setup/info page.
+- Added previous/next function for role list.
+
+*Setup:
+- Made new design
+- Added help and install summary to each step
+- Moved install steps from kernel/setup/parts/init to kernel/setup/steps
+- Added install class, eZStepInstaller, which all install steps are derived from
+- Added i18n support to all install steps
+- Added site template step for choosing site template
+- Moved database initialization to end of installation
+- Added support to hide steps which to not need user interaction
+
+*Package system:
+- Implemented the first version of the new package system.
+
+*Templates:
+- Made default size of textarea fields like text line fields.
+- Made sure that the new $attribute_base variable is used to generate post variable names in datatype edit templates.
+  This is required for datatypes to be used in the new eZObjectRelationList.
+- Added EditDirtyObjectAction in ContentSettings, to choose wether to always edit the current version,
+  or show version list as usual.
+- Added wizard for creating new datatypes.
+
+*Library :
+*eZ XML:
+- Fixed regexp to match xml attribute to make it handle - (dash) as it should have been.
+- Added convenience functions for querying if node has attributes or children and getting the count.
+- Added functions to return one or multiple elements by name from the children.
+- Added convenience function which allows fetching attribute names and values into PHP arrays.
+- Added convenience function to append multiple attribute values which are defined in a PHP array.
+- Added function to get all attributes in defined namespace.
+- Added convenience functions for fetching the text content and attribute value of a child
+  element by naming it.
+- Added convenience function to fetch the children and first child of a named child element.
+- Added convenience function to fetch the text content of all child elements with a given name.
+- The appendChild and appendAttribute now returns the element and attribute that was added.
+
+*eZ i18n:
+- Added support for Unicode encoding which is an array with Unicode values. Conversion from
+  and to this encoding is supported seamlessly.
+- Cleaned up the code which decides how the conversion should be done from input charset to output charset.
+- Removed bad use of reference in eZUTF8Codec.
+- Added koi-r charset and the cp125* charsets to the charset info class.
+
+
+*eZ template:
+- Added basic string and array handling operators.
+- Added support for defining template function and operator names dynamically trought a php function
+  in template autoloading.
+
+*eZ db:
+- Added support for inserting an SQL file in eZDBInterface.
+- Added support for setting the global instance.
+- Added support for getting version number of database.
+- Added support for getting all available databases for logged in user.
+
+*eZ locale:
+- Added support for querying the locale about allowed charsets.
+
+*eZ utils:
+- Added compatability files for eZLog, eZFile and eZDir which links to the eZ file library.
+- Fixed magic quote problem for array variable if magic_quotes_gpc is ON in php setting.
+
+eZ ini:
+- Added support for more characters in accociative arrays defined in .ini files.
+- Added support for fetching an ini file by supplying the full path thus ignoring
+  overrides and cache files.
+
+eZ sys:
+- Added the possibility to return indexDir and indexFile without siteaccess at the end.
+
+eZ module:
+- Added function to return the current redirection URI which is built from module, view and parameters.
+- Made sure it's possible to do redirections and reruns from the error module.
+
+eZ extension:
+- Added the helper function expandedPathList to turn a list of extension with an optional
+  subdirectory into real expanded paths.
+
+eZ session:
+- Added support for defining the name of the session variable.
+- Added support for having a unique session name per siteaccess, thus allowing
+  unique login per siteaccess even with url based siteaccess.
+- Added two functions for stopping and removing the session.
+
+eZ debug:
+- Added support for stylized output when using plain text.
+- Added support for suppressing the various debug levels, accumulators and timing points.
+  Default is to show all of them, as before.
+
+eZ cli:
+- New class to handle terminal and CLI specific functionality.
+- Moved class in to the eZ file library.
+
+eZ dir:
+- Added function directoryPermission() which returns the permission mask
+  which should be used to create directories.
+- Moved class in to the eZ file library.
+
+eZ log:
+- Moved class in to the eZ file library.
+
+*eZ file:
+- New library for dealing with files, directories, archives and compressed files.
+- Added create() function in eZFile which creates a file somewhere with some optional data.
+- Added support for recursive directory copy in eZDir.
+
+*eZ webdav:
+- New library. Implements basic WebDAV server framework/functionality. May be used to build WebDAV servers.
+- Added ezwebdavfileserver which builds on ezwebdavserver. May be used to serve a part of a flat/local filesystem.
+- Added ezwebdavcontentserver which builds on ezwebdavserver. Provides webdav interface to the site content.
+

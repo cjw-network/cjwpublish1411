@@ -1,0 +1,138 @@
+Changes from 3.4.0beta2 to 3.4.0
+
+*Kernel:
+- Updated webdav content server to use the new policy checking.
+- Added listitem template for link class in base design.
+- Added parameters to eztc.php (template compiler) to set the www-dir, index-file and access-path.
+
+*Updates:
+- Made sure the database update files has SQL commands which can be run on MysQL 3.23
+
+*DataType:
+
+eZIdentifier:
+- Added serialization support.
+
+*Bugfixes:
+- Fixed bug of unabling to login when using limited assignment of roles.
+  http://ez.no/community/bug_reports/policy_and_problem_with_login
+- Fixed bug related to useless eZSOAPServer::registerFunction() method.
+  http://ez.no/community/bug_reports/ezsoap_registerfunction_is_useless_invalid_code
+- Fixed bug with cleaning up subtree-expiry affected cache-blocks.
+  http://ez.no/community/bug_reports/cache_block_subtree_expiry_table_won_t_be_cleaned_if_an_object_is_deleted
+- Fixed bug of missing function canEdit(), canCreate(), canRemove() in eZContentObjectTreeNode.
+  http://ez.no/community/bug_reports/missing_permission_functoins_in_ezcontentobjecttreenode
+- Fixed bug of tool create_object will not show if the root node is selected as 'show in subtree'.
+- Fixed bug of not updating pagelayout cache when using browse button to edit tool parameters.
+- Fixed bug of missing argument when use function validateinput() in content/translate.php
+  http://ez.no/community/bug_reports/ezcontentobjectattribute_validateinput_missing_parameter_3_at_translation
+- Fixed bug when creating related objects and strict user rights.
+  http://ez.no/community/bug_reports/unable_to_create_related_object_without_very_relaxing_privileges
+- Fixed broken pdf export: applied the suggested solution.
+  http://ez.no/community/bug_reports/pdf_export_fails
+- Fixed bug related to inability of selecting source node for RSS export
+  (fixes also in stable/3.3 Rev. 6609).
+  http://ez.no/community/bug_reports/rss_export_source_1_selection_fails
+- Fixed bug related to inability of removing an RSS export source
+  (merged from 3.3, rev. 6614).
+  http://ez.no/community/bug_reports/rss_export_delete_source_missing
+- Fixed Checkbox datatype bugs, merged from stable 3.3 rev. 6616.
+  http://ez.no/community/bug_reports/checkbox_doesn_t_remember_default_value
+- Fixed bug of sometimes "index.php" appearing in urls on virtual host setup.
+  Added checking for ForceVirtualHost setting. Merged from  3.3 rev. 6618.
+  http://ez.no/community/bug_reports/virtual_host_setup_sometimes_index_php_appearing_in_urls
+- Fixed bug with the default template function where it would unset variables
+  getting out of scope.
+  http://ez.no/community/bug_reports/template_caching_problem_with_included_templates
+- Fixed bug of offset is not used by function fetchFilteredList() in ezcontentobject.php
+  http://ez.no/community/bug_reports/ezcontentobject_attribute_plz_undo_the_changes
+- Fixed access to PDF files, merged from stable/3.3 rev. 6635.
+  http://ez.no/community/bug_reports/pdf_export_to_url_fails
+- Fixed storing export PDF type, merged from stable/3.3 rev. 6635.
+  http://ez.no/community/bug_reports/export_to_pdf_does_not_store_export_type
+- Fixed bug with destroying variables if they were passed to an included
+  template under the same name.
+  http://ez.no/community/bug_reports/include_in_template_does_not_create_a_new_namespace
+  http://ez.no/community/bug_reports/template_compiler_undefined_vars
+- Fixed PHP error when trying to edit non existing role, merged from stable/3.3 rev. 6637.
+  http://ez.no/community/bug_reports/error_in_role_view
+- Fixed bug (suggestion) of  Remove object should also remove bookmark
+  Also added cleaning up existing bookmarks and recent items for corrupted nodes
+  http://ez.no/community/bug_reports/remove_object_should_also_remove_bookmark
+- Fixed verification of user's permissions which are were merged from several
+  roles.
+  http://ez.no/community/bug_reports/several_role_settings_for_module_user_does_not_work
+- Fixed attribute name pattern for the article class.
+  http://ez.no/community/bug_reports/default_article_content_type_has_incorrect_object_name_pattern
+- Fixed problem with missing duplicate function for file handlers.
+  http://ez.no/community/bug_reports/missing_function_duplicate_in_ezarchivehandler_detachhandler
+- Fixed bug in input-transforming code for the template compiler.
+  http://ez.no/community/bug_reports/problems_with_input_parameter
+- Fixed bug of link does not work for embedded image.
+  http://ez.no/community/bug_reports/xml_image_link_does_not_work
+- Fixed bug of missing integer check when update priority.
+  http://ez.no/community/bug_reports/action_update_priority_needs_an_input_check
+- Fixed void "recompile options" field of "Missing database handlers" issue
+  when setting up site without PostgreSQL support in PHP (merged from 3.3, rev. 6671).
+  http://ez.no/community/bug_reports/fine_tune_database_message
+- Fixed bug of unable to edit translated object.
+  http://ez.no/community/bug_reports/editing_of_a_translation_don_t_work_bug_in_attribute_edit_php
+- Fixed bug of missing included file in function fetchBookmarks() of ezcontentfunctioncollection.php.
+  http://ez.no/community/bug_reports/fatal_error_on_redirecting_template_when_registering_users
+- Fixed bug of undefined variable in eztemplatearrayoperator.php.
+  http://ez.no/community/bug_reports/eztemplatearrayoperator_php_undef_var
+- Fixed bug in wishlist of wrong culculation of VAT and discount.
+  Merged from stable 3.3  rev. 6682.
+  http://ez.no/community/bug_reports/wishlist_is_buggy
+- Fixed typo in ezlog.
+  http://ez.no/community/bug_reports/typo_in_ezlog
+- Implemented 'HEAD' in Webdav so that IE 6.0 would no longer 'PUT' an object
+  twice.
+- Fixed Webdav's 'MOVE', the extension was not removed from the source before
+  and thus could the source object never be found.
+- Fixed bug of missing i18n in shop/useregister.tpl
+  http://www.ez.no/community/bug_reports/i18n_not_found
+- Changed Webdav's 'PUT' to use the parent node's sectionID as sectionID for
+  the newly PUT object.
+- Fixed bug of getting fatal error when moving node.
+  http://ez.no/community/bug_reports/moving_article_from_one_folder_to_its_parent
+- Fixed bug with duplicate options in menu setup.
+  http://ez.no/community/bug_reports/the_different_choices_in_the_menu_toolbar_is_shown_twice
+- Fixed bug where Bookmark Additions required a ContentObjectID without it
+  being used. (Merged from 3.3, rev. 6705)
+  http://ez.no/community/bug_reports/recording_bookmarks_shouldnt_need_a_content_object_id
+- Fixed bug of typo in company address for company object editing.
+  http://ez.no/community/bug_reports/typo_in_add_company_in_contacts
+- Fixed PDF lib bug.
+  http://ez.no/community/bug_reports/margin_in_pdf_frame_header_footer
+- Fixed bug of missing limit attribute when fetch sub menu in double_top menu.
+  http://ez.no/community/bug_reports/bug_in_the_double_top_meny_for_news
+- Fixed bug with undefined user in eZAuthor datatype
+  http://ez.no/community/bug_reports/package_install_error_on_article_content_object
+- Fixed missing class_identifier bug in class/grouplist view.
+  http://ez.no/community/bug_reports/undefined_index_class_identifier
+- Fixed bug in the content cache where year/month/day parameters were not taken
+  into account.
+  http://ez.no/community/bug_reports/toolbar_error_when_publishing_a_calendar
+- Fixed typo bug
+  http://ez.no/community/bug_reports/typos_in_design_standard_templates_content_bookmark_tpl
+- Fixed bugs in update scripts for PostGreSQL.
+- Fixed bug in template compiled 'fetch' function.
+  http://ez.no/community/bug_reports/template_compiler_bug_when_class_list_is_passed_to_fetch_in_a_variable_containing_hash
+- Fixed undefined variable in debug call.
+  http://ez.no/community/bug_reports/warning_undefined_variable_in_kernel_workflow_edit_php
+
+*Library:
+
+eZMail:
+- Added setting to work around line ending issues in broken MTAs.
+  http://ez.no/community/bug_reports/ez_no_notifaction_not_working_properly_wrong_email_output
+
+eZ template:
+- Added parameter tool_id and offset for toolbar function.
+- Made sure loop item for the section function is unset before children are
+  processed.
+- Fixed a bug in the compilation system when compiling multiple files in session.
+
+*Translations:
+- Updated locale ger-DE

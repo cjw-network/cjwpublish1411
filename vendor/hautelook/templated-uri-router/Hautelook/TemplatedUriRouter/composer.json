@@ -1,0 +1,44 @@
+{
+    "name": "hautelook/templated-uri-router",
+    "description": "Symfony2 RFC-6570 compatible router and URL Generator",
+    "keywords": [
+        "Symfony2",
+        "URI",
+        "URL",
+        "RFC 6570",
+        "JSON",
+        "XML",
+        "Hateoas",
+        "Router"
+    ],
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "homepage": "http://www.hautelooktech.com/",
+    "authors": [
+        {
+            "name": "Baldur Rensch",
+            "email": "brensch@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "symfony/routing": "~2.5"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": "~2.1"
+    },
+    "conflict": {
+        "symfony/routing": "2.4.1"
+    },
+    "autoload": {
+        "psr-0": {
+            "Hautelook\\TemplatedUriRouter": ""
+        }
+    },
+    "target-dir": "Hautelook/TemplatedUriRouter",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0-dev"
+        }
+    }
+}

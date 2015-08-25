@@ -1,0 +1,19 @@
+# globale config.yml wird nach den Configs vom SiteBundle geladen und überschreibt so die Settings
+# @see src/Cjw/MultiSiteBundle/cjwpublish/CjwMultiSiteKernel.php registerContainerConfiguration()
+
+# ezp 5.3
+# alle SiteBundles muesen die  'default_connection' haben damit wir die DB Settings bzw cache settings usw
+# überschreiben können
+
+# doctrine:
+#    dbal:
+#        connections:
+#            default_connection:
+#                driver: pdo_mysql
+#                host: localhost
+#                dbname: ez14051_sss
+#                user: xxx
+#                password: xxx
+#                charset: UTF8
+#                options: {  }
+

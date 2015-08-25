@@ -1,0 +1,1015 @@
+eZ component: PersistentObject, Design, 1.5
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:Author:   Tobias Schlitt
+:Revision: $Rev$
+:Date:     $Date$
+:Status:   Draft
+
+.. contents::
+
+=====
+Scope
+=====
+
+The scope of this document is to describe the proposed enhancements for the
+PersistentObject component version 1.5.
+
+The general goal for this version is to implement various features
+described by these issues in our issue tracker:
+
+- Select query decorator.
+- #12473: Identity map for PersistentObject.
+- #13074: Fetching related objects through joins.
+- #11831: isRelated() Method.
+- #13073: Sub-select support for PersistentObject.
+- #13170: Support for custom relation implementations.
+
+Each of the issues and their proposed solutions are explained in a separate
+chapter in this document. Some issues relate to each other, which is also
+explained in the issue descriptions. The requirements for each of the
+enhancements can be found in the corresponding requirements document.
+
+======================
+Select query decorator
+======================
+
+The initial design of the PersistentObject component defined the following code
+flow to create a find query for certain objects and fetch the desired objects::
+
+    <?php
+    $query = $session->createFindQuery( 'SomeClass' );
+
+    $query->where( /*...*/ );
+    
+    $objects = $session->find( $query, 'SomeClass' );
+    ?>
+
+The class name of the objects to fetch is actually submitted twice to the
+ezcPersistentSession instance. This is uncomfortable for the user of the
+component and should be solved by a custom decorator for the SELECT query
+classes provided by the Database component.
+
+The idea is to create a wrapper class for the (database specific)
+ezcQuerySelect instance that is returned by
+ezcPersistentSession->createFindQuery(). This decorator class will dispatch all
+method and attribute accesses to the internal query class, but also accepts
+further meta information from the ezcPersistentSession instance it was created
+by.
+
+------
+Design
+------
+
+The basic decorator class (ezcPersistentFindQuery) will consist only of a
+constructor that adds a single virtual property $className as meta data to the
+query::
+
+    public function __construct( ezcQuerySelect $q, string $className );
+
+All further method calls are delegate to the given $q object using __call().
+The same applies for property and attribute accesses, except for the $className
+property.
+
+The resulting code for user will be simplified as follows::
+
+    <?php
+    $query = $session->createFindQuery( 'SomeClass' );
+
+    $query->where( /*...*/ );
+    
+    $objects = $session->find( $query );
+    ?>
+
+Since the decorated query class is completly transparent to the user, the old
+code will still work as expected, maintaining backwards compatibility.
+
+Further enhancements of the PersistentObject component may enhance
+ezcPersistentFindQuery by extending the class. It is mandatory that these
+extensions maintain BC with ezcQuerySelect for all methods that already exist
+in ezcPersistentSession.
+
+=================================
+Identity map for PersistentObject
+=================================
+
+The Identity Map pattern is described by Martin Fowler in his book `Patterns of
+Enterprise Application Architecture`__. The purpose of this pattern is to avoid
+that 2 or more objects representing the same database row reside in memory. The
+problems here are:
+
+a) Duplicate memory consumption
+b) Potential inconsistencies between different copies of the same object.
+
+.. __: http://martinfowler.com/books.html#eaa
+
+To avoid this, the data manipulation mechanisms must take care of not
+delivering duplicate instances of the same data. Beside that, it can cache
+certain queries as long as manipulations are reflected properly. The data
+manipulation mechanisms in our case are realized in the ezcPersistentSession
+and related (internal) handler classes.
+
+------
+Design
+------
+
+The Identity Map support should be optional to not break BC and keep
+flexibility. Therefore, a new class named ezcPersistentIdentitySession is
+implemented. This extends the current implementation ezcPersistentSession to
+make instanceof checks still work. All of the methods will be overwritten and
+new handler classes, extending the existing ones will be implemented to reflect
+the actual additions.
+
+The following list gives an overview of classes to be implemented and their
+role in this design:
+
+- ezcPersistentIdentitySession
+
+  This class is a decorator to the existing ezcPersistentSession. An object of
+  this class wraps around the typically used persistence session and adds the
+  desired functionality to it. Database related method calls are still
+  performed using the original ezcPersistentSession instance.
+
+- ezcPersistentIdentityMap
+
+  This interface provides the methods that will be used by
+  ezcPersistentIdentitySession to cache query results. A basic implementation
+  of this interface is ezcPersistentBasicIdentityMap, realizing the typical
+  identity map, by storing the identities in memory of the current process.
+  
+  An instance of this class builds the heart of ezcPersistentIdentitySession.
+  It takes care for the in-memory management of object identities. The instance
+  used by ezcPersistentIdentitySession is replaceable, to allow custom
+  implementations like e.g. an identity map that uses the Cache component
+  instead of local memory.
+
+- ezcPersistentIdentitySessionOptions
+
+  This class is the options storage for ezcPersistentIdentitySession.
+
+The following sections describe the implemented classes in further detail.
+
+ezcPersistentIdentitySession
+============================
+
+This main class of the enhancement will be used exactly like
+ezcPersistentSession and realizes the desired functionality completely
+transparent to the user. This allows users to transparently replace the old
+version and vise versa. The class will moddel a decorator for the existing
+ezcPersistentSession.
+
+Functionality
+-------------
+
+The constructor of the class receives an ezcPersistentSession instance to
+decorate and an object of type ezcPersistentIdentityMap, which realizes the
+identity mapping itself. This central point is used as the cache for object
+identities. All method calls, that are affected as described in the
+requirements document, will utilize this object to grab cached object
+identities and to reflect their changes.
+
+ezcPersistentIdentitySession will implement the same methods as
+ezcPersistentSession and perform the necessary cache inserts, updates and
+lookups around it. The following methods cannot be traced correctly and may
+therefore lead to inconsistencies:
+
+- createUpdateQuery()
+- updateFromQuery()
+- createDeleteQuery()
+- deleteFromQuery()
+
+The use of the \*FromQuery() methods will therefore result in a complete purge
+of the identity map to ensure consistency.
+
+Interface
+---------
+
+__construct( ezcPersistentSession $session, ezcPersistentIdentityMap $map )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The constructor receives the persistent $session to dispatch method calls to.
+In addition it receives the identity $map object to cache and retrieve object
+identities with.
+
+Both instances can be replaced by custom extensions of the original
+implementation to add further functionality.
+
+load( string $class, mixed $id )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In case the requested object is found in the identity map, it will be returned
+from there. Otherwise the decorated persistent session will issue a normal
+load() operation and the result will be recorded in the identity map.
+loadIfExists() will react the same way.
+
+loadIntoObject( object $object, mixed $id )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In case the given $object already is a loaded instance of an object, an
+exception will be thrown. If the desired object with the $id was already
+recorded in the identity map, an exception is thrown, too, since the operation
+would result in a copy. Otherwise the load is performed as desired and the
+resulting object instance is recorded and returned.
+
+find( ezcPersistentFindQuery $query, $class = null )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ezcPersistentSession->find() is executed. In the resulting array, each object
+is checked in the identity map. If an identity is found, it is replaced into
+the result. If the identity of the object is not yet knowen, it is recorded.
+
+Since the new ezcPersistentFindQuery class will be introduced with this
+release, the optional $class parameter will be deprecated, but kept for BC
+reasons.
+
+It is possible to disable the identity caching globally, using the $refetch
+option.  In this case, identities will be updated, before they are fetched from
+the identity map. 2 cases must be differntiated here:
+
+1. The identity is not found in the identity map.
+   
+   In this case, the identity will be cretaed as usual.
+
+2. The identity is found in the identity map.
+
+   In this case, the loaded data will be used to update the existing identity
+   (as ezcPersistentSession->refresh() would do) and the updated identity will
+   be returned.
+
+findIterator( ezcPersistentFindQuery $query, string $class = null )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To support this method properly, a new class ezcPersistentIdenitiyFindIterator
+is introduced. This one decorates the ezcPersistentFindIterator returned by
+ezcPersistentSession->findIterator(). The decorating class will take care of
+modelling the same behavior as described above with the find() method.
+
+getRelatedObjects( object $object, $relatedClass, $relationName = null )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This method checks the relation cache of the identity map first, if a result
+set has already been stored for the given relation. In this case the cached
+result set will be returned.
+
+If the $refetch option is switched to true, the set of related objects will not
+be fetched from the identity map, but loaded from the database directly. If a
+result set already exists in memory, it will be replaced by the newly fetched
+set.
+
+The object identities themselves are handled as described in the find() method,
+including the behaviour of the $refetch option.
+
+getRelatedObject( object $object, $relatedClass, $relationName = null )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Same as above, only for a single object.
+
+createRelationFindQuery( object $object, string $relatedClass, string $relationName = null, string $setName = null )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This method just returns an instance of ezcPersistentFindQuery, as
+ezcPersistentSession->createRelationFindQuery() does. In addition to that, the
+optionally given $setName is set in the returned query. If the set name is
+given, getRelatedObjectSubset() (see `API additions for
+ezcPersistentIdentityMap`_) can be used to retrieve this set again.
+
+If the $setName is missing, the related object set returned by find() will not
+be cached, since it cannot be ensured that all related objects are fetched due
+to where conditions in the query.
+
+In any case, fetched object identities are cached and replaced from the
+identity map.
+
+save( object $object )
+^^^^^^^^^^^^^^^^^^^^^^
+
+Whenever a new object was saved successfully, it is recorded in the identity
+map.
+
+saveOrUpdate( object $object )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This method reacts the same as save() if the operation was not an update. In
+case of an update nothing is to do, since the object is already part of the
+identity map.
+
+addRelatedObject( object $sourceObject, object $relatedObject )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This method performs the usually operation of ezcPersistentSession. In
+addition, the following operations will be performed:
+
+If the $relatedObject was already related to another object, it is removed from
+the relation cache. The new relation is reflected accordingly in the relation
+cache.
+
+.. note::
+   It should be discussed if it is feasible to perform the save() operation
+   after a newly established relation automatically here, since otherwise
+   inconsistencies might occur with the mapping cache. ezcPersistentSession
+   does not do this, to avoid multiple UPDATE queries. Maybe a global switch in
+   ezcPersistentSession to activate this overall might be sensible?
+
+delete( object $object )
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+This method must remove all references to the object from all mapping caches
+before actually deleting the object itself from the DB. This is the most time
+consuming work, since multiple isset() calls might be necessary to remove all
+identities from the relation cache.
+
+.. note::
+   The delete() operation also removes all relations and, if cascading is used,
+   also removes related objects. Therefore the operation might even run longer.
+
+Performance should be a major concern when writing this code.
+
+removeRelatedObject( object $sourceObject, object $relatedObject, string $relationName = null )
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Beside removing the relation from the DB (in case of n:m relations), using
+ezcPersistentSession->removeRelatedObject(), the relation is removed from the
+relation cache, too.
+
+.. note::
+   It should be discussed if it is feasible to perform the save() operation
+   after a newly established relation automatically here, since otherwise
+   inconsistencies might occur with the mapping cache. ezcPersistentSession
+   does not do this, to avoid multiple UPDATE queries. Maybe a global switch in
+   ezcPersistentSession to activate this overall might be sensible?
+
+ezcPersistentIdenitySessionOptions
+==================================
+
+The new ezcPersistentIdentitySession can be configured to switch on and off
+certain features. The options are:
+
+$refetch = false;
+  Setting this to true will make the identity map indicate that no results have
+  been cached, yet. The result is, that the persistent session will re-fetch
+  all objects and record them in the identity map. This also affects the
+  relation cache ($refetchRelations = true).
+
+ezcPersistentIdentityMap
+========================
+
+This interface models the internal heart of the identity map enhancement. An
+implmentation of it handles all caching and mapping activities globally for a
+session.
+
+Users shall usually not access the identity map object directly to fetch cached
+objects or add new ones. On the other hand, the identity map should be
+replaceable to allow more advanced implementations (e.g. involving the Cache
+component). Therefore most methods of this class will public, but marked as
+proteced via documentation.
+
+Functionality
+-------------
+
+The following 2 areas of identity mapping will be handled:
+
+1. The identity mapping itself.
+
+   In this cache, each persistent object that is available in the session is
+   recorded once. The mapping is::
+
+        array(
+            <class_name> => array(
+                <id_value> => <object>,
+                <id_value> => <object>,
+                <id_value> => <object>,
+                // ...
+            ),
+            // ...
+        )
+
+   The <object> values here are structs of type ezcPersistentIdentity, which
+   store the object identity and some meta data and the relations cache in
+   addition.
+
+2. The relation mapping.
+
+   The relations of an object are stored in its ezcPersistentIdentity struct.
+   See the specific section of this document for further details.
+
+Interface
+---------
+
+The following methods will be provided by the ezcPersistentIdentityMap
+interface:
+
+- setIdentity( object $object )
+
+  Sets the identity for $object. If an identity for this object was already
+  recorded, it will be overwritten. The object using the identity map must
+  take care about checking if the identity was already recorded.
+
+- getIdentity( string $class, mixed $id )
+
+  Returns the object recorded for $class, identified by $id. If such object is
+  not available, null is returned.
+
+- removeIdentity( object $object )
+  
+  Removes the identity for the given $object from the map. In addition, removes
+  the object from all related object sets and named related object sets it is
+  referenced in.
+
+- setRelatedObjects( object $sourceObject, array $relatedObjects, string $relatedClass, $relationName = null )
+
+  Sets $relatedObjects for $sourceObject of class $relatedClass. The objects in
+  $relatedObjects must all be of $relatedClass, otherwise an exception will be
+  thrown. If a set of $relatedObjects for $className already exists, it will be
+  overwritten. The object using the identity map must take care about checking
+  if the related objects were already recorded.
+
+  The using object *must* call getRelatedObjects() after using
+  setRelatedObjects(), since during the addition to the identity map, already
+  existsing identities are replaced into the related object set.
+
+- setRelatedObjectSet( object $sourceObject, array $relatedObjects, string $setName )
+
+  Creates a named set of $relatedObjects for $sourceObject named $setName. If a
+  set of $relatedObjects with $setName already exists, it will be overwritten.
+  The object using the identity map must take care about checking if the
+  related objects were already recorded.
+
+  The using object *must* call getRelatedObjectSet() after using
+  setRelatedObjectSet(), since during the addition to the identity map, already
+  existsing identities are replaced into the related object set.
+
+- addRelatedObject( object $sourceObject, object $relatedObject, $relationName = null )
+
+  Appends a related object to an existing cached relation. Used in
+  ezcPersistentIdentitySession->addRelatedObject().
+  
+  If no relation result set has been cached, yet, it is not created, but the
+  call is ignored. This results in a newly fetch of the relation when
+  getRelatedObjects() is called.
+
+- removeRelatedObject( object $sourceObject, object $relatedObject, $relationName = null )
+
+  Removes a related object from the relation cache. Used in
+  ezcPersistentIdentitySession->removeRelatedObject(). If the relation
+  resultset is not cached, yet, the call is ignored.
+
+- getRelatedObjects( object $sourceObject, string $class, $relationName = null )
+
+  Returns an array of objects of type $class related to $sourceObject. This can
+  also be an empty array, if the last lookup in the database resulted in such.
+  In case no related objects have been recorded, yet, null is returned.
+
+- getRelatedObjectSet( object $sourceObject, string $setName )
+
+  Returns the related object set $setName for the $sourceObject. If no such
+  named related set exists, null is returned.
+
+- reset()
+
+  Resets the complete identity map to its original state, purging all related
+  objects and named related object sets.
+
+The PersistentObject component will provide a basic implementation of
+ezcPersistentIdentityMap which simply stores the identities in memory (the
+original idea of an identity map): ezcPersistentBasiIdentityMap. Making
+ezcPersistentIdentityMap an interface allows users to create more advanced
+maps, e.g. involving caching mechanisms.
+
+--------------
+Usage examples
+--------------
+
+The following code snippes illustrate how the features described above are
+intended to be used.
+
+Replacing ezcPersistentSession with ezcPersistentIdentitySession
+================================================================
+
+The current code to create and use a persistent session looks like this::
+
+    <?php
+    $db = ezcDbFactory::create( '<some dsn>' );
+
+    $session = new ezcPersistentSession(
+        $db,
+        new ezcPersistentCodeManager( "path/to/definitions" )
+    );
+    ?>
+
+A user can transparently replace the $session with the new identity session::
+
+    <?php
+    $db = ezcDbFactory::create( '<some dsn>' );
+
+    $persistentSession = new ezcPersistentSession(
+        $db,
+        new ezcPersistentCodeManager( "path/to/definitions" )
+    );
+
+    $map = new ezcPersistentIdentityMap();
+    $session = new ezcPersistentIdentitySession(
+        $persistentSession,
+        $map
+    );
+    ?>
+
+After this change, no duplicates of identities will be returned by
+PersistentObject. In addition, SELECT statemenst from the load() method might
+be avoided if an identity is to be loaded twice and duplicate relation fetches
+in getRelatedObjects() are avoided.
+
+Refetching object identities and relations
+==========================================
+
+It might be necessary to refresh several object identities at once in an
+application. To prevent the persistent session to re-use the user can use the
+following code::
+
+    <?php
+    $userA = $session->load( 'User', 23 );
+    $userB = $session->load( 'User', 42 );
+
+    $q = $session->createFindQuery( 'User' );
+    $q->where( 
+        $q->expr->lessThan( 'id, 1000 )
+    );
+
+    $session->options->refetch = true;
+    $users = $session->find( $q, 'User' );
+    $session->options->refetch = false;
+    ?>
+
+In this example, the User objects with IDs 23 and 42 are already loaded and
+their identity is cached in the identity map. Therefore, the find() of users
+with IDs lower than 1000 would normally return an array with 999 elements,
+containing the cached identities of the users 23 and 42. Since the $refetch
+option is switched on, the cached identities will be updated from the loaded
+data before they are returned.
+
+The same applies to relations::
+
+    <?php
+    $addresses = $session->getRelatedObjects( $user, 'Address' );
+    
+    // ...
+    $addresses = $session->getRelatedObjects( $user, 'Address' );
+
+    // ...
+    $session->options->refetch = true;
+    $addresses = $session->getRelatedObjects( $user, 'Address' );
+    $session->options->refetch = false;
+    ?>
+
+The first fetch of related Address objects for the User object results in a
+database query anyway. After that, the relation result is cached. Therefore the
+second call to getRelatedObjecst() does not perform a database query at all,
+but simple returns the cached relation set. For the third call, the $refetch
+option is set to true. Therefore the database query is issued and the relation
+result set is overwritten. In addition, all found identities are updated with
+the newly fetched values. Note still no duplicates are created, but already
+existing identities are updated and existing object references are used in the
+result returned by getRelatedObjects().
+
+-----------
+Open issues
+-----------
+
+- Since ezcPersistentIdentitySession only decorates ezcPersistentSessions, it
+  is not seamlessly possible to replace both in an application: Instanceof
+  checks will not work.
+- loadIfExists() can return null. Should this result be cached or should the
+  method try to load again if no object has been loaded successfully, yet?
+- The update() method only allows to update 1 specific object right now. This
+  results in a lot of select queries, if multiple objects need to be updated.
+  We should allow arrays of objects here and update them in a row using <id> IN
+  ( ... ).
+
+======================================
+Fetching related objects through joins
+======================================
+
+Relation management with Persistent Objects is very convenient and powerful.
+However, it suffers from one of the common consequences of such methods: the
+amount of SQL queries you end up executing.
+
+Since using relations is easy, you will easily end up running dozens or hundreds
+of SQL queries, especially when using the templates component::
+
+    {$event->location->name}
+
+Very convenient, but this will run at least one extra query here; if you do this
+when listing, let's say events, you will execute one extra query for each event
+you display the location for. If you also display the event's responsible name,
+it's another query. If you show 10 events, you execute 21 queries, and this is
+not acceptable.
+
+------
+Design
+------
+
+A precondition of the pre-fetching of related objects is that these objects can
+be stored internally in the persistent session somehow and can be accessed by
+the user. The section `Identity map for PersistentObject`_ already describes
+suche a mechanism in detail. Therefore, the pre-fetching feature will be
+implemented inside the defined `ezcPersistentIdentitySession`_ class to utilize
+this features.
+
+The additions also affect the `ezcPersistentIdentityMap`_ class in some ways,
+to allow the fetching of a subset of related objects.
+
+API additions for ezcPersistentIdentitySession
+==============================================
+
+The ezcPersistentIdentitySession (originally described in the `Identity map for
+PersistentObject`_ section) will be enhanced by methods to perform the
+following operations:
+
+
+- Load a persistent object including specific related objects.
+- Finding persistent objects including specific related objects.
+- Loading a persistent including a subset of related objects.
+- Finding persistent objects including a subset of related objects.
+
+To achieve this, the following methods will be added:
+
+loadWithRelatedObjects( string $class, mixed $id, array(ezcPersistentRelationFindDefinition) $relations )
+---------------------------------------------------------------------------------------------------------
+
+This method takes care about finding a speicifc persistent object (like the
+ezcPersistentSession->load() method) and finds related objects in addition. The
+$relations parameter contains a struct, defining the related objects to load.
+
+createFindQueryWithRelations( string $class, array $relations )
+---------------------------------------------------------------
+
+This method works like ezcPersistentSession->createFindQuery() and returns a
+query object, that may be manipulated by the user. The returned instance is of
+type ezcPersistentFindWithRelationsQuery, which is a decorator for
+ezcQuerySelect, that extends ezcPersistentFindQuery, defined earlier in `Select
+query decorator`_.
+
+Aliases for $class are defined as known from createFindQuery(). In addition,
+for the related objects to fetch as defined in $relations aliases are generated
+in the for '<key>_<propertyName>', where <key> is the array key provided in
+$relations for the specific relation.
+
+The query objects contains additional information about the $relations to
+fetch, which will be used by the findWithRelations() method to define the
+necessary JOINs and parse the returned objects.
+
+The query object can be used like an instance of ezcPersistentFindQuery (aka
+ezcQuerySelect) in general, but does not allow the following operations:
+
+- select()
+- selectDistinct()
+- from()
+- \*Join()
+- groupBy()
+- having()
+- limit()
+
+These operations throw an exception, since using them would break the query for
+extraction of the related objects. Calls to where() and orderBy() are still
+allowed. However, orderBy() should be avoided, since later re-fetching of
+related objects sets would result in potential inconsistencies in an
+application.
+
+The query decorator will detect if the user manipulates the WHERE condition. If
+the WHERE condition for a relation has been manipulated (a query restriction
+takes effect), find() will store a named sub-set for the related objects,
+instead of the normal related object set. This is necessary, since by adding a
+WHERE condition for a relation not the full set of related objects is fetched.
+
+The name of a named related object sub-set is determined by the key used in the
+$relations array for this relation.
+
+find( ezcPersistentFindWithRelationsQuery $query )
+---------------------------------------------------
+
+The find() method (originally defined by ezcPersistentSession) is extended to
+allow finding objects and related objects with an instance of
+ezcPersistentFindWithRelationsQuery. In the background, it also fetches the
+related objects as defined during createFindQueryWithRelations() and stores
+them in the identity map.
+
+The related objects can later be retreived from ezcPersistentIdentitySession by
+the user through ezcPersistentIdentitySession->getRelatedObjects() or
+->getRelatedObjectsSubset(). Named sub sets are created as described in the
+previous section, on basis of WHERE conditions.
+
+
+getRelatedObjectsSubset( object $object, string $setName )
+----------------------------------------------------------
+
+This method works similar to getRelatedObjects(), but allows to access a subset
+of related objects, fetched using find() with a restricted
+ezcPersistentFindWithRelationQuery object. If the set identified by $setName
+does not exist, null is returned.
+
+API additions for ezcPersistentIdentityMap
+==========================================
+
+Some of the additions to `ezcPersistentIdentitySession`_ (defined earlier in
+this section) require additions to the persistent session itself, too. The
+identity map must be extended to be capable of managing named subsets of
+related objects. The following methods are added:
+
+setRelationSet( object $sourceObject, array $relatedObjects, string $setName, string $relationName = null )
+--------------------------------------------------------------------------------------------------------------
+
+This method acts like addRelatedObjects() but adds the relation set as a named
+subset of relations. If the subset already exists, an exception is thrown.
+
+getRelationSet( object $object, string $relatedClass, string $setName, string $relationName = null )
+-------------------------------------------------------------------------------------------------------
+
+Returns the relation subset defined by the parameters. In case the subset is
+not cached, null is returned.
+
+ezcPersistentRelationFindDefinition
+===================================
+
+This struct class is used to define relations for pre-fetching. An array of
+such structs is used in favor of deeply nested array structures.
+
+The struct looks as follows::
+
+    <?php
+    class ezcPersistentRelationFindDefinition extends ezcBaseStruct
+    {
+        public $relatedClass;
+
+        public $relationName;
+
+        public $furtherRelations = array();
+
+        public function __construct(
+            $relatedClass,
+            $relationName = null,
+            array $furtherRelations = null
+        )
+        {
+            // ...
+        }
+    
+    }
+    ?>
+
+--------------
+Usage examples
+--------------
+
+The following code snippes illustrate how the features described above are
+intended to be used.
+
+Simple pre-fetching
+===================
+
+The most common usage of the pre-fetching will be the following use case::
+
+    <?php
+    $q = $session->createFindQuery( 'Book' );
+    $q->where(
+        $q->expr->gt(
+            'releaseDate', ( time() - 10080 )
+        )
+    );
+    $books = $session->find( $q, 'Book' );
+
+    foreach ( $books as $book )
+    {
+        $authors = $session->getRelatedObjects( $book, 'Author' );
+        foreach ( $authors as $author )
+        {
+            // Do something with Author objects...
+            $addresses = $session->getRelatedObjects( $author, 'Address', 'private' );
+            // Do something with Address objects...
+        }
+
+        $reviews = $session->getRelatedObjects( $book, 'Review' );
+        // Do something with Review objects...
+    }
+    ?>
+
+In this code snippet, Book objects are loaded that have been released within
+the last week. For each of the objects, 1 SELECT query is issued to find the
+Author objects for the book and another one to find reviews for the book. For
+each found Author object, another SQL query is issued to fetch the private
+Address objects registered for it. Asuming that 20 books are found, this make
+at least 60 SQL queries to fetch all the objects from the database.
+
+With pre-fetching, this becomes much more efficient, by changing the loading of
+Book objects to the following code::
+
+    <?php
+    $q = $session->createFindQueryWithRelations(
+        'Book'
+        array(
+            new ezcPersistentRelationFindDefinition(
+                'Author',
+                null,
+                array(
+                    new ezcPersistentRelationFindDefinition(
+                        'Address',
+                        'private'
+                    ),
+                )
+            ),
+            new ezcPersistentRelationFindDefinition(
+                'Review'
+            ),
+        )
+    );
+    $q->where(
+        $q->expr->gt(
+            'releaseDate', ( time() - 10080 )
+        )
+    );
+    $books = $session->findWithRelations( $q );
+    
+    // ...
+    ?>
+
+The rest of the code stays as showen in the first snippet. Instead of using 60
+SQL queries to fetch all desired objects, 1 single query is used.
+
+Complex pre-fetching
+====================
+
+In large applications fetching all related objects for a certain object is not
+desired. Instead, one usually wants to define the sub-sets of related objects
+to fetch pretty fine graned. An example, how to realize this, is shown below::
+
+    <?php
+    $q = $session->createFindQueryWithRelationSubset(
+        'Book'
+        array(
+            new ezcPersistentRelationFindDefinition(
+                'Author',
+                null,
+                array(
+                    new ezcPersistentRelationFindDefinition(
+                        'Address',
+                        'private'
+                    ),
+                )
+            ),
+            new ezcPersistentRelationFindDefinition(
+                'Review'
+            ),
+        )
+    );
+
+    $q->where(
+        $q->expr->gt(
+            'releaseDate', ( time() - 10080 )
+        )
+    );
+    $q->where(
+        $q->expr->gt(
+            'Review_date', ( time() - 1440 )
+        )
+    );
+
+    $books = $session->findWithRelationSubset( $q, 'latest_reviews' );
+    ?>
+
+The example is almost the same as for the last section, except that the Review
+objects fetched are limited to those that have been written in the past 24
+hours. Since the results fetched by this query do not correspond to the usual
+behavior of getRelatedObjects() anymore, a new method must be used here to
+retrieve the named subset::
+
+    <?php
+    foreach ( $books as $book )
+    {
+        $authors = $session->getRelatedObjectsSubset(
+            $book,
+            'Author',
+            'latest_reviews'
+        );
+        foreach ( $authors as $author )
+        {
+            // Do something with Author objects...
+            $addresses = $session->getRelatedObjects(
+                $author,
+                'Address',
+                'latest_reviews',
+                'private'
+            );
+            // Do something with Address objects...
+        }
+
+        $reviews = $session->getRelatedObjects(
+            $book,
+            'Review',
+            'latest_reviews'
+         );
+        // Do something with Review objects...
+    }
+    ?>
+
+-----------
+Open issues
+-----------
+
+- Currently, the aliasing of related object attribute names is ambiguous (e.g.
+  Author_name). A good solution could be here to make the user simply define
+  prexifes himself::
+
+    <?php
+    $q = $session->createFindQueryWithRelationSubset(
+        'Book'
+        array(
+            'Author' => new ezcPersistentRelationFindDefinition(
+                'Author',
+                null,
+                array(
+                    'privAddress' => new ezcPersistentRelationFindDefinition(
+                        'Address',
+                        'private'
+                    ),
+                )
+            ),
+            'Review' => new ezcPersistentRelationFindDefinition(
+                'Review'
+            ),
+        )
+    );
+    ?>
+
+  In this example, the $name attribute of the Author class can be accessed via
+  'Author_name' and the $street attribute of the Address class through
+  'privAddress_street'.
+
+- It has to be decided if these enhancements should become directly part of
+  ezcPersistentIdentitySession or if they should go into an extended class.
+
+==================
+isRelated() method
+==================
+
+It might be useful in an application to know if to given objects are related to
+each other. This way, the user does not need to remember how the relation
+between 2 objects is practically established.
+
+------
+Design
+------
+
+A new method::
+
+    bool isRelated( object $object1, object $object2 )
+
+is added to ezcPersistentSession. This method will perform the following
+operations when being called with 2 objects:
+
+- Check if the object classes have a relation assigned in their persistent
+  object definition (forward or backward).
+  - If not: Return false.
+- Check if the objects are related to each other.
+  - If not: Return false.
+- Return true.
+
+The operation will work without a database query for the following relations
+
+- One-To-One
+- One-To-Many
+- Many-To-One
+
+but will perform a database query for the Many-To-Many relation type.
+
+=======================================
+Sub-select support for PersistentObject
+=======================================
+
+The method ezcPersistentSession->createFindQuery() allows the user to create a
+pre-configured ezcQuerySelect object, which has aliases assigned from object
+attributes to column names. This has 2 advantages:
+
+a) The user does not need to remember any column names, but only needs to know
+   the object attribute names.
+b) The user does not need to manually escape the column names.
+
+If the user wants to create a sub select query. he usually calls
+$query->subSelect(), which returns a new query object. For the persistent
+object queries, he then needs to manually configure the table name and needs to
+make use of the column names.
+
+------
+Design
+------
+
+The new `Select query decorator`_ which will be returned by createFindQuery()
+from this version on, will be enhanced by a method::
+    
+    createSubFindQuery( string $className )
+
+This method will call ezcQuerySelect->subSelect() on the inner query object and
+prepare the query according to the behavior of createFindQuery().
+
+..
+   Local Variables:
+   mode: rst
+   fill-column: 79
+   End:
+   vim: et syn=rst tw=79

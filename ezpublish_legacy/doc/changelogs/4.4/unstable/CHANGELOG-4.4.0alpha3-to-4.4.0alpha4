@@ -1,0 +1,28 @@
+Changes from 4.4.0alpha3 to 4.4.0alpha4
+
+*Kernel:
+- Implemented enhancement #016791: admin2 content/edit_attribute.tpl - attribute-groups (fieldsets) has no unique css class
+- Implemented enhancement #016903: 'is_published' field of ezcontentobject table is not used and should be dropped
+
+*Design:
+
+*eZTemplate:
+- Implemented enhancement #016901: Allow PHPOperatorList functions to work with parameter in template compile mode
+- Implemented enhancement #002314: urldecode should be added by default in template.ini
+
+*eZLocale:
+
+*Package system:
+
+*Scripts:
+
+*Translations:
+
+*Bugfixes:
+- Fixed bug #011887: List of countries needs to be updated
+- Fixed wrong --iteration-limit parameter parsing for clusterbinarypurge.php, ref. issue #15793: eZDFS: Image files and aliases are not removed when a objectversion is deleted
+- Fixed wrong variable name in clusterbinarypurge.php, ref. issue #15793: eZDFS: Image files and aliases are not removed when a objectversion is deleted
+- Fixed bug #016776: PHP errors and warnings prevents HTTP status 500 to be used by index_cluster.php
+- Fixed bug #016811: admin2: role/edit - can not add policy with all function for a module
+- Fixed bug #16763: Notification cronjob eats all memory and crashes
+

@@ -1,0 +1,367 @@
+eZ component: PersistentObject, Design, 1.4
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:Author:    Frederik Holljen
+            Tobias Schlitt
+:Revision:  $Rev: 3576 $
+:Date:      $Date: 2006-09-25 13:44:15 +0400 (Mon, 25 Sep 2006) $
+:Status:    Final
+
+.. contents::
+
+Scope
+=====
+
+The scope of this document is to describe the proposed enhancements for the
+PersistentObject component version 1.4.
+
+The general goal for this version is to implement various features
+described by these issues in our issue tracker:
+
+- #10151: Improved Database and PersistentObject datatype support (especially
+  binary data).
+- #10373: Several relations to the same table for PersistentObject.
+- #10913: Complex data types (e.g. DateTime) for PersistentObject.
+- #12287: ezcPersistentSession refactoring.
+
+Each of the issues and their proposed solutions are explained in a seperate
+chapter in this document.
+
+Improved datatype support (especially binary data) [#10151]
+===========================================================
+
+Background
+----------
+PDO uses several different ways of binding parameters to queries. Currently
+these are:
+
+- PDO::PARAM_BOOL
+- PDO::PARAM_NULL
+- PDO::PARAM_INT
+- PDO::PARAM_LOB
+- PDO::PARAM_STR (default)
+- PDO::PARAM_INPUT_OUTPUT Currently unsported by PDO. Used for in/out 
+  parameters of a stored procedure.
+
+Currently only the default paramter PARAM_STR is supported by persistent
+object. This does not mean that you can not store integers and booleans as the
+database drivers will figure this out themselves.
+
+However, for some field types especially you are required to use parameters. An
+example of this is binary data which can contain '\0'. If you use the default
+parameter PDO::PARAM_STR the remaining data will simply be ignored since the
+end of the string has already been encountered.
+
+The support for PDO PARAM_ types was recently added to the Database component
+as a fix for issue `#010943`_.
+
+.. _`#010943`: http://issues.ez.no/IssueView.php?Id=10943
+
+Design
+------
+
+The proposed solution is to add a columnType property for all definitions where
+a column is defined. The columnType can be one of the PDO PARAM_ type
+parameters and directly defines the parameter type provided to PDO when
+building the queries.
+
+This currently affects:
+- ezcPersistentObjectIdProperty (definition)
+- ezcPersistentObjectProperty (definition)
+- ezcPersistentSession (usage)
+
+Open questions
+--------------
+
+> It would be nice to make large binary data available as a resource both for
+> writing and reading. PDO::PARAM_LOB can handle this if used together with 
+> PDO::FETCH_BOUND. Should we, and how do we make this available to the user?
+> Write support will most probably work out of the box. If the value is a
+> resource the whole file will be read automatically by PDO as long as PARAM_LOB
+> is used.
+
+This is not possible with the current design for PersistentObject, since we
+only bind values and not parameters. We could only support this in the load()
+method, where the SELECT query is build completly internally and cannot be
+modified by the user. Everywhere else we would need to keep track of the bound
+variables and can not rely on correctly bound parameters when using find(). In
+addition, this functionality seems to be broken in MySQL and SQLite (see:
+http://bugs.php.net/bug.php?id=40913).
+
+As discussed on the mailinglist: No support for FETCH_BOUND, because of missing
+architecture infrastructure.
+
+> Should we use the PDO::PARAM_BOOL/INT by default? That is do we actually
+> want to require to use this for anything else than PARAM_LOB since ints/bools
+> etc. actually work fine already. What does using these parameters gain us.
+
+It does not work for those parameter types in all cases (referring to DR) so we
+should support all of them. Since ezcDbQuery::bindValue() uses
+PDO::PARAM_STRING as default, we can silently rely on this as the default for
+PersistentObject definitions, too.
+
+Several relations to the same table for PersistentObject [#10373]
+=================================================================
+
+Background
+----------
+Since version 1.2 PersistentObject supports relations. The definition of a
+relation will typically look something like:
+
+::
+    $def->relations["Address"] = new ezcPersistentManyToManyRelation(
+         "persons",
+         "addresses",
+         "persons_addresses"
+    );
+    $def->relations["Address"]->columnMap = array(
+         new ezcPersistentDoubleTableMap( "id", "person_id", "address_id", "id" )
+    );
+
+The method to fetch a relation with this definition will typically look
+something like:
+
+::
+    // signature getRelatedObjects( object $relationObject, string $className )
+    $addresses = $session->getRelatedObjects( $person, "Address" );
+
+Basically we can see that both the definition and the fetching of related
+objects is bound to the related class type. This means that a class can only
+have one relation type to another class. Usually this is sufficient. However,
+sometimes it is necessary to have more than one relation to the same class
+e.g. a Person class with the relations "mother" and "father" to the very same
+Person class.
+
+
+PersistentSession design
+------------------------
+The proposed solution is to add an optional name for relations. This way it is
+possible to use the name to specify the exact relation you want to fetch if
+there are more than one. All methods used to fetch and store relations will
+have the optional parameter appended to them. The affected methods and their
+new signatures are:
+
+::
+    ezcPersistentSession::getRelatedObject(
+        object $object,
+        string $className,
+        string $relationName = null
+    )
+
+    ezcPersistentSession::getRelatedObjects(
+        object $object,
+        string $className,
+        string $relationName = null
+    )
+
+    ezcPersistentSession::addRelatedObject(
+        object $object, 
+        object $relationObject,
+        string $relationName = null
+    );
+
+    ezcPersistentSession::removeRelatedObject(
+        object $object, 
+        object $relationObject,
+        string $relationName = null
+    );
+
+The new parameter makes it possible to reach one new exceptional state:
+
+- ezcPersistentUndeterministicRelationException is thrown when several relations
+  to one class is defined but no relation name is used.
+
+Definition Design
+-----------------
+
+Similar to the changes to PersistentSession we need to change the persistent
+object definition to store the relation name for classes that have more than
+one relation to another class.
+
+To do this we want to introduce a wrapper struct that can hold several named
+relations:
+
+::
+   class ezcPersistentRelationCollection
+   {
+      public $namedRelations = array();
+   }
+
+An implementation of the example with persons would then look something like:
+
+::
+   $personRelations = new ezcPersistentRelationCollection;
+   $def->relations['Person'] = $personRelations;
+
+   $personRelations['Mother'] = new ezcPersistentOneToOneRelation(
+        "persons",
+        "persons"
+   );
+
+   $personRelations['Mother']->columnMap = array( 
+       new ezcPersistentSingleTableMap(
+           "id",
+           "mother_id"
+       )
+   );
+
+   $personRelations['Father'] = new ezcPersistentOneToOneRelation(
+       "persons",
+       "persons"
+   );
+   $personRelations['Father']->columnMap = array( 
+       new ezcPersistentSingleTableMap(
+           "id",
+           "father_id"
+       )
+   );
+
+The changes do not break BC and require changes in PersistentSession to
+work. An extra if will have to be introduced to check for the existence of
+named relations. This will not harm performance in a significant way.
+
+Complex data types (e.g. DateTime) for PersistentObject [#10913]
+================================================================
+
+Background
+----------
+
+Currently, PersistentObject simply loads column values from a database and
+assigns those to PHP object properties. When storing a persistent object, the
+property values are simply stored into their corresponding columns.
+
+A typical example for such a conversion is the DateTime object of PHP 5.2. To
+store date and time values database independantly an integer field is usually
+used, containing unix timestamp information. In the business logic, this is
+somewhat unhandy and an instance of DateTime is desired for comfortable
+handling. The conversion between both date/time representations must currently
+be performed manually. This feature should allow the conversion to be handled
+by PersistentObject transparently.
+
+Design
+------
+
+To support highest flexibility for conversions, a very basic interface is
+introduced, which must be implemented by a class to use its instances as
+"conversion objects". An instance of such a class may then be assigned to an
+instance of ezcPersistentObjectProperty to enable the conversion for it. This
+way, a single conversion object might also be used for multiple properties, to
+reduce the number of objects to be instanciated.
+
+The interface ezcPersistentObjectPropertyConversion defines the following
+methods:
+
+fromDatabase( $databaseValue )
+  This method will be called by ezcPersistentSession right after a value has
+  been read from the database column and before this value gets assigned to the
+  PHP objects property. The $databaseValue parameter will contain the value
+  read from the database. The return value of this method will be assigned to
+  the object property, instead of the original database value.
+toDatabase( $propertyValue )
+  Corresponding to fromDatabase(), this method will be invoked right before
+  object values are stored into the database (on insert and update). The given
+  parameter $propertyValue will contain the object property contents and the
+  value returned by this method will be stored into the database.
+
+For the DateTime example, fromDatabase() will receive the integer unix
+timestamp value and will return a PHP DateTime object. toDatabase() will
+receive an instance of DateTime and return an integer unix timestamp value.
+
+As a reference implementation, the described DateTime conversion will be used.
+If more (generally sensible) conversions are found during the implementation or
+are requested by users, it might happen that additional conversion classes will
+be shipped with this version of PersistentObject.
+
+
+ezcPersistentSession refactoring [#12287]
+=========================================
+
+Background
+----------
+
+The ezcPersistentSession class is the very heart of the PersistentObject
+component. It contains the complete application logic of the component,
+structured in many public (25) and a few protected and private (5) methods
+consisting of  more than 1200 lines of code and documentation.
+
+The mass of code starts getting unmaintainable by now and some code-synergies
+could be realized between different methods. Therefore a refactoring of the
+class and its surrounding classes will be described in this section to solve
+the named issues. The public API of ezcPersistentSession will not be affected
+by this, but only delegation might happen internally, without being visible to
+the user of the API.
+
+Design
+------
+
+To reduce the pure number of method implementations in this class, the
+following new classes are suggested to group the functionality:
+
+- ezcPersistentLoadHandler
+  - public function load( $class, $id )
+  - public function loadIfExists( $class, $id )
+  - public function loadIntoObject( $pObject, $id )
+  - public function refresh( $pObject )
+  - public function find( ezcQuerySelect $query, $class )
+  - public function findIterator( ezcQuerySelect $query, $class )
+  - public function getRelatedObjects( $object, $relatedClass )
+  - public function getRelatedObject( $object, $relatedClass )
+  - public function createFindQuery( $class )
+  - public function createRelationFindQuery( $object, $relatedClass )
+
+- ezcPersistentSaveHandler
+  - public function save( $pObject )
+  - public function update( $pObject )
+  - public function saveOrUpdate( $pObject )
+  - public function addRelatedObject( $object, $relatedObject )
+  - public function createUpdateQuery( $class )
+  - public function updateFromQuery( ezcQueryUpdate $query )
+  - private function saveInternal( $pObject, $doPersistenceCheck = true,
+  - private function updateInternal( $pObject, $doPersistenceCheck = true )
+
+- ezcPersistentDeleteHandler
+  - public function delete( $pObject )
+  - public function removeRelatedObject( $object, $relatedObject )
+  - public function createDeleteQuery( $class )
+  - public function deleteFromQuery( ezcQueryDelete $query )
+  - private function cascadeDelete( $object, $relatedClass, ezcPersistentRelation $relation )
+
+These classes will just act as method containers. An instance of each class will
+be held in a virtual-property of the ezcPersistentSession instance. All will
+receive the ezcPersistentSession instance as a ctor parameter, to be able to
+interact with it and the remaining classes.
+
+The methods stubs of ezcPersistentSession will remain as they are, dispatching
+to instances of the newly created classes, which will then perform the actual
+work.
+
+Some common methods will be left in ezcPersistentSession, defined as public but
+marked as private (lack of friendship relations for PHP classes). In addition,
+the code of the outsourced methods will be consolidated into new, common
+methods (like executing a query and checking the result, optional checks of
+getState() methods, ...) of ezcPersistentSession, where possible.
+
+Notes and ideas
+---------------
+
+This refactoring approach will obviously have an impact on performance, since
+for each public method call on ezcPersistentSession there will be an additional
+method invocation added. In addition, the consolidiation of common code into
+helper methods (held on ezcPersistentSession) will impact performance. On the
+other hand, the extraction of methods from ezcPersistentSession into
+handler-classes will raise the maintainability of the whole component and the
+consolidation of common code will reduce the complexity of the implemented
+methods, which also raises maintainability, code-reuse and error-tollerance. In
+addition, it makes the implementation of new features easier.
+
+An idea would be to instanciate the newly created handler classes only when
+needed (via virtual-property checks), which would reduce the ammount of code to
+load on instantiating ezcPersistentSession and the memory usage occupied by
+objects.
+
+
+..
+   Local Variables:
+   mode: rst
+   fill-column: 79
+   End: 
+   vim: et syn=rst tw=79

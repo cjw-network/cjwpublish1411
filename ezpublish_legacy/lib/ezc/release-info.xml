@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<release-info>
+ <version>ezp45</version>
+ <deps>
+  <php>5.2.1</php>
+  <packages>
+   <package version="1.4.1-ezp45" name="Archive"/>
+   <package version="1.3.1-ezp45" name="Authentication"/>
+   <package version="1.1-ezp45" name="AuthenticationDatabaseTiein">
+    <deps>
+     <package version="1.3" name="Database"/>
+     <package version="1.1" name="Authentication"/>
+    </deps>
+   </package>
+   <package version="1.8-ezp45" name="Base"/>
+   <package version="1.5-ezp45" name="Cache"/>
+   <package version="1.3.5-ezp45" name="Configuration"/>
+   <package version="1.6.1-ezp45" name="ConsoleTools"/>
+   <package version="1.4.7-ezp45" name="Database"/>
+   <package version="1.4.4-ezp45" name="DatabaseSchema"/>
+   <package version="1.2.1-ezp45" name="Debug"/>
+   <package version="1.3.1-ezp45" name="Document"/>
+   <package version="1.4-ezp45" name="EventLog"/>
+   <package version="1.0.2-ezp45" name="EventLogDatabaseTiein">
+    <deps>
+     <package version="1.0.3" name="EventLog"/>
+     <package version="1.2" name="Database"/>
+    </deps>
+   </package>
+   <package version="1.1.1-ezp45" name="Execution"/>
+   <package version="1.3-ezp45" name="Feed"/>
+   <package version="1.2-ezp45" name="File"/>
+   <package version="1.5-ezp45" name="Graph"/>
+   <package version="1.0.1-ezp45" name="GraphDatabaseTiein">
+    <deps>
+     <package version="1.1" name="Graph"/>
+    </deps>
+   </package>
+   <package version="1.1.3-ezp45" name="ImageAnalysis"/>
+   <package version="1.3.8-ezp45" name="ImageConversion">
+    <deps>
+     <package version="1.1.3" name="ImageAnalysis"/>
+    </deps>
+   </package>
+   <package version="1.7.1-ezp45" name="Mail"/>
+   <package version="1.1.3-ezp45" name="MvcTools"/>
+   <package version="1.0-ezp45" name="MvcAuthenticationTiein"/>
+   <package version="1.0-ezp45" name="MvcFeedTiein">
+    <deps>
+     <package version="1.1" name="MvcTools"/>
+     <package version="1.2.1" name="Feed"/>
+    </deps>
+   </package>
+   <package version="1.0.1-ezp45" name="MvcMailTiein">
+    <deps>
+     <package version="1.0" name="MvcTools"/>
+     <package version="1.7" name="Mail"/>
+    </deps>
+   </package>
+   <package version="1.0-ezp45" name="MvcTemplateTiein">
+    <deps>
+     <package version="1.0" name="MvcTools"/>
+     <package version="1.3.1" name="Template"/>
+    </deps>
+   </package>
+   <package version="1.7.1-ezp45" name="PersistentObject">
+    <deps>
+     <package version="1.3" name="Database"/>
+    </deps>
+   </package>
+   <package version="1.3-ezp45" name="PersistentObjectDatabaseSchemaTiein">
+    <deps>
+     <package version="1.3" name="PersistentObject"/>
+     <package version="1.2" name="DatabaseSchema"/>
+     <package version="1.3" name="ConsoleTools"/>
+    </deps>
+   </package>
+   <package version="1.0.6-ezp45" name="PhpGenerator"/>
+   <package version="1.0.9-ezp45" name="Search"/>
+   <package version="1.1.1-ezp45" name="SignalSlot"/>
+   <package version="1.0.8-ezp45" name="SystemInformation"/>
+   <package version="1.4.2-ezp45" name="Template"/>
+   <package version="1.1.1-ezp45" name="TemplateTranslationTiein">
+    <deps>
+     <package version="1.4" name="Template"/>
+     <package version="1.3" name="Translation"/>
+     <package version="1.5" name="ConsoleTools"/>
+    </deps>
+   </package>
+   <package version="1.3.2-ezp45" name="Translation"/>
+   <package version="1.1.2-ezp45" name="TranslationCacheTiein">
+    <deps>
+     <package version="1.1.2" name="Translation"/>
+     <package version="1.1.4" name="Cache"/>
+    </deps>
+   </package>
+   <package version="1.1.4-ezp45" name="Tree"/>
+   <package version="1.1.1-ezp45" name="TreeDatabaseTiein">
+    <deps>
+     <package version="1.1" name="Tree"/>
+     <package version="1.3" name="Database"/>
+    </deps>
+   </package>
+   <package version="1.0-ezp45" name="TreePersistentObjectTiein">
+    <deps>
+     <package version="1.0" name="Tree"/>
+     <package version="1.3" name="PersistentObject"/>
+    </deps>
+   </package>
+   <package version="1.2.2-ezp45" name="Url"/>
+   <package version="1.4-ezp45" name="UserInput"/>
+   <package version="1.1.4-ezp45" name="Webdav"/>
+   <package version="1.4.1-ezp45" name="Workflow"/>
+   <package version="1.4-ezp45" name="WorkflowDatabaseTiein">
+    <deps>
+     <package version="1.3" name="Database"/>
+     <package version="1.4" name="Workflow"/>
+    </deps>
+   </package>
+   <package version="1.1-ezp45" name="WorkflowEventLogTiein">
+    <deps>
+     <package version="1.1" name="EventLog"/>
+     <package version="1.4" name="Workflow"/>
+    </deps>
+   </package>
+   <package version="1.0-ezp45" name="WorkflowSignalSlotTiein">
+    <deps>
+     <package version="1.1" name="SignalSlot"/>
+     <package version="1.4" name="Workflow"/>
+    </deps>
+   </package>
+  </packages>
+ </deps>
+</release-info>
