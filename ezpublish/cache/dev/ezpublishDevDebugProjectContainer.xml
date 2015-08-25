@@ -6354,7 +6354,7 @@
         </argument>
         <argument type="service">
           <service class="eZ\Publish\Core\MVC\Symfony\Security\Authentication\AnonymousAuthenticationProvider" public="false">
-            <argument>55dc734e4f600</argument>
+            <argument>55dc802724f42</argument>
             <call method="setRepository">
               <argument type="service" id="ezpublish.signalslot.repository"/>
             </call>
@@ -6365,7 +6365,7 @@
         </argument>
         <argument type="service">
           <service class="eZ\Publish\Core\MVC\Symfony\Security\Authentication\AnonymousAuthenticationProvider" public="false">
-            <argument>55dc734e4f600</argument>
+            <argument>55dc802724f42</argument>
             <call method="setRepository">
               <argument type="service" id="ezpublish.signalslot.repository"/>
             </call>
@@ -6650,7 +6650,7 @@
         <argument type="service">
           <service class="Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener" public="false">
             <argument type="service" id="security.context"/>
-            <argument>55dc734e4f600</argument>
+            <argument>55dc802724f42</argument>
             <argument type="service" id="monolog.logger.security" on-invalid="null"/>
           </service>
         </argument>
@@ -6693,7 +6693,7 @@
         <argument type="service">
           <service class="Symfony\Component\Security\Http\Firewall\AnonymousAuthenticationListener" public="false">
             <argument type="service" id="security.context"/>
-            <argument>55dc734e4f600</argument>
+            <argument>55dc802724f42</argument>
             <argument type="service" id="monolog.logger.security" on-invalid="null"/>
           </service>
         </argument>
