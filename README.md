@@ -32,7 +32,7 @@ see https://github.com/cjw-network/cjwpublish1411/blob/master/src/Cjw/SiteCjwpub
 
 3. Install demo mysql database and user and setup all symlinks in the process you will ask for your root mysql user to create the database 
 
-        cd cjwpublish1411/src/SiteCjwpublishBundle
+        cd cjwpublish1411/src/Cjw/SiteCjwpublishBundle
         sh install.sh  
 
 4. setup vhost for *.cjwpublish1411.* *.cjwpublish1411dev.* *.cjwpublish1411l.*
