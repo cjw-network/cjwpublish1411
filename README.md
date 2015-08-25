@@ -22,7 +22,7 @@ License: GPL v2
 
 DemoBundle is located in src/Cjw/SiteCjwpublishBundle
 
-see https://github.com/cjw-network/cjwpublish1411/blob/master/src/Cjw/PublishToolsBundle/README.md for details
+see https://github.com/cjw-network/cjwpublish1411/blob/master/src/Cjw/SiteCjwpublishBundle/README.md for details
 
 1. get cjwpublish1411 from github 
 
