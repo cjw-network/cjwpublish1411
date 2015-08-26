@@ -10,7 +10,7 @@
 
 namespace Cjw\PublishToolsBundle\Services;
 
-use Symfony\Component\Form\FormBuilder;
+//use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Yaml\Yaml;
 //use eZ\Publish\Core\FieldType\XmlText\Input\EzXml as EzXmlInput;
 
@@ -25,8 +25,6 @@ class FormBuilderService
      */
     public function __construct( $container, $configFile )
     {
-        //var_dump( $configFile );
-        // to check if $configFile exists
         $this->container = $container;
         $this->setConfigFile( $configFile );
     }

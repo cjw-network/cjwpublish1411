@@ -30,7 +30,7 @@ see https://github.com/cjw-network/cjwpublish1411/blob/master/src/Cjw/SiteCjwpub
  
 2. login as root
 
-3. Install demo mysql database and user and setup all symlinks in the process you will ask for your root mysql user to create the database 
+3. Install demo mysql database: 'ez1411_cjwpublish' and mysql user: 'cjwpublish' pwd: 'cjwpublish' and setup all symlinks in the process you will ask for your root mysql user to create the database 
 
         cd cjwpublish1411/src/Cjw/SiteCjwpublishBundle
         sh install.sh  
