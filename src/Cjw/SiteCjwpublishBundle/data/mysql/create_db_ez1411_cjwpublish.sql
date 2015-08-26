@@ -1,5 +1,5 @@
 
---- create db
+-- create db
 -- CREATE SCHEMA `ez1411_cjwpublish` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
 --
 
