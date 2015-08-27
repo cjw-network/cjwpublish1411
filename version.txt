@@ -1,4 +1,4 @@
-Paketname: cjwpublish1411-20150825
-Svn-Release: 31377
-Paketerstellungsdatum: 20150825-170734
-Paketdateiname: cjwpublish1411-20150825_svn-31377.tar.gz
+Paketname: cjwpublish1411-20150827
+Svn-Release: 31398
+Paketerstellungsdatum: 20150827-123307
+Paketdateiname: cjwpublish1411-20150827_svn-31398.tar.gz

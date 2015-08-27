@@ -62,10 +62,23 @@ rm -Rf ezpublish_legacy/var/cache_ezp5/cjwpublish
 php cjwpublish/console --create-symlinks
 
 # ezpublish_legacy teil installaieren
-# php cjwpublish/console-cjwpublish ezpublish:legacybundles:install_extensions
+# php cjwpublish/console-cjwpublish ezpublish:legacybundles:install_extensions --relative
 
 # public folder vom Bundles als symlink unter web/bundles anlegen
-php cjwpublish/console-cjwpublish assets:install web --symlink
+php cjwpublish/console-cjwpublish assets:install web --symlink --relative
+
+# symlinks  web/~design ~extension ~share ~var setzen
+# this is done already in master setup
+#echo "## set relative symlinks  web/~design ~extension ~share ~var"
+#php ezpublish/console ezpublish:legacy:assets_install --symlink --relative web   => macht  ../ezpublish/../ezpublish_legacy/design
+#ln -s ../ezpublish_legacy/design/ web/design
+#ln -s ../ezpublish_legacy/extension/ web/extension
+#ln -s ../ezpublish_legacy/share/ web/share
+#ln -s ../ezpublish_legacy/var/ web/var
+
+#echo "## ln -s ../ezpublish_legacy/var_cache/ web/var_cache";
+#ln -s ../ezpublish_legacy/var_cache/ web/var_cache
+
 
 # assetics für dev + prod anlegen
 php cjwpublish/console-cjwpublish assetic:dump --env="dev"
