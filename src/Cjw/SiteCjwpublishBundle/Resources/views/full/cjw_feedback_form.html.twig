@@ -6,7 +6,7 @@
 <h1>{{ ez_render_field(content, 'title') }}</h1>
 
     {# http://brentertainment.com/other/docs/cookbook/form/twig_form_customization.html #}
-    {{ form( form ) }}
+    {#{ form( form ) }#}
 
 
     {#{{ form_start(form) }}#}
@@ -17,7 +17,58 @@
     {#{{ form_row(form.children[getFullContentName['message']], {'attr': {'value': 'abcd' }}) }}#}
 
 
+    {# http://symfony.com/doc/current/reference/forms/twig_reference.html #}
+    {{ form_start( form ) }}
+    {{ form_errors( form ) }}
 
+    {# Cycle through children to render all elements, which are not and hidden and are no
+        button. #}
+    {% for form_child_key, form_child in form.children %}
+
+        {# True if the form_child is a button input element #}
+        {% set is_button = ( 'button' in form_child.vars.block_prefixes ) %}
+        {# True if the form_child is a hidden input element #}
+        {% set is_hidden = ( 'hidden' in form_child.vars.block_prefixes ) %}
+
+        {% set is_repeated = ( 'repeated' in form_child.vars.block_prefixes ) %}
+
+        {# Show every element, which is no button and not hidden #}
+        {% if not is_button %}
+
+            {% if is_repeated %}
+                {# Separate rendering for the password attribtue/field #}
+                <div class="form-group">
+                    {{ form_row( form_child.first , { 'attr': { 'class': 'form-control' },
+                        'label': 'User Password'|trans()
+                    } ) }}
+                    {{ form_row( form_child.second , { 'attr': { 'class': 'form-control' },
+                        'label': 'User Password (repeat)'|trans()
+                    } ) }}
+                </div>
+            {% elseif not is_hidden %}
+                <div class="form-group">
+                    {{ form_row( form_child, { 'attr': { 'class': 'form-control' } } ) }}
+                </div>
+            {% else %}
+                {{ form_widget( form_child ) }}
+            {% endif %}
+
+            {#{{ dump( form_child ) }}#}
+
+        {% endif %}
+
+    {% endfor %}
+
+    {# Render buttons separate, so we can define the attributes of the button elements. #}
+    <div class="form-group form-inline">
+        {{ form_widget( form.children.save, { 'attr': { 'class': 'form-control btn btn-primary' } } ) }}
+    </div>
+
+
+    {# The form_end() function automatically renders the missing elements (the elements, which
+        haven't been rendered in this "form_start/form_end"-block, when the form_end() function
+        is called. #}
+    {{ form_end( form, { 'render_rest': false } ) }}
 
 {% endblock %}
 

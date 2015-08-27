@@ -53,7 +53,7 @@ class SitemapsController extends Controller
 
             $sitemapXmlResponse = $this->render(
                 'CjwPublishToolsBundle::sitemap.xml.twig',
-                array( 'urls' => $urls, 'hostname' => $hostname ),
+                array( 'urls' => $urls, 'hostname' => 'https://'.$hostname ),
                 $response
             );
 
@@ -71,7 +71,7 @@ class SitemapsController extends Controller
     {
         return $this->render(
             'CjwPublishToolsBundle::robots.txt.twig',
-            array( 'hostname' => $this->getRequest()->getHost() )
+            array( 'hostname' => 'https://'.$this->getRequest()->getHost() )
         );
     }
 }

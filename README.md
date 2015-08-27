@@ -37,11 +37,15 @@ see https://github.com/cjw-network/cjwpublish1411/blob/master/src/Cjw/SiteCjwpub
 
 4. setup vhost for *.cjwpublish1411.* *.cjwpublish1411dev.* *.cjwpublish1411l.*
      
+    - nginx:
+     
     @see example https://github.com/cjw-network/cjwpublish1411/blob/master/_vhost/nginx/etc/nginx/conf.d/cjwpublish1411.conf
     
     @see example https://github.com/cjw-network/cjwpublish1411/blob/master/_vhost/nginx/etc/nginx/conf.d/cjwpublish1411dev.conf
  
     @see example https://github.com/cjw-network/cjwpublish1411/blob/master/_vhost/nginx/etc/nginx/conf.d/cjwpublish1411l.conf
+    
+    - apache: @see https://github.com/cjw-network/cjwpublish1411/blob/master/doc/apache2/Readme.md
  
 5. Accessing your installation 
 

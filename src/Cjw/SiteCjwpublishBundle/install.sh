@@ -80,18 +80,18 @@ php cjwpublish/console-cjwpublish cache:clear --no-warmup --env="prod"
 
 
 # set filesystem rights => 777 is not for production ;-)
-chmod 777 -R web/bundles
-chmod 777 -R web/bundles
+chmod -R 777 web/bundles
+chmod -R 777 web/bundles
 
-chmod 777 -R ezpublish_legacy/var/cache
-chmod 777 -R ezpublish_legacy/var/cache_ezp5
-chmod 777 -R ezpublish_legacy/var/log
-chmod 777 -R ezpublish_legacy/var_log
+chmod -R 777 ezpublish_legacy/var/cache
+chmod -R 777 ezpublish_legacy/var/cache_ezp5
+chmod -R 777 ezpublish_legacy/var/log
+chmod -R 777 ezpublish_legacy/var_log
 
-chmod 777 -R ezpublish_legacy/var_log
-chmod 777 -R ezpublish_legacy/var_cache
+chmod -R 777 ezpublish_legacy/var_log
+chmod -R 777 ezpublish_legacy/var_cache
 
-chmod 777 -R ezpublish_legacy/var
+chmod -R 777 ezpublish_legacy/var
 
 echo ""
 
