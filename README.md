@@ -76,3 +76,9 @@ It can be used in every ezpublish 5 setup and should only located in src/Cjw/Pub
 see https://github.com/cjw-network/CjwPublishToolsBundle/blob/master/README.md for details
 
 ***
+
+## Another test option
+
+If you want a quick and easy installation, then simply try out our CJW-EZSUMMERCAMP-2015-WORKSHOP installation:
+
+https://github.com/cjw-network/cjw-ezsc2015-workshop
