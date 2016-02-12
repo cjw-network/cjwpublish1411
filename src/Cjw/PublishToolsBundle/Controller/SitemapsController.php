@@ -18,12 +18,15 @@ class SitemapsController extends Controller
         $response->setPublic();
         $response->setSharedMaxAge( $ttl );
 
-        $cacheFile = $this->container->getParameter( 'kernel.cache_dir' ) . '/sitemap.xml';
+        $siteaccessName = $this->container->get('ezpublish.siteaccess')->name;
+        $cacheFile = $this->container->getParameter( 'kernel.cache_dir' ) . '/sitemap_'.$siteaccessName.'.xml';
 
         $cacheFileMtime = 0;
         if ( file_exists( $cacheFile ) )
         {
-            $cacheFileMtime = stat( $cacheFile )['mtime'];
+//            $cacheFileMtime = stat( $cacheFile )['mtime'];
+            $cacheFileMtime = stat( $cacheFile );
+            $cacheFileMtime = $cacheFileMtime['mtime'];
         }
 
         if ( $cacheFileMtime < ( time() - $ttl ) )

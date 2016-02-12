@@ -68,7 +68,7 @@ The three services are a **TwigFunctionService** that provides some Twig Templat
 - cjw_user_get_current
 - cjw_redirect
 - [cjw_file_exists](#cjw_file_exists)
-- [cjw_template_get_var](#cjw_template_var)
+- [cjw_template_get_var](#cjw_template_var) ... with additonal new example
 - [cjw_template_set_var](#cjw_template_var)
 - [cjw_render_location](#cjw_render_location)
 - cjw_siteaccess_parameters
@@ -144,7 +144,7 @@ here you can find an example include temple for pagination: [:parts:navigator.ht
 | parent | boolean | false | no | if true include parent node in result |
 | main_location_only | boolean | false | no | list only main locations |
 | filter_relation | array | not set | no | [ [ 'relation_field', 'contains', objectId ] ] |
-| filter_field | array | not set | no | [ [ 'date_to', '>', date().timestamp ] ] in ezp 1411 the 'date_to' field needs to be set searchable! |
+| filter_fields | array | not set | no | [ [ 'date_to', '>', date().timestamp ] ] in ezp 1411 the 'date_to' field needs to be set searchable! |
 | filter_search | array | not set | no | ToDo: not implemented yet |
 | filter_attribute | array | not set | no | ToDo: not implemented yet |
 
@@ -174,7 +174,7 @@ A sortby parameter array with **4 items** means sort by field attribute.
 
 If none sortby parameter are specified, the default sort will be the sort criterion of the parent node (specified in the admin backend).
 
-**cjw_content_fetch allowed operators for the filter_field parameter**
+**cjw_content_fetch allowed operators for the filter_fields parameter**
 
 - '='
 - '>'
@@ -184,7 +184,7 @@ If none sortby parameter are specified, the default sort will be the sort criter
 - 'in'
 - 'between'
 - 'like'
-- 'contains
+- 'contains'
 
 ***
 
@@ -401,6 +401,34 @@ override the ezimage field type template:
 	{#  the variable value can be an array #}
 
 	...
+	
+###cjw_template_get/set_var another practical example for test purposes
+
+*pagelayout.html.twig*
+
+	{# insert after body or anything else tag ... #}
+	
+	{# Additional Debug Output ... two variants, via block and via our new twig function #}
+	{% if app.environment == 'dev' %}
+    		<div style="margin-bottom: 2em;">
+    			<h3>CJW Debug Output</h3>
+        			<h4>From <b>cjw_debug</b> Block</h3>
+        				{% block cjw_debug %}
+        				{% endblock %}
+        			<h4>From <b>cjwDebug</b> Variable</h4>
+            				<h5>cjw_template_get_var( 'cjwDebug' )</h5>
+            					{{ cjw_template_get_var( 'cjwDebug' ) }}
+            					<hr />
+    		</div>
+	{% endif  %}
+	
+*xyz.html.twig*
+
+	{% set cjwDebug %}
+    		<h6>From xyz.html.twig</h6>
+    		{{ dump() }}
+	{% endset %}
+	{{ cjw_template_set_var( 'cjwDebug', cjwDebug ) }}
 	
 ***
 

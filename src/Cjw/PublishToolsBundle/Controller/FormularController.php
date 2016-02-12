@@ -307,14 +307,18 @@ class FormularController extends Controller
 
                 $newUser = $this->userRegisterHandler( $formDataObj, $locationId, $contentType );
 
+// ToDo: catch "Argument 'userCreateStruct' is invalid: User with provided login already exists" (InvalidArgumentException) exception
+
                 if ( $newUser !== false )
                 {
-                    // ToDo: sucess tpl or login, email exception
-
                     if ( $form->isValid() )
                     {
+                        $app = array();
+                        $app['request'] = $this->request;
+                        $handlerParameters = array( 'content' => $newUser, 'app' => $app );
+
                         // process configured handlers
-                        $response = $this->processHandlers( 'user_register_config:handlers', $form->getData(), array(), $form );
+                        $response = $this->processHandlers( 'user_register_config:handlers', $form->getData(), $handlerParameters, $form );
 
                         if ( $response !== false )
                         {
@@ -486,7 +490,7 @@ class FormularController extends Controller
     }
 
     /**
-     * Handle adding a new user content object adding for user regster action, chnging the owner id to it self, getting the parameters from formbuilder.yml, returns the new user content object
+     * Handle adding a new user content object adding for user regster action, changing the owner id to it self, getting the parameters from formbuilder.yml, returns the new user content object
      *
      * @param mixed $formDataObj
      * @param mixed $contentInfo
@@ -499,14 +503,34 @@ class FormularController extends Controller
     // http://symfony.com/doc/current/cookbook/doctrine/registration_form.html
     private function userRegisterHandler( $formDataObj, $locationId, $contentType )
     {
+        $formParams = $this->formBuilderService->getFormConfigType( 'parameters', 'user_register_config', false );
+
+        if ( array_key_exists( 'admin_user_id', $formParams ) )
+        {
+            $adminUserId = $formParams['admin_user_id'];
+        }
+        else
+        {
+            $adminUserId = 14;
+        }
+
+        if ( array_key_exists( 'account_status_enabled', $formParams ) )
+        {
+            $accountStatusEnabled = $formParams['account_status_enabled'];
+        }
+        else
+        {
+            $accountStatusEnabled = true;
+        }
+
         $object = false;
         $userService = $this->repository->getUserService();
 
         // save current user id
         $currentUserId = $this->repository->getCurrentUser()->content->versionInfo->contentInfo->id;
 
-        // sToDo: read the id from config, et current user to admin user
-        $this->repository->setCurrentUser( $userService->loadUser( 14 ) );
+        // the id from config, et current user to admin user
+        $this->repository->setCurrentUser( $userService->loadUser( $adminUserId ) );
 
         $contentCreateStruct = $this->contentService->newContentCreateStruct( $contentType, $this->initialLanguageCode );
         $object = $this->formBuilderService->buildContentStructWithFormData( $formDataObj, $contentCreateStruct );
@@ -522,6 +546,8 @@ class FormularController extends Controller
                 $this->initialLanguageCode,
                 $contentType
             );
+
+            $userCreateStruct->enabled = $accountStatusEnabled;
 
             $contentStruct = $object['contentStruct'];
             foreach ( $contentStruct->fields as $field )
@@ -546,60 +572,4 @@ class FormularController extends Controller
 
         return $object;
     }
-/*
-    // Test, ToDo
-//use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-//use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
-//use Symfony\Component\HttpFoundation\Cookie;
-    private function userLogin()
-    {
-// das folgende gehöhrt in die user activate action
-//$session = $this->request->getSession();
-//var_dump($session->storage);
-//$session->set( 'eZUserLoggedInID', $newUser->contentInfo->id );
-
-$this->repository->setCurrentUser( $this->repository->getUserService()->loadUser( $newUser->contentInfo->id ) );
-
-// http://share.ez.no/forums/ez-publish-5-platform/how-to-log-a-user-in-a-controller
-// https://gist.github.com/Plopix/6103198
-
-// login user and redirect to it self
-
-// ToDo:
-// http://stackoverflow.com/questions/5886713/automatic-post-registration-user-authentication
-// http://jmuras.com/blog/2012/manually-authenticate-symfony-2-user/
-//var_dump($newUser->fields['user_account'][$this->initialLanguageCode]->email);exit;
-                    $token = new UsernamePasswordToken(
-                        $newUser->fields['user_account'][$this->initialLanguageCode]->login,
-                        $newUser->fields['user_account'][$this->initialLanguageCode]->passwordHash,
-//                        $newUser->fields['user_account'][$this->initialLanguageCode]->email,
-//                        null,
-                        'ezpublish_front',
-                        [ 'ROLE_USER' ]
-                    );
-//$credentials = $token->credentials;
-                    $this->get( 'security.context' )->setToken( $token );
-//$credentials = $this->get( 'security.context' )->token->credentials;
-//                    $this->get( 'session' )->set( '_security_ezpublish_front', serialize( $token ) );
-//var_dump($token);var_dump($this->get( 'security.context' ));exit;
-// /home/htdocs/jac14051/vendor/ezsystems/ezpublish-kernel/eZ/Publish/Core/MVC/Symfony/Security/InteractiveLoginToken.php
-// https://github.com/ezsystems/ezpublish-kernel/blob/master/doc/specifications/security/multiple_user_providers.md
-// https://github.com/ezsystems/ezpublish-kernel/blob/master/eZ/Publish/Core/MVC/Symfony/Security/EventListener/SecurityListener.php#L75
-// return $this->connectUser( $user, $redirectURI );
-// http://devnotebook.fr/index.php/layout/set/print/Informatique/Web/CMS/eZ-Publish/Creer-une-page-de-login
-                    // http://hasin.me/2013/10/27/how-to-login-a-user-programatically-in-symfony2/
-                    // http://stackoverflow.com/questions/9550079/how-to-programmatically-login-authenticate-a-user
-//                    $event = new InteractiveLoginEvent( $this->request, $token );
-//                    $this->get( 'event_dispatcher' )->dispatch( 'security.interactive_login', $event );
-
-                    // http://hasin.me/2013/10/27/how-to-login-a-user-programatically-in-symfony2/
-                    $event = new InteractiveLoginEvent( $this->request, $token );
-                    $this->get( 'event_dispatcher' )->dispatch( 'security.interactive_login', $event );
-
-                    $response = new RedirectResponse( '/content/location/'.$newUser->contentInfo->mainLocationId );
-//                    $response = new response();
-$response->headers->setCookie( new Cookie( 'eZSESSID', $token->getCredentials() ) );
-var_dump($this->request->getSession());
-    }
-*/
 }

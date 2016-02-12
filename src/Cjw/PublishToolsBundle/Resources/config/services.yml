@@ -55,7 +55,6 @@ services:
 #    cjw_publishtools.mobiledetect.library:
 #        class: Cjw\PublishToolsBundle\Services\MobileDetectService
 
-
     # Show exceptions/errors in self defined template
 #    cjw_publishtools.eventlistener.exception:
 #        class: Cjw\PublishToolsBundle\EventListener\ExceptionListener
